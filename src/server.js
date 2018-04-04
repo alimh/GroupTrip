@@ -4,38 +4,24 @@ import path from 'path';
 import { Server } from 'http';
 import Express from 'express';
 import React from 'react';
+import Mongoose from 'mongoose';
+import dotenv from 'dotenv';
 import { renderToString } from 'react-dom/server';
 import { StaticRouter as Router } from 'react-router-dom';
 import { App } from './components/App';
 
+dotenv.config();
 
 const app = new Express();
 const server = new Server(app);
 
-// use ejs templates
-// app.set('view engine', 'ejs');
-// app.set('views', path.join(__dirname, 'views'));
+console.log(process.env.MONGO_DB);
+Mongoose.Promise = Promise;
+Mongoose.connect(process.env.MONGO_DB);
 
-const renderPage = markup =>
-  `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Judo Heroes - A Universal JavaScript demo application with React</title>
-        <link rel="stylesheet" href="/css/style.css">
-      </head>
-      <body>
-        <div id="main">
-          <h1>From the server</h1>
-          ${markup}
-        </div>
-        <script src="/js/bundle.js"></script>
-      </body>
-    </html>
-  `
-;
+// use ejs templates
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 // define the folder that will be used for static assets
 app.use(Express.static(path.join(__dirname, 'static')));
@@ -63,7 +49,7 @@ app.get('*', (req, res) => {
     }
   }
 
-  return res.status(status).send(renderPage(markup));
+  return res.status(status).render('index', { markup });
 });
 
 
