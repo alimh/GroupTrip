@@ -1,8 +1,9 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
-import { Layout } from './Layout';
-import { IndexPage } from './IndexPage';
-import { NotFoundPage } from './NotFoundPage';
+import { Layout } from './pages/Layout';
+import { IndexPage } from './pages/IndexPage';
+import { NotFoundPage } from './pages/NotFoundPage';
+import { SettingsPage } from './pages/SettingsPage';
 
 const renderIndex = () => <IndexPage />;
 // const renderAthlete = ({ match, staticContext }) => {
@@ -15,10 +16,13 @@ const renderIndex = () => <IndexPage />;
 //   return <AthletePage athlete={athlete} athletes={athletes} />;
 // };
 
+const renderSettings = () => <SettingsPage />;
+
 export const App = () => (
   <Layout>
     <Switch>
       <Route exact path="/" render={renderIndex} />
+      <Route exact path="/settings" render={renderSettings} />
       <Route component={NotFoundPage} />
     </Switch>
   </Layout>

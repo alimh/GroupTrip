@@ -6,16 +6,18 @@ import Express from 'express';
 import React from 'react';
 import Mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import bodyParser from 'body-parser';
 import { renderToString } from 'react-dom/server';
 import { StaticRouter as Router } from 'react-router-dom';
-import { App } from './components/App';
+import { App } from './App';
+import ApiSettings from './api/settings';
+import ApiExpenses from './api/expenses';
 
 dotenv.config();
 
 const app = new Express();
 const server = new Server(app);
 
-console.log(process.env.MONGO_DB);
 Mongoose.Promise = Promise;
 Mongoose.connect(process.env.MONGO_DB);
 
@@ -26,6 +28,12 @@ app.set('views', path.join(__dirname, 'views'));
 // define the folder that will be used for static assets
 app.use(Express.static(path.join(__dirname, 'static')));
 
+app.use(bodyParser.json());
+
+// app.use('/api', checkAuth);
+app.use('/api/settings', ApiSettings);
+app.use('/api/expenses', ApiExpenses);
+
 // universal routing and rendering
 app.get('*', (req, res) => {
   let markup = '';
@@ -33,11 +41,11 @@ app.get('*', (req, res) => {
 
   if (process.env.UNIVERSAL) {
     const context = {};
-    markup = renderToString(
+    markup = renderToString((
       <Router location={req.url} context={context}>
         <App />
-      </Router>,
-    );
+      </Router>
+    ));
 
     // context.url will contain the URL to redirect to if a <Redirect> was used
     if (context.url) {
@@ -60,8 +68,7 @@ server.listen(port, (err) => {
   if (err) {
     return console.error(err);
   }
-  return console.info(
-    `
+  return console.info(`
       Server running on http://localhost:${port} [${env}]
       Universal rendering: ${process.env.UNIVERSAL ? 'enabled' : 'disabled'}
     `);
