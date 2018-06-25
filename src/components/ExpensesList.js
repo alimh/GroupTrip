@@ -2,28 +2,28 @@ import React from 'react';
 import Axios from 'axios';
 import Auth from '../utils/Auth';
 import { LoadingView } from '../components/LoadingView';
-import { ExpenseForm } from './ExpenseForm';
+import { ExpensesListTable } from './ExpensesListTable';
 
-export class NewExpense extends React.Component {
+export class ExpensesList extends React.Component {
   constructor() {
     super();
 
     this.state = {
       loading: true,
-      settingsValues: null,
+      expenses: null,
     };
   }
 
   componentDidMount() {
-    this.getSettings();
+    this.getExpenses();
   }
 
-  getSettings() {
+  getExpenses() {
     const authorizationHeader = 'bearer '.concat(Auth.getToken());
-    Axios.get('/api/settings/all', { headers: { Authorization: authorizationHeader } })
+    Axios.get('/api/expenses/all', { headers: { Authorization: authorizationHeader } })
       .then((response) => {
         const { data } = response;
-        this.setState({ loading: false, settingsValues: data });
+        this.setState({ loading: false, expenses: data });
       })
       .catch((err) => {
         this.setState({ loading: false });
@@ -31,11 +31,11 @@ export class NewExpense extends React.Component {
       });
   }
 
-  handleSave(expenseObject) {
-    const payload = expenseObject;
+  handleRemove(id) {
+    const payload = { id };
     const authorizationHeader = 'bearer '.concat(Auth.getToken());
-    Axios.post('/api/expenses/new', payload, { headers: { Authorization: authorizationHeader } })
-      .then(() => this.props.message({ success: 'Added Expense' }))
+    Axios.post('/api/expenses/remove', payload, { headers: { Authorization: authorizationHeader } })
+      .then(() => this.props.message({ success: 'Removed Expense' }))
       .catch(err => this.props.message({ error: err.toString() }));
   }
 
@@ -43,15 +43,14 @@ export class NewExpense extends React.Component {
     if (this.state.loading) return <LoadingView />;
     return (
       <div>
-        <h1>New Expense</h1>
-        <ExpenseForm
-          users={this.state.settingsValues.Users}
-          categories={this.state.settingsValues.Categories}
-          onSave={expenseObject => this.handleSave(expenseObject)}
+        <ExpensesListTable
+          key={this.state.key}
+          expenses={this.state.expenses}
+          onRemove={id => this.handleRemove(id)}
         />
       </div>
     );
   }
 }
 
-export default NewExpense;
+export default ExpensesList;

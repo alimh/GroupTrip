@@ -3,27 +3,24 @@ import Expense from '../models/expenses';
 
 const router = new express.Router();
 
-// router.get('/all', (req, res) => {
-//   Settings.find({ removed_at: null }, (err, settings) => {
-//     if (err) {
-//       return res.status(403).end();
-//     }
+router.get('/all', (req, res) => {
+  Expense.find({ }, (err, expenses) => {
+    if (err) {
+      return res.status(403).end();
+    }
+    const expensesObj = expenses.map(exp => ({
+      id: exp._id,
+      date: exp.date,
+      amount: exp.amount || '',
+      note: exp.note || '',
+      category: exp.category || {},
+      splitBy: exp.splitBy || [],
+      paidBy: exp.paidBy || {},
+    }));
 
-//     const settingsObj = settings.reduce((acc, s) => {
-//       const temp = {};
-//       const current = acc[s.settingsCategory] ? [...acc[s.settingsCategory]] : [];
-//       const item = {
-//         id: s.id,
-//         value: s.settingsValue,
-//       };
-//       current.push(item);
-//       temp[s.settingsCategory] = current;
-//       return { ...acc, ...temp };
-//     }, { Users: [], Categories: [] });
-
-//     return res.status(200).json(settingsObj).end();
-//   });
-// });
+    return res.status(200).json(expensesObj).end();
+  });
+});
 
 router.post('/new', (req, res) => {
   const newExpense = Expense({
@@ -57,14 +54,14 @@ router.post('/new', (req, res) => {
   return res.status(200).end();
 });
 
-// router.post('/remove', (req, res) => {
-//   Settings.findOneAndUpdate({
-//     _id: req.body.id,
-//   }, { removed_at: new Date() }, (err) => {
-//     if (err) throw err;
-//   });
+router.post('/remove', (req, res) => {
+  Expense.findOneAndRemove({
+    _id: req.body.id,
+  }, (err) => {
+    if (err) throw err;
+  });
 
-//   return res.status(200).end();
-// });
+  return res.status(200).end();
+});
 
 export default router;

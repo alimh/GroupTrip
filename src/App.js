@@ -4,6 +4,7 @@ import { Layout } from './pages/Layout';
 import { IndexPage } from './pages/IndexPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { ExpensesPage } from './pages/ExpensesPage';
 
 const renderIndex = () => <IndexPage />;
 // const renderAthlete = ({ match, staticContext }) => {
@@ -17,12 +18,14 @@ const renderIndex = () => <IndexPage />;
 // };
 
 const renderSettings = () => <SettingsPage />;
+const renderExpenses = () => <ExpensesPage />;
 
 export const App = () => (
   <Layout>
     <Switch>
       <Route exact path="/" render={renderIndex} />
       <Route exact path="/settings" render={renderSettings} />
+      <Route exact path="/expenses" render={renderExpenses} />
       <Route component={NotFoundPage} />
     </Switch>
   </Layout>
