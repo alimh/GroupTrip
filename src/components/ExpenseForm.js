@@ -6,7 +6,7 @@ export const ExpenseForm = (props) => {
   const {
     date, paidBy, splitBy, note, amount, category,
     users, categories,
-    onSave,
+    onSave, onCancel,
   } = props;
 
   const today = new Date();
@@ -63,6 +63,7 @@ export const ExpenseForm = (props) => {
       <FormBuilder
         fields={fields}
         onSave={fieldValues => onSave(fieldValues)}
+        onCancel={() => onCancel()}
       />
     </div>
   );

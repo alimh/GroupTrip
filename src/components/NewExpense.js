@@ -11,6 +11,7 @@ export class NewExpense extends React.Component {
     this.state = {
       loading: true,
       settingsValues: null,
+      key: Math.random(),
     };
   }
 
@@ -39,15 +40,21 @@ export class NewExpense extends React.Component {
       .catch(err => this.props.message({ error: err.toString() }));
   }
 
+  handleCancel() {
+    this.setState({ key: Math.random() });
+  }
+
   render() {
     if (this.state.loading) return <LoadingView />;
     return (
       <div>
         <h1>New Expense</h1>
         <ExpenseForm
+          key={this.state.key}
           users={this.state.settingsValues.Users}
           categories={this.state.settingsValues.Categories}
           onSave={expenseObject => this.handleSave(expenseObject)}
+          onCancel={() => this.handleCancel()}
         />
       </div>
     );
