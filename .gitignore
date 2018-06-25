@@ -41,3 +41,5 @@ src/server-es5.js
 .env
 .vscode
 .babelrc
+
+src/static/js/bundle.js
