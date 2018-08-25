@@ -4,14 +4,17 @@ import Auth from '../utils/Auth';
 import { LoadingView } from './LoadingView';
 import { ExpenseForm } from './ExpenseForm';
 
-export class NewExpense extends React.Component {
-  constructor() {
-    super();
+export class EditExpense extends React.Component {
+  constructor(props) {
+    super(props);
+
+    const { expenseObject } = props;
 
     this.state = {
       loading: true,
       settingsValues: null,
-      key: Math.random(),
+      expenseObject,
+      key: expenseObject.id,
     };
   }
 
@@ -33,26 +36,32 @@ export class NewExpense extends React.Component {
   }
 
   handleSave(expenseObject) {
-    const payload = expenseObject;
+    const payload = { ...expenseObject, id: this.state.key };
     const authorizationHeader = 'bearer '.concat(Auth.getToken());
-    Axios.post('/api/expenses/new', payload, { headers: { Authorization: authorizationHeader } })
-      .then(() => this.props.message({ success: 'Added Expense' }))
+    Axios.post('/api/expenses/update', payload, { headers: { Authorization: authorizationHeader } })
+      .then(() => this.props.message({ success: 'Updated Expense' }))
       .catch(err => this.props.message({ error: err.toString() }));
   }
 
   handleCancel() {
-    this.setState({ key: Math.random() });
+    this.props.message({ cancel: 'Cancelled by user' });
   }
 
   render() {
     if (this.state.loading) return <LoadingView />;
     return (
       <div>
-        <h1>New Expense</h1>
+        <h1>Edit Expense</h1>
         <ExpenseForm
           key={this.state.key}
           users={this.state.settingsValues.Users}
           categories={this.state.settingsValues.Categories}
+          date={this.state.expenseObject.date}
+          note={this.state.expenseObject.note}
+          amount={this.state.expenseObject.amount}
+          category={this.state.expenseObject.category}
+          splitBy={this.state.expenseObject.splitBy}
+          paidBy={this.state.expenseObject.paidBy}
           onSave={expenseObject => this.handleSave(expenseObject)}
           onCancel={() => this.handleCancel()}
         />
@@ -61,4 +70,4 @@ export class NewExpense extends React.Component {
   }
 }
 
-export default NewExpense;
+export default EditExpense;

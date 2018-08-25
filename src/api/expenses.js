@@ -54,6 +54,39 @@ router.post('/new', (req, res) => {
   return res.status(200).end();
 });
 
+router.post('/update', (req, res) => {
+  Expense.findByIdAndUpdate(
+    req.body.id,
+    {
+      date: req.body.date,
+      note: req.body.note,
+      amount: req.body.amount,
+      category: {
+        name: req.body.categories.value,
+        id: req.body.categories.key,
+      },
+      splitBy: req.body.users.reduce((acc, user) => {
+        if (user.checked) {
+          acc.push({
+            name: user.value,
+            id: user.key,
+          });
+        }
+        return acc;
+      }, []),
+      paidBy: {
+        name: req.body.paidBy.value,
+        id: req.body.paidBy.key,
+      },
+    },
+    (err) => {
+      if (err) throw err;
+    },
+  );
+
+  return res.status(200).end();
+});
+
 router.post('/remove', (req, res) => {
   Expense.findOneAndRemove({
     _id: req.body.id,

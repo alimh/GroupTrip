@@ -2,10 +2,10 @@ import React from 'react';
 
 export const InputBox = props => (
   <div className="input-box-group">
-    <label className="input-box-label" htmlFor={props.id}>{props.name}</label>
+    <label htmlFor={props.label} className="input-box-label">{props.label}</label>
     <input
       className="input-box"
-      id={props.name}
+      id={props.id}
       type={props.inputType}
       value={props.value}
       onChange={e => props.onUpdate(e.target.value)}
@@ -20,11 +20,11 @@ export const InputBox = props => (
 
 export const SelectBox = props => (
   <div className="select-box-group">
-    <label className="select-box-label" htmlFor={props.id}>{props.name}</label>
+    <label className="select-box-label" htmlFor={props.label}>{props.label}</label>
     <select
       className="select-box"
       id={props.id}
-      value={props.selected.key}
+      value={props.value.key}
       onChange={e => (
           props.onUpdate({
             value: e.target.namedItem(e.target.value).innerText,
@@ -45,16 +45,17 @@ export const SelectBox = props => (
 
 export const MultiSelect = props => (
   <div className="multi-select-group">
-    <label className="multi-select-label" htmlFor={props.id}>{props.name}</label>
+    <label className="multi-select-label" htmlFor={props.label}>{props.label}</label>
     {props.options.map((option, n) => (
             // options: {
+            //  key: String
             //  name: String
             //  checked: Bool
             // }
       <Checkbox
-        key={option.key || option.value}
-        name={option.value}
-        title={option.value}
+        key={option.key}
+        id={option.key}
+        label={option.value}
         onUpdate={(checked) => {
             const newOptions = props.options;
             newOptions[n].checked = checked;
@@ -72,11 +73,11 @@ export const Checkbox = props => (
   <div className="checkbox-group">
     <input
       className="check-box"
-      name={props.name}
+      name={props.id}
       onChange={e => props.onUpdate(e.target.checked)}
       checked={props.checked}
       type="checkbox"
-    />{props.title}
+    />{props.label}
   </div>
 );
 
@@ -86,13 +87,48 @@ export class FormBuilder extends React.Component {
 
     const initialState = props.fields.reduce((set, field) => {
       const noValidation = () => false;
-      const values = { ...set.values, [field.id]: field.initialValue || '' };
+
+      let initialValue = null;
+      if (field.type === 'select-box') {
+        initialValue = field.initialValue || { key: '', value: '' };
+      } else if (field.type === 'multi-select') {
+        const checked = field.initialValue || [];
+        const kvp = checked.reduce((acc, element, n) => {
+          acc[element.key] = n + 1; // to avoid 0 being counted as false
+          return acc;
+        }, { });
+        initialValue = field.options.map((option) => {
+          const check = kvp[option.key] > 0; // if the option exists int he checked kvp
+          return { key: option.key, value: option.value, checked: check };
+        });
+      } else { initialValue = field.initialValue || ''; }
+      const values = { ...set.values, [field.id]: initialValue };
+
       const errors = { ...set.errors, [field.id]: false };
       const errorChecks = { ...set.errorChecks, [field.id]: field.errorChecks || noValidation };
+
       return { values, errors, errorChecks };
     }, { values: { }, errors: { }, errorChecks: { } });
 
-    this.state = initialState;
+    // set all the initial values for the multi-select
+    // props.fields.forEach((field) => {
+    //   if (field.type === 'multi-select') {
+    //     // In order to pre-check the initial values:
+    //     // 1. Create a key-value pair of all the options along with their index
+    //     // 2. Loop through each of the initial values (the ones supposed to be checked)
+    //     // 2a. if it is in the list, get the index and check it
+    //     // 2b. if it is not in the list (old option that was removed), add to end?
+
+    const onCancel = props.onCancel || (() => this.resetForm());
+
+    this.state = { ...initialState, initial: initialState, handleCancel: onCancel };
+  }
+
+  resetForm() {
+    this.setState({
+      values: this.state.initial.values,
+      errors: this.state.initial.errors,
+    });
   }
 
   handleUpdate(field, value) {
@@ -120,16 +156,14 @@ export class FormBuilder extends React.Component {
     if (error) this.setState({ errors });
     else {
       this.props.onSave(this.state.values);
-    //   const blankValues = Object.keys(this.state.values).reduce((acc, field) => (
-    //     { ...acc.values, [field]: '' }
-    //   ), { });
+      this.resetForm();
     }
   }
 
   handleCancel(e) {
     e.preventDefault();
 
-    this.props.onCancel();
+    this.state.handleCancel();
   }
 
   render() {
@@ -146,8 +180,8 @@ export class FormBuilder extends React.Component {
         return format(
           MultiSelect({
             id: field.id,
-            name: field.name,
-            options: field.options || [],
+            label: field.label,
+            options: this.state.values[field.id],
             onUpdate: options => this.handleUpdate(field.id, options),
             disabled: field.disabled,
             errMsg: this.state.errors[field.id],
@@ -159,9 +193,9 @@ export class FormBuilder extends React.Component {
         return format(
           SelectBox({
             id: field.id,
-            name: field.name,
-            selected: this.state.values[field.id],
-            onUpdate: value => this.handleUpdate(field.id, value),
+            label: field.label,
+            value: { key: this.state.values[field.id].key },
+            onUpdate: selected => this.handleUpdate(field.id, selected),
             disabled: field.disabled,
             errMsg: this.state.errors[field.id],
             options: field.options || [],
@@ -173,7 +207,7 @@ export class FormBuilder extends React.Component {
       return format(
         InputBox({
           id: field.id,
-          name: field.name,
+          label: field.label,
           value: this.state.values[field.id],
           onUpdate: value => this.handleUpdate(field.id, value),
           placeholder: field.placeholder,

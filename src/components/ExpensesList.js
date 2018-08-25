@@ -1,16 +1,20 @@
 import React from 'react';
 import Axios from 'axios';
 import Auth from '../utils/Auth';
-import { LoadingView } from '../components/LoadingView';
+import { LoadingView } from './LoadingView';
 import { ExpensesListTable } from './ExpensesListTable';
+import { EditExpense } from './EditExpense';
 
 export class ExpensesList extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     this.state = {
+      key: Math.random(),
+      keyEditExpense: null,
       loading: true,
       expenses: null,
+      expenseObjectToEdit: null,
     };
   }
 
@@ -39,7 +43,30 @@ export class ExpensesList extends React.Component {
       .catch(err => this.props.message({ error: err.toString() }));
   }
 
+  handleEdit(n) {
+    this.setState({
+      keyEditExpense: Math.random(),
+      expenseObjectToEdit: this.state.expenses[n],
+    });
+  }
+
+  handleMessage(k, m) {
+    // if user cancelled
+    if (m.cancel) { this.setState({ keyEditExpense: null }); }
+    if (m.success) { this.setState({ keyEditExpense: null }); this.props.message(m); }
+  }
+
   render() {
+    const EditExpenseView = this.state.keyEditExpense ?
+      (
+        <EditExpense
+          key={this.state.keyEditExpense}
+          message={message => this.handleMessage(this.state.keyEditExpense, message)}
+          expenseObject={this.state.expenseObjectToEdit}
+        />
+      ) :
+        <p>Nothing to Edit</p>;
+
     if (this.state.loading) return <LoadingView />;
     return (
       <div>
@@ -47,7 +74,9 @@ export class ExpensesList extends React.Component {
           key={this.state.key}
           expenses={this.state.expenses}
           onRemove={id => this.handleRemove(id)}
+          onEdit={n => this.handleEdit(n)}
         />
+        {EditExpenseView}
       </div>
     );
   }
