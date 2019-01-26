@@ -1,0 +1,49 @@
+import React from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { Layout } from './pages/Layout';
+import { TripPage } from './pages/TripPage';
+import { NotFoundPage } from './pages/NotFoundPage';
+// import { SettingsPage } from './pages/SettingsPage';
+// import { ExpensesPage } from './pages/ExpensesPage';
+// import { SummaryPage } from './pages/SummaryPage';
+import { AllTrips } from './pages/AllTrips';
+import { NewTripPage } from './pages/NewTripPage';
+
+// import './style.css';
+
+// const renderIndex = () => <IndexPage test2="test2" />;
+// const renderAthlete = ({ match, staticContext }) => {
+//   const id = match.params.id;
+//   const athlete = athletes.find(current => current.id === id);
+//   if (!athlete) {
+//     return <NotFoundPage staticContext={staticContext} />;
+//   }
+
+//   return <AthletePage athlete={athlete} athletes={athletes} />;
+// };
+
+const renderAllTrips = () => <AllTrips />;
+// const renderSettings = () => <SettingsPage />;
+// const renderExpenses = () => <ExpensesPage />;
+// const renderSummary = () => <SummaryPage />;
+const renderNewTrip = () => <NewTripPage />;
+const renderTripPage = pathObj => <TripPage tripId={pathObj.match.params.n} />;
+
+export const App = () => (
+  <Router>
+    <Layout>
+      <Switch>
+        <Route exact path="/" render={renderAllTrips} />
+        <Route exact path="/new" render={renderNewTrip} />
+        <Route
+          exact
+          path="/trips/:n"
+          render={pathObj => renderTripPage(pathObj)}
+        />
+        <Route component={NotFoundPage} />
+      </Switch>
+    </Layout>
+  </Router>
+);
+
+export default App;

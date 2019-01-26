@@ -51,7 +51,7 @@ export class EditExpense extends React.Component {
     if (this.state.loading) return <LoadingView />;
     return (
       <div>
-        <h1>Edit Expense</h1>
+        <h3>Edit Expense</h3>
         <ExpenseForm
           key={this.state.key}
           users={this.state.settingsValues.Users}

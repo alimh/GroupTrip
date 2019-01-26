@@ -1,4 +1,4 @@
-/* global window document */
+/* global document */
 
 import React from 'react';
 import { render } from 'react-dom';
@@ -11,6 +11,4 @@ const AppClient = () => (
   </Router>
 );
 
-window.onload = () => {
-  render(<AppClient />, document.getElementById('main'));
-};
+render(<AppClient />, document.getElementById('root'));

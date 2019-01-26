@@ -1,29 +1,29 @@
 import React from 'react';
 import Axios from 'axios';
 import Auth from '../utils/Auth';
-import { SettingsView } from '../components/SettingsView';
+import { TripSettingsView } from '../components/TripSettingsView';
 import { ErrorView } from '../components/ErrorView';
 import { LoadingView } from '../components/LoadingView';
 
-export class SettingsPage extends React.Component {
+export class TripSettingsPage extends React.Component {
   constructor() {
     super();
 
     this.state = {
       loading: true,
+      settingsId: null,
     };
   }
 
   componentDidMount() {
-    this.getSettings();
-  }
-
-  getSettings() {
     const authorizationHeader = 'bearer '.concat(Auth.getToken());
-    Axios.get('/api/settings/all', { headers: { Authorization: authorizationHeader } })
+    Axios.get('/api/settings', {
+      headers: { Authorization: authorizationHeader },
+      params: { id: this.state.settingsId },
+    })
       .then((response) => {
         const { data } = response;
-        this.setState({ loading: false, settings: data });
+        this.setState({ loading: false, settingsObject: data });
       })
       .catch((err) => {
         this.setState({ loading: false, error: err.toString() });
@@ -36,9 +36,13 @@ export class SettingsPage extends React.Component {
     //  value: String, value of the new setting
     const payload = settingsObject;
     const authorizationHeader = 'bearer '.concat(Auth.getToken());
-    Axios.post('/api/settings/new', payload, { headers: { Authorization: authorizationHeader } })
+    Axios.post('/api/settings/new', payload, {
+      headers: { Authorization: authorizationHeader },
+    })
       .then(() => this.getSettings())
-      .catch((err) => { this.setState({ loading: false, error: err.toString() }); });
+      .catch((err) => {
+        this.setState({ loading: false, error: err.toString() });
+      });
   }
 
   handleRemoveSetting(id) {
@@ -47,16 +51,20 @@ export class SettingsPage extends React.Component {
     //  value: String, value of the setting to remove
     const payload = { id };
     const authorizationHeader = 'bearer '.concat(Auth.getToken());
-    Axios.post('/api/settings/remove', payload, { headers: { Authorization: authorizationHeader } })
+    Axios.post('/api/settings/remove', payload, {
+      headers: { Authorization: authorizationHeader },
+    })
       .then(() => this.getSettings())
-      .catch((err) => { this.setState({ loading: false, error: err.toString() }); });
+      .catch((err) => {
+        this.setState({ loading: false, error: err.toString() });
+      });
   }
 
   render() {
     if (this.state.loading) return <LoadingView />;
     if (this.state.error) return <ErrorView error={this.state.error} />;
     return (
-      <SettingsView
+      <TripSettingsView
         settings={this.state.settings}
         onNew={settingsObject => this.handleNewSetting(settingsObject)}
         onRemove={settingsObject => this.handleRemoveSetting(settingsObject)}
@@ -65,4 +73,4 @@ export class SettingsPage extends React.Component {
   }
 }
 
-export default SettingsPage;
+export default TripSettingsPage;

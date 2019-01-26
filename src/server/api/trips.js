@@ -1,0 +1,65 @@
+import express from 'express';
+import TripObjs from '../models/trips';
+
+const router = new express.Router();
+
+router.get('/all', (req, res) => {
+  TripObjs.find({ removed_at: null }, (err, trips) => {
+    if (err) {
+      return res.status(403).end();
+    }
+    return res
+      .status(200)
+      .json(trips)
+      .end();
+  });
+});
+
+router.get('/get', (req, res) => {
+  const { id } = req.query;
+  TripObjs.findById(id, (err, trip) => {
+    if (!trip || err) {
+      return res.status(403).end();
+    }
+    return res
+      .status(200)
+      .json(trip.toObject({ getters: true }))
+      .end();
+  });
+});
+
+router.post('/new', (req, res) => {
+  const newTrip = TripObjs({
+    id: Math.random(),
+    name: req.body.name,
+    categories: req.body.categories,
+    travelers: req.body.travelers,
+    created_at: new Date(),
+    removed_at: null,
+  });
+
+  newTrip.save((err) => {
+    if (err) throw err;
+  });
+
+  return res
+    .status(200)
+    .json(newTrip.id)
+    .end();
+});
+
+// router.post('/remove', (req, res) => {
+//   Settings.findOneAndUpdate(
+//     {
+//       _id: req.body.id,
+//     },
+//     { removed_at: new Date() },
+//     (err) => {
+//       if (err) throw err;
+//     }
+//   );
+
+//   return res.status(200).end();
+// });
+
+export default router;

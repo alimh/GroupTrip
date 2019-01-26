@@ -9,22 +9,31 @@ export class ExpensesList extends React.Component {
   constructor(props) {
     super(props);
 
+    const { expenses } = props;
+
     this.state = {
       key: Math.random(),
       keyEditExpense: null,
-      loading: true,
-      expenses: null,
+      loading: expenses === undefined,
+      expenses: expenses || null,
       expenseObjectToEdit: null,
     };
   }
 
   componentDidMount() {
-    this.getExpenses();
+    if (this.state.expenses === null) this.getExpenses();
   }
 
   getExpenses() {
     const authorizationHeader = 'bearer '.concat(Auth.getToken());
-    Axios.get('/api/expenses/all', { headers: { Authorization: authorizationHeader } })
+    Axios.get(
+      '/api/expenses/all',
+      {
+        headers: {
+          Authorization: authorizationHeader,
+        },
+      },
+    )
       .then((response) => {
         const { data } = response;
         this.setState({ loading: false, expenses: data });
@@ -65,11 +74,12 @@ export class ExpensesList extends React.Component {
           expenseObject={this.state.expenseObjectToEdit}
         />
       ) :
-        <p>Nothing to Edit</p>;
+        <div />;
 
     if (this.state.loading) return <LoadingView />;
-    return (
+    return this.state.expenses.length > 0 ? (
       <div>
+        <h3>Expense List</h3>
         <ExpensesListTable
           key={this.state.key}
           expenses={this.state.expenses}
@@ -78,7 +88,7 @@ export class ExpensesList extends React.Component {
         />
         {EditExpenseView}
       </div>
-    );
+    ) : <div />;
   }
 }
 
