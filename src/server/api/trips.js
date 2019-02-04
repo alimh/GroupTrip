@@ -28,23 +28,35 @@ router.get('/get', (req, res) => {
   });
 });
 
-router.post('/new', (req, res) => {
-  const newTrip = TripObjs({
-    id: Math.random(),
+router.post('/save', (req, res) => {
+  const tripDetails = {
     name: req.body.name,
     categories: req.body.categories,
     travelers: req.body.travelers,
-    created_at: new Date(),
+    updated_at: new Date(),
     removed_at: null,
+  };
+
+  const newTrip = TripObjs({
+    ...tripDetails,
   });
 
-  newTrip.save((err) => {
-    if (err) throw err;
-  });
+  console.log('from /trips/new');
+  console.log(req.body);
+
+  if (req.body.id) {
+    TripObjs.findByIdAndUpdate(req.body.id, { ...tripDetails }, (err) => {
+      if (err) throw err;
+    });
+  } else {
+    newTrip.save((err) => {
+      if (err) throw err;
+    });
+  }
 
   return res
     .status(200)
-    .json(newTrip.id)
+    .json(req.body.id || newTrip.id)
     .end();
 });
 

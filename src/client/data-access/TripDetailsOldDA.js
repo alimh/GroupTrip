@@ -6,11 +6,12 @@ import { ErrorView } from '../components/ErrorView';
 import { LoadingView } from '../components/LoadingView';
 
 export class SettingsPage extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     this.state = {
       loading: true,
+      tripId: props.tripId || null,
     };
   }
 
@@ -20,8 +21,11 @@ export class SettingsPage extends React.Component {
 
   getSettings() {
     const authorizationHeader = 'bearer '.concat(Auth.getToken());
-    Axios.get('/api/settings/all', {
-      headers: { Authorization: authorizationHeader },
+    Axios.get('/api/settings/get', {
+      headers: {
+        Authorization: authorizationHeader,
+      },
+      params: { id: this.props.tripId },
     })
       .then((response) => {
         const { data } = response;

@@ -11,13 +11,11 @@ export class AllTripsDA extends React.Component {
     this.state = {
       trips: [],
     };
-
-    this.getTripsFromServer();
   }
 
-  // componentDidMount() {
-  //   this.getTripsFromServer();
-  // }
+  componentDidMount() {
+    this.getTripsFromServer();
+  }
 
   getTripsFromServer() {
     /* Gets an array of trips from the server

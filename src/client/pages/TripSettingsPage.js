@@ -1,74 +1,55 @@
 import React from 'react';
-import Axios from 'axios';
-import Auth from '../utils/Auth';
-import { TripSettingsView } from '../components/TripSettingsView';
+import { TripDetailsDA } from '../data-access/TripDetailsDA';
 import { ErrorView } from '../components/ErrorView';
-import { LoadingView } from '../components/LoadingView';
+import { SuccessView } from '../components/SuccessView';
+import { TripLinks } from '../components/TripLinks';
 
 export class TripSettingsPage extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     this.state = {
-      loading: true,
-      settingsId: null,
+      tripId: props.tripId || null,
+      messages: {
+        success: null,
+        error: null,
+      },
     };
   }
+  handleMessage(k, m) {
+    // display message
+    this.setState({ messages: m });
 
-  componentDidMount() {
-    const authorizationHeader = 'bearer '.concat(Auth.getToken());
-    Axios.get('/api/settings', {
-      headers: { Authorization: authorizationHeader },
-      params: { id: this.state.settingsId },
-    })
-      .then((response) => {
-        const { data } = response;
-        this.setState({ loading: false, settingsObject: data });
-      })
-      .catch((err) => {
-        this.setState({ loading: false, error: err.toString() });
+    // if success message came from New Expense, reset both, otherwise just the one it came from
+    if (m.success && k === this.state.keyNewExpense) {
+      this.setState({
+        keyNewExpense: Math.random(),
+        keyExpenseList: Math.random(),
       });
-  }
-
-  handleNewSetting(settingsObject) {
-    // settingsObject: {
-    //  category: String, name of the setting category
-    //  value: String, value of the new setting
-    const payload = settingsObject;
-    const authorizationHeader = 'bearer '.concat(Auth.getToken());
-    Axios.post('/api/settings/new', payload, {
-      headers: { Authorization: authorizationHeader },
-    })
-      .then(() => this.getSettings())
-      .catch((err) => {
-        this.setState({ loading: false, error: err.toString() });
+    }
+    if (m.success && k === this.state.keyExpenseList) {
+      this.setState({
+        keyExpenseList: Math.random(),
       });
-  }
-
-  handleRemoveSetting(id) {
-    // settingsObject: {
-    //  category: String, name of the setting category
-    //  value: String, value of the setting to remove
-    const payload = { id };
-    const authorizationHeader = 'bearer '.concat(Auth.getToken());
-    Axios.post('/api/settings/remove', payload, {
-      headers: { Authorization: authorizationHeader },
-    })
-      .then(() => this.getSettings())
-      .catch((err) => {
-        this.setState({ loading: false, error: err.toString() });
-      });
+    }
   }
 
   render() {
-    if (this.state.loading) return <LoadingView />;
-    if (this.state.error) return <ErrorView error={this.state.error} />;
     return (
-      <TripSettingsView
-        settings={this.state.settings}
-        onNew={settingsObject => this.handleNewSetting(settingsObject)}
-        onRemove={settingsObject => this.handleRemoveSetting(settingsObject)}
-      />
+      <div>
+        <TripLinks tripId={this.state.tripId} />
+        <h1>Trip Settings</h1>
+        <ErrorView error={this.state.messages.error} />
+        <SuccessView msg={this.state.messages.success} />
+
+        <TripDetailsDA
+          key={this.state.keyNewTrip}
+          tripId={this.state.tripId}
+          message={message =>
+            this.handleMessage(this.state.keyNewTrip, message)
+          }
+        />
+      </div>
     );
   }
 }

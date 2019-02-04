@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Layout } from './pages/Layout';
 import { TripPage } from './pages/TripPage';
 import { NotFoundPage } from './pages/NotFoundPage';
-// import { SettingsPage } from './pages/SettingsPage';
+import { TripSettingsPage } from './pages/TripSettingsPage';
 // import { ExpensesPage } from './pages/ExpensesPage';
 // import { SummaryPage } from './pages/SummaryPage';
 import { AllTrips } from './pages/AllTrips';
@@ -23,8 +23,10 @@ import { NewTripPage } from './pages/NewTripPage';
 // };
 
 const renderAllTrips = () => <AllTrips />;
-// const renderSettings = () => <SettingsPage />;
 // const renderExpenses = () => <ExpensesPage />;
+const renderSettings = pathObj => (
+  <TripSettingsPage tripId={pathObj.match.params.n} />
+);
 // const renderSummary = () => <SummaryPage />;
 const renderNewTrip = () => <NewTripPage />;
 const renderTripPage = pathObj => <TripPage tripId={pathObj.match.params.n} />;
@@ -35,6 +37,11 @@ export const App = () => (
       <Switch>
         <Route exact path="/" render={renderAllTrips} />
         <Route exact path="/new" render={renderNewTrip} />
+        <Route
+          exact
+          path="/trips/:n/settings"
+          render={pathObj => renderSettings(pathObj)}
+        />
         <Route
           exact
           path="/trips/:n"

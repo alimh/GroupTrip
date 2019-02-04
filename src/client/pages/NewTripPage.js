@@ -1,5 +1,5 @@
 import React from 'react';
-import { NewTripDA } from '../data-access/NewTripDA';
+import { TripDetailsDA } from '../data-access/TripDetailsDA';
 import { ErrorView } from '../components/ErrorView';
 import { SuccessView } from '../components/SuccessView';
 
@@ -18,6 +18,8 @@ export class NewTripPage extends React.Component {
 
   handleMessage(k, m) {
     // display message
+    console.log('handling message');
+    console.log(m);
     this.setState({ messages: { ...m } });
   }
 
@@ -28,7 +30,7 @@ export class NewTripPage extends React.Component {
         <ErrorView error={this.state.messages.error} />
         <SuccessView msg={this.state.messages.success} />
 
-        <NewTripDA
+        <TripDetailsDA
           key={this.state.keyNewTrip}
           message={message =>
             this.handleMessage(this.state.keyNewTrip, message)

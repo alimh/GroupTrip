@@ -6,7 +6,7 @@ const tripObjSchema = new Schema({
   name: String,
   categories: [String],
   travelers: [String],
-  created_at: Date,
+  updated_at: Date,
   removed_at: Date,
 });
 

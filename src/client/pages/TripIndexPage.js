@@ -1,6 +1,7 @@
 import React from 'react';
 import { SuccessView } from '../components/SuccessView';
 import { ErrorView } from '../components/ErrorView';
+import { TripLinks } from '../components/TripLinks';
 import { NewExpense } from '../data-access/NewExpense';
 import { ExpensesList } from '../components/ExpensesList';
 
@@ -42,8 +43,10 @@ export class TripIndexPage extends React.Component {
     console.log(this.state.tripObj);
     return (
       <div className="home">
+        <TripLinks tripId={this.state.tripObj.id} />
         <ErrorView error={this.state.messages.error} />
         <SuccessView msg={this.state.messages.success} />
+
         <div>
           <h3>{this.state.tripObj.name}</h3>
           <div>

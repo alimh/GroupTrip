@@ -8,15 +8,6 @@ export const Layout = props => (
         <li>
           <Link to="/">Home</Link>
         </li>
-        <li>
-          <Link to="/summary">Summary</Link>
-        </li>
-        <li>
-          <Link to="/settings">Settings</Link>
-        </li>
-        <li>
-          <Link to="/new">New Trip</Link>
-        </li>
       </ul>
     </header>
 
