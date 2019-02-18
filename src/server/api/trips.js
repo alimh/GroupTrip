@@ -17,6 +17,8 @@ router.get('/all', (req, res) => {
 
 router.get('/get', (req, res) => {
   const { id } = req.query;
+  console.log('from /trips/get');
+  console.log(id);
   TripObjs.findById(id, (err, trip) => {
     if (!trip || err) {
       return res.status(403).end();
