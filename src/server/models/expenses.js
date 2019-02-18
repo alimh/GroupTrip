@@ -1,8 +1,9 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const { Schema } = mongoose;
 
 const expensesSchema = new Schema({
+  tripId: String,
   date: Date,
   note: String,
   amount: Number,
@@ -10,11 +11,13 @@ const expensesSchema = new Schema({
     name: String,
     id: String,
   },
-  splitBy: [{
-    id: String,
-    name: String,
-    checked: String,
-  }],
+  splitBy: [
+    {
+      id: String,
+      name: String,
+      checked: String,
+    },
+  ],
   paidBy: {
     name: String,
     id: String,
@@ -22,6 +25,6 @@ const expensesSchema = new Schema({
   created_at: Date,
 });
 
-const Expenses = mongoose.model('Expense', expensesSchema);
+const Expenses = mongoose.model("Expense", expensesSchema);
 
 export default Expenses;

@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 // import {
 //   Field,
 //   Control,
@@ -21,7 +21,7 @@ export const InputBox = props => (
       onChange={e => props.onUpdate(e.target.value)}
       onBlur={e => props.onUpdate(e.target.value)}
       placeholder={props.placeholder}
-      style={props.errMsg ? { border: "2px solid red" } : {}}
+      style={props.errMsg ? { border: '2px solid red' } : {}}
       disabled={props.disabled || false}
     />
     <div color="danger">{props.errMsg}</div>
@@ -118,20 +118,20 @@ export class FormBuilder extends React.Component {
         //     // 2b. if it is not in the list (old option that was removed), add to end?
 
         let initialValue = null;
-        if (field.type === "select-box") {
-          initialValue = field.initialValue || { key: "", value: "" };
-        } else if (field.type === "multi-select") {
+        if (field.type === 'select-box') {
+          initialValue = field.initialValue || { key: '', value: '' };
+        } else if (field.type === 'multi-select') {
           const checked = field.initialValue || [];
           const kvp = checked.reduce((acc, element, n) => {
             acc[element.key] = n + 1; // to avoid 0 being counted as false
             return acc;
           }, {});
-          initialValue = field.options.map(option => {
+          initialValue = field.options.map((option) => {
             const check = kvp[option.key] > 0; // if the option exists int he checked kvp
             return { key: option.key, value: option.value, checked: check };
           });
         } else {
-          initialValue = field.initialValue || "";
+          initialValue = field.initialValue || '';
         }
         const values = { ...set.values, [field.id]: initialValue };
 
@@ -216,14 +216,14 @@ export class FormBuilder extends React.Component {
       </button>
     );
 
-    const saveButtonText = this.props.saveButtonText || "Save";
-    const cancelButtonText = this.props.cancelButtonText || "Cancel";
+    const saveButtonText = this.props.saveButtonText || 'Save';
+    const cancelButtonText = this.props.cancelButtonText || 'Cancel';
     const formatItem = this.props.formatItem || noFormatItem;
     const formatWrapper = this.props.formatWrapper || noFormatWrapper;
     //    const formatButtons = this.props.formatButtons || formatItem;
 
-    const elements = this.props.fields.map(field => {
-      if (field.type === "multi-select") {
+    const elements = this.props.fields.map((field) => {
+      if (field.type === 'multi-select') {
         console.log(this.state.values[field.id]);
         return formatItem(
           MultiSelect({
@@ -237,7 +237,7 @@ export class FormBuilder extends React.Component {
           field.id
         );
       }
-      if (field.type === "select-box") {
+      if (field.type === 'select-box') {
         return formatItem(
           SelectBox({
             id: field.id,

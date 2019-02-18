@@ -4,21 +4,30 @@ import Expense from '../models/expenses';
 const router = new express.Router();
 
 router.get('/all', (req, res) => {
-  Expense.find({ }, (err, expenses) => {
+  const { id } = req.query;
+  console.log('from /trips/get');
+  console.log(id);
+  Expense.find({ tripId: id }, (err, expenses) => {
+    console.log(expenses);
     if (err) {
       return res.status(403).end();
     }
-    const expensesObj = expenses.map(exp => ({
-      id: exp._id,
-      date: exp.date,
-      amount: exp.amount || '',
-      note: exp.note || '',
-      category: exp.category || {},
-      splitBy: exp.splitBy || [],
-      paidBy: exp.paidBy || {},
-    }));
-
-    return res.status(200).json(expensesObj).end();
+    // const expensesObj = expenses.map(exp => ({
+    //   id: exp._id,
+    //   date: exp.date,
+    //   amount: exp.amount || '',
+    //   note: exp.note || '',
+    //   category: exp.category || {},
+    //   splitBy: exp.splitBy || [],
+    //   paidBy: exp.paidBy || {},
+    // }));
+    const expenseObj = expenses.length
+      ? expenses.toObject({ getters: true })
+      : [];
+    return res
+      .status(200)
+      .json(expenseObj)
+      .end();
   });
 });
 
@@ -81,18 +90,21 @@ router.post('/update', (req, res) => {
     },
     (err) => {
       if (err) throw err;
-    },
+    }
   );
 
   return res.status(200).end();
 });
 
 router.post('/remove', (req, res) => {
-  Expense.findOneAndRemove({
-    _id: req.body.id,
-  }, (err) => {
-    if (err) throw err;
-  });
+  Expense.findOneAndRemove(
+    {
+      _id: req.body.id,
+    },
+    (err) => {
+      if (err) throw err;
+    }
+  );
 
   return res.status(200).end();
 });

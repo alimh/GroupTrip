@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExpensesList } from '../components/ExpensesList';
+import { ExpensesList } from '../data-access/ExpensesListDA';
 
 export const ExpensesPage = () => (
   <div className="home">

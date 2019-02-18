@@ -25,7 +25,7 @@ export class TripDetailsDA extends React.Component {
         headers: {
           Authorization: authorizationHeader,
         },
-        params: { id: this.props.tripId },
+        params: { id: this.state.tripId },
       })
         .then((response) => {
           const { data } = response;

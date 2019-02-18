@@ -3,7 +3,7 @@ import { SuccessView } from '../components/SuccessView';
 import { ErrorView } from '../components/ErrorView';
 import { TripLinks } from '../components/TripLinks';
 import { NewExpense } from '../data-access/NewExpense';
-import { ExpensesList } from '../components/ExpensesList';
+import { ExpensesList } from '../data-access/ExpensesListDA';
 
 export class TripIndexPage extends React.Component {
   constructor(props) {
@@ -61,8 +61,8 @@ export class TripIndexPage extends React.Component {
           </div>
           <div>
             <ExpensesList
-              expenses={this.state.tripObj.expenses}
               key={this.state.keyExpenseList}
+              tripId={this.state.tripObj.id}
               message={message =>
                 this.handleMessage(this.state.keyExpenseList, message)
               }
