@@ -1,11 +1,13 @@
 import React from 'react';
+import { Prompt } from 'react-router-dom';
 import { SettingsViewWithNew } from './SettingsViewWithNew';
 import { InputBox } from './FormComponents';
+import { checkNotBlankError } from '../utils/FormValidation';
 
 export class TripDetailsView extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props);
+
     const blankTripObj = {
       name: '',
       categories: [],
@@ -15,12 +17,17 @@ export class TripDetailsView extends React.Component {
 
     this.state = {
       tripObj: props.tripObj || blankTripObj,
+      errors: { name: false },
+      errorChecks: {
+        name: f => checkNotBlankError(f),
+      },
+      unsaved: props.tripObj === null,
     };
   }
 
   handleUpdateName(name) {
     const tripObj = { ...this.state.tripObj, name };
-    this.setState({ tripObj });
+    this.setState({ tripObj, unsaved: true });
   }
 
   handleNewSetting(settingGroup, newValue) {
@@ -41,20 +48,37 @@ export class TripDetailsView extends React.Component {
 
   handleSave(e) {
     e.preventDefault();
-    this.props.onSave(this.state.tripObj);
+
+    const { errors } = this.state;
+
+    // loop through error checks and make sure they are all false
+    const error = Object.keys(this.state.errorChecks).reduce((acc, field) => {
+      errors[field] = this.state.errorChecks[field](this.state.tripObj[field]);
+      return acc || errors[field] !== false;
+    }, false);
+
+    if (error) this.setState({ errors, unsaved: true });
+    else {
+      this.props.onSave(this.state.tripObj);
+      this.setState({ unsaved: false });
+    }
   }
 
   render() {
-    console.log(this.state.tripObj);
     return (
       <div>
         <form onSubmit={e => this.handleSave(e)}>
+          <Prompt
+            when={this.state.unsaved}
+            message="You have unsaved changes"
+          />
           <strong>Give a name for your trip</strong>
           <br />
           <InputBox
             id="TripName"
             onUpdate={name => this.handleUpdateName(name)}
             value={this.state.tripObj.name}
+            errMsg={this.state.errors.name}
           />
           <strong>Who is going on the trip?</strong>
           <SettingsViewWithNew

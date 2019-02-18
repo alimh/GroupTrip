@@ -133,7 +133,7 @@ export class FormBuilder extends React.Component {
           ...set.errorChecks,
           [field.id]: field.errorChecks || noValidation,
         };
-        console.log(values);
+
         return { values, errors, errorChecks };
       },
       { values: {}, errors: {}, errorChecks: {} }
