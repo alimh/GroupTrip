@@ -4,18 +4,21 @@ import Auth from '../utils/Auth';
 import { ExpenseForm } from '../components/ExpenseForm';
 
 export class NewExpense extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     /* props
-      id: String, id of trip that new expense will save to
+      tripId: String, id of trip that new expense will save to
     */
+    console.log(props);
     this.state = {
       key: Math.random(),
+      tripId: props.tripId || null,
     };
   }
 
   handleSave(expenseObject) {
-    const payload = expenseObject;
+    const { tripId } = this.state;
+    const payload = { ...expenseObject, tripId };
     const authorizationHeader = 'bearer '.concat(Auth.getToken());
     Axios.post('/api/expenses/new', payload, {
       headers: { Authorization: authorizationHeader },
@@ -33,7 +36,6 @@ export class NewExpense extends React.Component {
     console.log(this.props);
     return (
       <div>
-        <h3>New Expense</h3>
         <ExpenseForm
           key={this.state.key}
           users={this.props.travelers}

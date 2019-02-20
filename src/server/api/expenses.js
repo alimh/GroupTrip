@@ -21,9 +21,10 @@ router.get('/all', (req, res) => {
     //   splitBy: exp.splitBy || [],
     //   paidBy: exp.paidBy || {},
     // }));
-    const expenseObj = expenses.length
-      ? expenses.toObject({ getters: true })
-      : [];
+    const expenseObj = expenses.map(e => e.toObject({ getters: true }));
+    // const expenseObj = expenses.length
+    //   ? expenses.toObject({ getters: true })
+    //   : [];
     return res
       .status(200)
       .json(expenseObj)
@@ -33,6 +34,7 @@ router.get('/all', (req, res) => {
 
 router.post('/new', (req, res) => {
   const newExpense = Expense({
+    tripId: req.body.tripId,
     date: req.body.date,
     note: req.body.note,
     amount: req.body.amount,

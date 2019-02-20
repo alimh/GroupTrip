@@ -1,7 +1,7 @@
-import React from "react";
-import { TripPageDA } from "../data-access/TripPageDA";
-import { SuccessView } from "../components/SuccessView";
-import { ErrorView } from "../components/ErrorView";
+import React from 'react';
+import { TripPageDA } from '../data-access/TripPageDA';
+import { SuccessView } from '../components/SuccessView';
+import { ErrorView } from '../components/ErrorView';
 
 export class TripPage extends React.Component {
   constructor(props) {

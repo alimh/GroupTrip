@@ -51,6 +51,7 @@ export class TripIndexPage extends React.Component {
           <h3>{this.state.tripObj.name}</h3>
           <div>
             <NewExpense
+              tripId={this.state.tripObj.id}
               categories={this.state.tripObj.categories}
               travelers={this.state.tripObj.travelers}
               key={this.state.keyNewExpense}

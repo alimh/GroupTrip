@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const { Schema } = mongoose;
 
@@ -25,6 +25,6 @@ const expensesSchema = new Schema({
   created_at: Date,
 });
 
-const Expenses = mongoose.model("Expense", expensesSchema);
+const Expenses = mongoose.model('Expense', expensesSchema);
 
 export default Expenses;
