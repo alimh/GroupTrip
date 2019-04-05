@@ -31,20 +31,26 @@ router.get('/get', (req, res) => {
 });
 
 router.post('/save', (req, res) => {
+  const categories = req.body.categories.map(c => ({
+    label: c.label || '',
+    id: c.id !== undefined ? c.id : null,
+    active: c.active || false,
+  }));
+  const travelers = req.body.travelers.map(t => ({
+    label: t.label || '',
+    id: t.id !== undefined ? t.id : null,
+    active: t.active || false,
+  }));
+
   const tripDetails = {
-    name: req.body.name,
-    categories: req.body.categories,
-    travelers: req.body.travelers,
+    name: req.body.name || '',
+    categories,
+    travelers,
     updated_at: new Date(),
     removed_at: null,
   };
 
-  const newTrip = TripObjs({
-    ...tripDetails,
-  });
-
-  console.log('from /trips/new');
-  console.log(req.body);
+  const newTrip = TripObjs({ ...tripDetails });
 
   if (req.body.id) {
     TripObjs.findByIdAndUpdate(req.body.id, { ...tripDetails }, (err) => {

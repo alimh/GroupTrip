@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Layout } from './pages/Layout';
-import { TripPage } from './pages/TripPage';
+import { TripIndexPage } from './pages/TripIndexPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { TripSettingsPage } from './pages/TripSettingsPage';
 // import { ExpensesPage } from './pages/ExpensesPage';
@@ -29,7 +29,9 @@ const renderSettings = pathObj => (
 );
 // const renderSummary = () => <SummaryPage />;
 const renderNewTrip = () => <NewTripPage />;
-const renderTripPage = pathObj => <TripPage tripId={pathObj.match.params.n} />;
+const renderTripPage = pathObj => (
+  <TripIndexPage tripId={pathObj.match.params.n} />
+);
 
 export const App = () => (
   <Router>

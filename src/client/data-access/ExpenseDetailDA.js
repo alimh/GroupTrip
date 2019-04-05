@@ -1,0 +1,104 @@
+import React from 'react';
+import Axios from 'axios';
+import Auth from '../utils/Auth';
+import { ExpenseForm } from '../components/ExpenseForm';
+import { LoadingView } from '../components/LoadingView';
+
+export class ExpenseDetail extends React.Component {
+  constructor(props) {
+    super(props);
+
+    const tripId = props.tripId || null;
+    const expenseObj = props.expenseObj || null;
+    const tripObj = props.tripObj || null;
+
+    console.log(expenseObj);
+
+    this.state = {
+      loading: true,
+      tripObj,
+      tripId,
+      expenseObj,
+    };
+  }
+
+  componentDidMount() {
+    if (this.state.tripId) {
+      const authorizationHeader = 'bearer '.concat(Auth.getToken());
+      Axios.get('/api/trips/get', {
+        headers: {
+          Authorization: authorizationHeader,
+        },
+        params: { id: this.state.tripId },
+      })
+        .then((response) => {
+          const { data } = response;
+          this.setState({ loading: false, tripObj: data });
+        })
+        .catch((err) => {
+          this.setState({ loading: false });
+          this.props.message({ err: err.toString() });
+        });
+    } else {
+      this.props.message({ error: 'Trip ID not valid' });
+    }
+  }
+
+  handleSave(expenseObject) {
+    const payload = {
+      ...expenseObject,
+      tripId: this.state.tripId,
+      id: this.state.expenseObj ? this.state.expenseObj.id : null,
+    };
+    const authorizationHeader = 'bearer '.concat(Auth.getToken());
+
+    this.setState({ loading: true });
+    Axios.post('/api/expenses/save', payload, {
+      headers: { Authorization: authorizationHeader },
+    })
+      .then(() => {
+        this.props.message({ success: 'Saved' });
+        // TODO: renable this if component is not destroyed by parent
+        // this.setState({
+        //   loading: false,
+        //   expenseObj: null,
+        //   // expenseObj: expenseObject,
+        //   // keyExpenseForm: Math.random(),
+        // });
+      })
+      .catch((err) => {
+        this.props.message({ error: err.toString() });
+      });
+  }
+
+  handleCancel() {
+    this.setState({ keyExpenseForm: Math.random() });
+    if (this.props.onCancel) this.props.onCancel();
+  }
+
+  render() {
+    if (this.state.loading) return <LoadingView />;
+    return (
+      <div>
+        <ExpenseForm
+          key={this.state.keyExpenseForm}
+          categories={
+            this.state.tripObj.categories
+              .filter(c => c.active)
+              .map(c => c.label) || []
+          }
+          travelers={
+            this.state.tripObj.travelers
+              .filter(t => t.active)
+              .map(t => t.label) || []
+          }
+          expenseObj={this.state.expenseObj}
+          onSave={expenseObject => this.handleSave(expenseObject)}
+          onCancel={() => this.handleCancel()}
+        />
+      </div>
+    );
+  }
+}
+
+export default ExpenseDetail;

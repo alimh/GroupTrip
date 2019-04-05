@@ -10,7 +10,6 @@ import bodyParser from 'body-parser';
 // import { renderToString } from 'react-dom/server';
 // import { StaticRouter as Router } from 'react-router-dom';
 // import { App } from '../client/App';
-import ApiSettings from './api/settings';
 import ApiExpenses from './api/expenses';
 import ApiTrips from './api/trips';
 // import template from '../../public/template';
@@ -33,7 +32,6 @@ app.use(Express.static('dist'));
 app.use(bodyParser.json());
 
 // app.use('/api', checkAuth);
-app.use('/api/settings', ApiSettings);
 app.use('/api/expenses', ApiExpenses);
 app.use('/api/trips', ApiTrips);
 

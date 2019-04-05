@@ -22,8 +22,10 @@ const expensesSchema = new Schema({
     name: String,
     id: String,
   },
-  created_at: Date,
+  updated_at: Date,
 });
+
+expensesSchema.set('toJSON', { virtuals: true });
 
 const Expenses = mongoose.model('Expense', expensesSchema);
 

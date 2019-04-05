@@ -2,7 +2,7 @@ import React from 'react';
 import { SuccessView } from '../components/SuccessView';
 import { ErrorView } from '../components/ErrorView';
 import { TripLinks } from '../components/TripLinks';
-import { NewExpense } from '../data-access/NewExpense';
+import { ExpenseDetail } from '../data-access/ExpenseDetailDA';
 import { ExpensesList } from '../data-access/ExpensesListDA';
 
 export class TripIndexPage extends React.Component {
@@ -10,6 +10,7 @@ export class TripIndexPage extends React.Component {
     super(props);
 
     this.state = {
+      tripId: props.tripId || null,
       tripObj: props.tripObj || null,
       keyNewExpense: Math.random(),
       keyExpenseList: Math.random(),
@@ -39,22 +40,18 @@ export class TripIndexPage extends React.Component {
   }
 
   render() {
-    console.log('Trip Index Page');
-    console.log(this.state.tripObj);
+    console.log(this.state);
     return (
       <div className="home">
-        <TripLinks tripId={this.state.tripObj.id} />
+        <TripLinks tripId={this.state.tripId} />
         <ErrorView error={this.state.messages.error} />
         <SuccessView msg={this.state.messages.success} />
 
         <div>
-          <h3>{this.state.tripObj.name}</h3>
           <div>
-            <NewExpense
-              tripId={this.state.tripObj.id}
-              categories={this.state.tripObj.categories}
-              travelers={this.state.tripObj.travelers}
+            <ExpenseDetail
               key={this.state.keyNewExpense}
+              tripId={this.state.tripId}
               message={message =>
                 this.handleMessage(this.state.keyNewExpense, message)
               }
@@ -63,7 +60,7 @@ export class TripIndexPage extends React.Component {
           <div>
             <ExpensesList
               key={this.state.keyExpenseList}
-              tripId={this.state.tripObj.id}
+              tripId={this.state.tripId}
               message={message =>
                 this.handleMessage(this.state.keyExpenseList, message)
               }

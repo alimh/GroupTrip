@@ -26,10 +26,19 @@ export class SettingsViewWithNew extends React.Component {
     return (
       <ul>
         {this.state.settings.map((value, i) => (
-          <li key={value}>
-            {value}
+          <li key={value.id}>
+            {value.label}
             &nbsp;
-            <button value="x" onClick={() => this.props.onRemove(i)} />
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                this.props.onRemove(i);
+              }}
+            >
+              x
+            </button>
+            {value.active ? <div>active</div> : <div />}
+            {value.unsaved !== undefined ? <div>unsaved</div> : <div />}
           </li>
         ))}
         <li key="new">

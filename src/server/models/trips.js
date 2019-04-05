@@ -4,8 +4,20 @@ const { Schema } = mongoose;
 
 const tripObjSchema = new Schema({
   name: String,
-  categories: [String],
-  travelers: [String],
+  categories: [
+    {
+      label: String,
+      id: String,
+      active: Boolean,
+    },
+  ],
+  travelers: [
+    {
+      label: String,
+      id: String,
+      active: Boolean,
+    },
+  ],
   updated_at: Date,
   removed_at: Date,
 });

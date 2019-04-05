@@ -12,18 +12,15 @@ import {
 
 export const ExpenseForm = (props) => {
   const {
-    date,
-    paidBy,
-    note,
-    amount,
-    category,
-    splitBy,
-    users,
-    categories,
-    onSave,
-    onCancel,
-  } = props;
+ travelers, categories, onSave, onCancel 
+} = props;
 
+  const {
+ date, paidBy, note, amount, category, splitBy 
+} =
+    props.expenseObj || {};
+
+  console.log(props);
   const today = new Date();
 
   const fields = [
@@ -48,19 +45,21 @@ export const ExpenseForm = (props) => {
     },
     {
       type: 'select-box',
-      id: 'categories',
+      id: 'category',
       label: 'Category',
-      initialValue: category ? { value: category, key: -1 } : null,
+      initialValue: category
+        ? { value: category.name, key: category.id }
+        : null,
       options: categories
         ? categories.map((c, n) => ({ key: n, value: c }))
         : [],
     },
     {
       type: 'multi-select',
-      id: 'users',
+      id: 'splitBy',
       label: 'Split By',
       options:
-        users.map((user, n) => ({
+        travelers.map((user, n) => ({
           value: user,
           key: n,
           checked: false,
@@ -73,11 +72,11 @@ export const ExpenseForm = (props) => {
       type: 'select-box',
       id: 'paidBy',
       label: 'Paid By',
-      initialValue: paidBy ? { value: paidBy, key: -1 } : null,
-      options: users ? users.map((u, n) => ({ key: n, value: u })) : [],
+      initialValue: paidBy ? { value: paidBy.name, key: paidBy.id } : null,
+      options: travelers ? travelers.map((u, n) => ({ key: n, value: u })) : [],
     },
   ];
-
+  console.log('rendeirng expense form');
   return (
     <div>
       <div>

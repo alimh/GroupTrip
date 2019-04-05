@@ -32,16 +32,26 @@ export class TripDetailsView extends React.Component {
 
   handleNewSetting(settingGroup, newValue) {
     const newSetting = this.state.tripObj[settingGroup];
-    newSetting[newSetting.length] = newValue;
+    newSetting[newSetting.length] = {
+      label: newValue,
+      id: newSetting.length,
+      active: true,
+      unsaved: true,
+    };
 
     const tripObj = { ...this.state.tripObj, [settingGroup]: newSetting };
     this.setState({ tripObj });
   }
 
   handleRemoveSetting(settingGroup, i) {
-    const newSetting = this.state.tripObj[settingGroup];
-    newSetting.splice(i);
-
+    const currentSetting = this.state.tripObj[settingGroup];
+    const newSettingItem = {
+      ...currentSetting[i],
+      active: !currentSetting[i].active,
+      unsaved: true,
+    };
+    const newSetting = currentSetting;
+    newSetting[i] = newSettingItem;
     const tripObj = { ...this.state.tripObj, [settingGroup]: newSetting };
     this.setState({ tripObj });
   }
@@ -65,6 +75,7 @@ export class TripDetailsView extends React.Component {
   }
 
   render() {
+    console.log(this.state.tripObj);
     return (
       <div>
         <form onSubmit={e => this.handleSave(e)}>

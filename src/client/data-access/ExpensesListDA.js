@@ -3,7 +3,8 @@ import Axios from 'axios';
 import Auth from '../utils/Auth';
 import { LoadingView } from '../components/LoadingView';
 import { ExpensesListTable } from '../components/ExpensesListTable';
-import { EditExpense } from '../components/EditExpense';
+// import { EditExpense } from '../components/EditExpense';
+import { ExpenseDetail } from '../data-access/ExpenseDetailDA';
 
 export class ExpensesList extends React.Component {
   constructor(props) {
@@ -38,14 +39,10 @@ export class ExpensesList extends React.Component {
       })
         .then((response) => {
           const { data } = response;
-          console.log('then response');
-          console.log(data);
           this.setState({ loading: false, expenses: data });
         })
         .catch((err) => {
           this.setState({ loading: false });
-          console.log('catch repsone');
-          console.log(err);
           this.props.message({ error: err.toString() });
         });
     }
@@ -81,12 +78,14 @@ export class ExpensesList extends React.Component {
 
   render() {
     const EditExpenseView = this.state.keyEditExpense ? (
-      <EditExpense
+      <ExpenseDetail
         key={this.state.keyEditExpense}
         message={message =>
           this.handleMessage(this.state.keyEditExpense, message)
         }
-        expenseObject={this.state.expenseObjectToEdit}
+        expenseObj={this.state.expenseObjectToEdit}
+        tripId={this.state.tripId}
+        onCancel={() => this.setState({ keyEditExpense: null })}
       />
     ) : (
       <div />

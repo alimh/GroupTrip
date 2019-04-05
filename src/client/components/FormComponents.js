@@ -224,7 +224,6 @@ export class FormBuilder extends React.Component {
 
     const elements = this.props.fields.map((field) => {
       if (field.type === 'multi-select') {
-        console.log(this.state.values[field.id]);
         return formatItem(
           MultiSelect({
             id: field.id,
