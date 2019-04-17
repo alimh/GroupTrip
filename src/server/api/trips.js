@@ -17,8 +17,6 @@ router.get('/all', (req, res) => {
 
 router.get('/get', (req, res) => {
   const { id } = req.query;
-  console.log('from /trips/get');
-  console.log(id);
   TripObjs.findById(id, (err, trip) => {
     if (!trip || err) {
       return res.status(403).end();
@@ -68,18 +66,12 @@ router.post('/save', (req, res) => {
     .end();
 });
 
-// router.post('/remove', (req, res) => {
-//   Settings.findOneAndUpdate(
-//     {
-//       _id: req.body.id,
-//     },
-//     { removed_at: new Date() },
-//     (err) => {
-//       if (err) throw err;
-//     }
-//   );
+router.post('/remove', (req, res) => {
+  TripObjs.findByIdAndUpdate(req.body.id, { removed_at: new Date() }, (err) => {
+    if (err) throw err;
+  });
 
-//   return res.status(200).end();
-// });
+  return res.status(200).end();
+});
 
 export default router;

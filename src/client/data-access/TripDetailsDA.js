@@ -19,7 +19,6 @@ export class TripDetailsDA extends React.Component {
 
   componentDidMount() {
     if (this.state.tripId) {
-      console.log(this.state.tripId);
       const authorizationHeader = 'bearer '.concat(Auth.getToken());
       Axios.get('/api/trips/get', {
         headers: {
@@ -64,13 +63,32 @@ export class TripDetailsDA extends React.Component {
       });
   }
 
+  handleRemove() {
+    const payload = { id: this.state.tripId };
+    const authorizationHeader = 'bearer '.concat(Auth.getToken());
+
+    this.setState({ loading: true });
+    Axios.post('/api/trips/remove', payload, {
+      headers: { Authorization: authorizationHeader },
+    })
+      .then(() => {
+        this.props.message({ success: 'Removed' });
+        this.setState({ loading: false, tripObj: null });
+        // TODO: redirct to new link
+      })
+      .catch((err) => {
+        this.setState({ loading: false });
+        this.props.message({ error: err.toString() });
+      });
+  }
+
   render() {
-    console.log(this.state);
     if (this.state.loading) return <LoadingView />;
     return (
       <TripDetailsView
         tripObj={this.state.tripObj}
         onSave={tripObj => this.handleSave(tripObj)}
+        onRemove={() => this.handleRemove()}
       />
     );
   }

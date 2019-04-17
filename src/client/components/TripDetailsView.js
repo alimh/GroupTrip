@@ -21,7 +21,7 @@ export class TripDetailsView extends React.Component {
       errorChecks: {
         name: f => checkNotBlankError(f),
       },
-      unsaved: props.tripObj === null,
+      unsaved: false,
     };
   }
 
@@ -69,13 +69,27 @@ export class TripDetailsView extends React.Component {
 
     if (error) this.setState({ errors, unsaved: true });
     else {
-      this.props.onSave(this.state.tripObj);
+      const categories = this.state.tripObj.categories.map((c) => {
+        const { unsaved, ...rest } = c;
+        return rest;
+      });
+      const travelers = this.state.tripObj.travelers.map((c) => {
+        const { unsaved, ...rest } = c;
+        return rest;
+      });
+      this.props.onSave({ ...this.state.tripObj, categories, travelers });
       this.setState({ unsaved: false });
     }
   }
 
+  handleRemove(e) {
+    e.preventDefault();
+
+    this.props.onRemove();
+    this.setState({ unsaved: false });
+  }
+
   render() {
-    console.log(this.state.tripObj);
     return (
       <div>
         <form onSubmit={e => this.handleSave(e)}>
@@ -113,6 +127,15 @@ export class TripDetailsView extends React.Component {
             color="primary"
           >
             Save
+          </button>
+          <button
+            key="remove-button"
+            type="cancel"
+            variant="contained"
+            disabled={this.state.tripObj.tripId === null}
+            onClick={e => this.handleRemove(e)}
+          >
+            Remove
           </button>
         </form>
       </div>
