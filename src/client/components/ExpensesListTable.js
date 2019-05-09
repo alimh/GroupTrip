@@ -15,8 +15,8 @@ export const ExpensesListTable = (props) => {
     return (
       <ListGroup.Item key={exp.id} active={exp.active || false}>
         <h4>{exp.note || ''}</h4>
-        {exp.date || ''}
-        <div>{exp.amount || ''}</div>
+        {exp.dateFormatted || ''}
+        <div>{exp.amountFormatted || ''}</div>
         <div>Category: {exp.category.name || ''}</div>
         <div>Split By: {p}</div>
         <div>Paid By: {exp.paidBy.name || ''}</div>

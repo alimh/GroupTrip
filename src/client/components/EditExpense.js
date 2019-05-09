@@ -24,7 +24,9 @@ export class EditExpense extends React.Component {
 
   getSettings() {
     const authorizationHeader = 'bearer '.concat(Auth.getToken());
-    Axios.get('/api/settings/all', { headers: { Authorization: authorizationHeader } })
+    Axios.get('/api/settings/all', {
+      headers: { Authorization: authorizationHeader },
+    })
       .then((response) => {
         const { data } = response;
         this.setState({ loading: false, settingsValues: data });
@@ -38,7 +40,9 @@ export class EditExpense extends React.Component {
   handleSave(expenseObject) {
     const payload = { ...expenseObject, id: this.state.key };
     const authorizationHeader = 'bearer '.concat(Auth.getToken());
-    Axios.post('/api/expenses/update', payload, { headers: { Authorization: authorizationHeader } })
+    Axios.post('/api/expenses/update', payload, {
+      headers: { Authorization: authorizationHeader },
+    })
       .then(() => this.props.message({ success: 'Updated Expense' }))
       .catch(err => this.props.message({ error: err.toString() }));
   }

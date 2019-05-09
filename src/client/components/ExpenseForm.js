@@ -11,7 +11,7 @@ export const ExpenseForm = (props) => {
   const { travelers, categories } = props;
   const { onSave, onCancel } = props;
 
-  const { date, paidBy, note } = props.expenseObj || {};
+  const { dateFormatted, paidBy, note } = props.expenseObj || {};
   const { amount, category, splitBy } = props.expenseObj || {};
 
   const { borderVariant } = props || 'light';
@@ -25,7 +25,14 @@ export const ExpenseForm = (props) => {
     {
       id: 'date',
       label: 'Date',
-      initialValue: date || today.toDateString(),
+      initialValue:
+        dateFormatted ||
+        today.toLocaleDateString('en-US', {
+          weekday: 'short',
+          month: 'long',
+          day: '2-digit',
+          year: 'numeric',
+        }),
       errorChecks: value => checkValidDateError(value),
     },
     {
@@ -38,7 +45,8 @@ export const ExpenseForm = (props) => {
       id: 'amount',
       label: 'Amount',
       initialValue: amount,
-      placehodler: 'Amount',
+      placeholder: 'Amount',
+      prepend: '$',
       errorChecks: value => checkPositiveNumberError(value),
     },
     {

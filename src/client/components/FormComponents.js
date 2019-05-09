@@ -1,21 +1,33 @@
 import React from 'react';
 import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
 
 export const InputBox = props => (
   <Form.Group controlId={props.id}>
     <Form.Label>{props.label}</Form.Label>
-    <Form.Control
-      className="input-box"
-      type={props.inputType}
-      value={props.value}
-      onChange={e => props.onUpdate(e.target.value)}
-      onBlur={e => props.onUpdate(e.target.value)}
-      placeholder={props.placeholder}
-      style={props.errMsg ? { border: '2px solid red' } : {}}
-      disabled={props.disabled || false}
-    />
-    <Form.Control.Feedback type="invalid">{props.errMsg}</Form.Control.Feedback>
+    <InputGroup>
+      {props.prepend ? (
+        <InputGroup.Prepend>
+          <InputGroup.Text>{props.prepend}</InputGroup.Text>
+        </InputGroup.Prepend>
+      ) : (
+        <div />
+      )}
+      <Form.Control
+        className="input-box"
+        type={props.inputType}
+        value={props.value}
+        onChange={e => props.onUpdate(e.target.value)}
+        onBlur={e => props.onUpdate(e.target.value)}
+        placeholder={props.placeholder}
+        style={props.errMsg ? { border: '2px solid red' } : {}}
+        disabled={props.disabled || false}
+      />
+      <Form.Control.Feedback type="invalid">
+        {props.errMsg}
+      </Form.Control.Feedback>
+    </InputGroup>
   </Form.Group>
 );
 
@@ -238,12 +250,9 @@ export class FormBuilder extends React.Component {
       }
       return formatItem(
         InputBox({
-          id: field.id,
-          label: field.label,
+          ...field,
           value: this.state.values[field.id],
           onUpdate: value => this.handleUpdate(field.id, value),
-          placeholder: field.placeholder,
-          disabled: field.disabled,
           errMsg: this.state.errors[field.id],
         }),
         field.id

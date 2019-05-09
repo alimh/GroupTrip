@@ -25,6 +25,18 @@ const expensesSchema = new Schema({
   updated_at: Date,
 });
 
+expensesSchema.virtual('dateFormatted').get(function () {
+  return this.date.toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'long',
+    day: '2-digit',
+    year: 'numeric',
+  });
+});
+expensesSchema.virtual('amountFormatted').get(function () {
+  return '$ '.concat(this.amount);
+});
+
 expensesSchema.set('toJSON', { virtuals: true });
 
 const Expenses = mongoose.model('Expense', expensesSchema);

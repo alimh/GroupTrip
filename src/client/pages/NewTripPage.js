@@ -1,4 +1,7 @@
 import React from 'react';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import { Redirect } from 'react-router-dom';
 import { TripDetailsDA } from '../data-access/TripDetailsDA';
 import { DisappearingAlert } from '../components/DisappearingAlert';
@@ -29,20 +32,30 @@ export class NewTripPage extends React.Component {
   render() {
     return (
       <div>
-        <h1>New Trip</h1>
-        <DisappearingAlert msg={this.state.messages.error} variant="danger" />
-
-        {this.state.redirect ? (
-          <Redirect push to={this.state.redirect} />
-        ) : (
-          <TripDetailsDA
-            key={this.state.keyNewTrip}
-            message={message =>
-              this.handleMessage(this.state.keyNewTrip, message)
-            }
-            redirect={path => this.handleRedirect(path)}
+        <Container>
+          <h3>New Trip Details</h3>
+          <DisappearingAlert
+            msg={this.state.messages.error}
+            variant="danger"
+            disappear={false}
           />
-        )}
+
+          {this.state.redirect ? (
+            <Redirect push to={this.state.redirect} />
+          ) : (
+            <Row className="justify-content-md-center">
+              <Col>
+                <TripDetailsDA
+                  key={this.state.keyNewTrip}
+                  message={message =>
+                    this.handleMessage(this.state.keyNewTrip, message)
+                  }
+                  redirect={path => this.handleRedirect(path)}
+                />
+              </Col>
+            </Row>
+          )}
+        </Container>
       </div>
     );
   }
