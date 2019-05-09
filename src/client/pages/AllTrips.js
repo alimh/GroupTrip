@@ -1,8 +1,7 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { SuccessView } from '../components/SuccessView';
-import { ErrorView } from '../components/ErrorView';
-import { AllTripsDA } from '../data-access/AllTripsDA';
+import React from "react";
+import { Link } from "react-router-dom";
+import { DisappearingAlert } from "../components/DisappearingAlert";
+import { AllTripsDA } from "../data-access/AllTripsDA";
 
 export class AllTrips extends React.Component {
   constructor() {
@@ -29,8 +28,11 @@ export class AllTrips extends React.Component {
       <div className="home">
         <Link to="/new">New Trip</Link>
         <h1>Trips</h1>
-        <ErrorView error={this.state.messages.error} />
-        <SuccessView msg={this.state.messages.success} />
+        <DisappearingAlert msg={this.state.messages.error} variant="danger" />
+        <DisappearingAlert
+          msg={this.state.messages.success}
+          variant="success"
+        />
 
         <div spacing={24}>
           <div sm={6}>

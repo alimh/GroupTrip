@@ -1,21 +1,12 @@
 import React from 'react';
-// import {
-//   Field,
-//   Control,
-//   Label,
-//   Input,
-//   Select,
-//   Checkbox,
-//   Help,
-// } from 'react-bulma-components/lib/components/form';
-// import Button from 'react-bulma-components/lib/components/button';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
 
 export const InputBox = props => (
-  <div className="input-box-group">
-    <label>{props.label}</label>
-    <input
+  <Form.Group controlId={props.id}>
+    <Form.Label>{props.label}</Form.Label>
+    <Form.Control
       className="input-box"
-      id={props.id}
       type={props.inputType}
       value={props.value}
       onChange={e => props.onUpdate(e.target.value)}
@@ -24,51 +15,45 @@ export const InputBox = props => (
       style={props.errMsg ? { border: '2px solid red' } : {}}
       disabled={props.disabled || false}
     />
-    <div color="danger">{props.errMsg}</div>
-  </div>
+    <Form.Control.Feedback type="invalid">{props.errMsg}</Form.Control.Feedback>
+  </Form.Group>
 );
 
 export const SelectBox = props => (
-  <div>
-    <label>{props.label}</label>
-    <div>
-      <select
-        value={props.value.key}
-        onChange={e =>
-          props.onUpdate({
-            value: e.target.namedItem(e.target.value).innerText,
-            key: e.target.value,
-          })
-        }
-        inputprops={{
-          name: props.id,
-          id: props.id,
-        }}
-      >
-        <option key="0" value=" " name=" ">
-          {props.placeholder}
+  <Form.Group>
+    <Form.Label>{props.label}</Form.Label>
+    <Form.Control
+      as="select"
+      value={props.value.key}
+      onChange={e =>
+        props.onUpdate({
+          value: e.target.namedItem(e.target.value).innerText,
+          key: e.target.value,
+        })
+      }
+      inputprops={{
+        name: props.id,
+        id: props.id,
+      }}
+    >
+      <option key="0" value=" " name=" ">
+        {props.placeholder}
+      </option>
+      {props.options.map(option => (
+        <option key={option.key} value={option.key} name={option.key}>
+          {option.value}
         </option>
-        {props.options.map(option => (
-          <option key={option.key} value={option.key} name={option.key}>
-            {option.value}
-          </option>
-        ))}
-      </select>
-    </div>
-    <div color="danger">{props.errMsg}</div>
-  </div>
+      ))}
+    </Form.Control>
+    <Form.Control.Feedback type="invalid">{props.errMsg}</Form.Control.Feedback>
+  </Form.Group>
 );
 
 export const MultiSelect = props => (
   <div>
-    <label>{props.label}</label>
+    <div>{props.label}</div>
     <div>
       {props.options.map((option, n) => (
-        // options: {
-        //  key: String
-        //  value: String
-        //  checked: Bool
-        // }
         <CheckboxElement
           key={option.key}
           id={option.key}
@@ -89,14 +74,14 @@ export const MultiSelect = props => (
 
 export const CheckboxElement = props => (
   <div>
-    <input
+    <Form.Check
       className="check-box"
       name={props.id}
       onChange={() => props.onUpdate()}
       checked={props.checked}
       type="checkbox"
+      label={props.label}
     />
-    {props.label}
   </div>
 );
 
@@ -201,19 +186,19 @@ export class FormBuilder extends React.Component {
     const noFormatItem = (field, key) => <div key={key}>{field}</div>;
     const noFormatWrapper = fields => <div>{fields}</div>;
     const saveButton = text => (
-      <button
-        key="save-button"
-        type="submit"
-        variant="contained"
-        color="primary"
-      >
+      <Button key="save-button" type="submit" variant="primary">
         {text}
-      </button>
+      </Button>
     );
     const cancelButton = text => (
-      <button key="cancel-button" onClick={e => this.handleCancel(e)}>
+      <Button
+        key="cancel-button"
+        type="cancel"
+        variant="light"
+        onClick={e => this.handleCancel(e)}
+      >
         {text}
-      </button>
+      </Button>
     );
 
     const saveButtonText = this.props.saveButtonText || 'Save';
@@ -270,11 +255,10 @@ export class FormBuilder extends React.Component {
       cancelButton(cancelButtonText),
     ];
 
-    const elementsList = [elements, buttons];
-    const combine = elementsList.map(e => e);
+    const combine = [elements, buttons].map(e => e);
 
     return (
-      <form onSubmit={e => this.handleSave(e)}>{formatWrapper(combine)}</form>
+      <Form onSubmit={e => this.handleSave(e)}>{formatWrapper(combine)}</Form>
     );
   }
 }

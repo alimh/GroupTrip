@@ -1,7 +1,8 @@
 import React from 'react';
+import { Redirect } from 'react-router-dom';
+import Container from 'react-bootstrap/Container';
 import { TripDetailsDA } from '../data-access/TripDetailsDA';
-import { ErrorView } from '../components/ErrorView';
-import { SuccessView } from '../components/SuccessView';
+import { DisappearingAlert } from '../components/DisappearingAlert';
 import { TripLinks } from '../components/TripLinks';
 
 export class TripSettingsPage extends React.Component {
@@ -14,11 +15,16 @@ export class TripSettingsPage extends React.Component {
         success: null,
         error: null,
       },
+      redirect: null,
     };
   }
   handleMessage(k, m) {
     // display message
-    this.setState({ messages: m });
+    this.setState({ messages: m }, () =>
+      setTimeout(
+        () => this.setState({ messages: { success: null, error: null } }),
+        3000
+      ));
 
     // if success message came from New Expense, reset both, otherwise just the one it came from
     if (m.success && k === this.state.keyNewExpense) {
@@ -34,21 +40,30 @@ export class TripSettingsPage extends React.Component {
     }
   }
 
+  handleRedirect(path) {
+    this.setState({ redirect: path });
+  }
+
   render() {
     return (
       <div>
         <TripLinks tripId={this.state.tripId} />
-        <h1>Trip Settings</h1>
-        <ErrorView error={this.state.messages.error} />
-        <SuccessView msg={this.state.messages.success} />
+        <Container>
+          <DisappearingAlert msg={this.state.messages.error} variant="danger" />
 
-        <TripDetailsDA
-          key={this.state.keyNewTrip}
-          tripId={this.state.tripId}
-          message={message =>
-            this.handleMessage(this.state.keyNewTrip, message)
-          }
-        />
+          {this.state.redirect ? (
+            <Redirect push to={this.state.redirect} />
+          ) : (
+            <TripDetailsDA
+              key={this.state.keyNewTrip}
+              tripId={this.state.tripId}
+              message={message =>
+                this.handleMessage(this.state.keyNewTrip, message)
+              }
+              redirect={path => this.handleRedirect(path)}
+            />
+          )}
+        </Container>
       </div>
     );
   }

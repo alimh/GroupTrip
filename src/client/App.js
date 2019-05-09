@@ -5,7 +5,7 @@ import { TripIndexPage } from './pages/TripIndexPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { TripSettingsPage } from './pages/TripSettingsPage';
 // import { ExpensesPage } from './pages/ExpensesPage';
-// import { SummaryPage } from './pages/SummaryPage';
+import { SummaryPage } from './pages/SummaryPage';
 import { AllTrips } from './pages/AllTrips';
 import { NewTripPage } from './pages/NewTripPage';
 
@@ -27,7 +27,9 @@ const renderAllTrips = () => <AllTrips />;
 const renderSettings = pathObj => (
   <TripSettingsPage tripId={pathObj.match.params.n} />
 );
-// const renderSummary = () => <SummaryPage />;
+const renderSummary = pathObj => (
+  <SummaryPage tripId={pathObj.match.params.n} />
+);
 const renderNewTrip = () => <NewTripPage />;
 const renderTripPage = pathObj => (
   <TripIndexPage tripId={pathObj.match.params.n} />
@@ -43,6 +45,11 @@ export const App = () => (
           exact
           path="/trips/:n/settings"
           render={pathObj => renderSettings(pathObj)}
+        />
+        <Route
+          exact
+          path="/trips/:n/summary"
+          render={pathObj => renderSummary(pathObj)}
         />
         <Route
           exact

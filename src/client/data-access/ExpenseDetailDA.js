@@ -5,20 +5,24 @@ import { ExpenseForm } from '../components/ExpenseForm';
 import { LoadingView } from '../components/LoadingView';
 
 export class ExpenseDetail extends React.Component {
+  static getDerivedStateFromProps(nextProps) {
+    return nextProps;
+  }
+
   constructor(props) {
     super(props);
 
     const tripId = props.tripId || null;
     const expenseObj = props.expenseObj || null;
     const tripObj = props.tripObj || null;
-
-    console.log(expenseObj);
+    const borderVariant = props.borderVariant || null;
 
     this.state = {
       loading: true,
       tripObj,
       tripId,
       expenseObj,
+      borderVariant,
     };
   }
 
@@ -37,7 +41,7 @@ export class ExpenseDetail extends React.Component {
         })
         .catch((err) => {
           this.setState({ loading: false });
-          this.props.message({ err: err.toString() });
+          this.props.message({ error: err.toString() });
         });
     } else {
       this.props.message({ error: 'Trip ID not valid' });
@@ -78,25 +82,26 @@ export class ExpenseDetail extends React.Component {
 
   render() {
     if (this.state.loading) return <LoadingView />;
-    return (
-      <div>
-        <ExpenseForm
-          key={this.state.keyExpenseForm}
-          categories={
-            this.state.tripObj.categories
-              .filter(c => c.active)
-              .map(c => c.label) || []
-          }
-          travelers={
-            this.state.tripObj.travelers
-              .filter(t => t.active)
-              .map(t => t.label) || []
-          }
-          expenseObj={this.state.expenseObj}
-          onSave={expenseObject => this.handleSave(expenseObject)}
-          onCancel={() => this.handleCancel()}
-        />
-      </div>
+    return this.state.tripObj ? (
+      <ExpenseForm
+        key={this.state.keyExpenseForm}
+        categories={
+          this.state.tripObj.categories
+            .filter(c => c.active)
+            .map(c => c.label) || []
+        }
+        travelers={
+          this.state.tripObj.travelers
+            .filter(t => t.active)
+            .map(t => t.label) || []
+        }
+        expenseObj={this.state.expenseObj}
+        onSave={expenseObject => this.handleSave(expenseObject)}
+        onCancel={() => this.handleCancel()}
+        borderVariant={this.state.borderVariant}
+      />
+    ) : (
+      <div />
     );
   }
 }

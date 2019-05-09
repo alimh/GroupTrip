@@ -52,9 +52,10 @@ export class TripDetailsDA extends React.Component {
     Axios.post('/api/trips/save', payload, {
       headers: { Authorization: authorizationHeader },
     })
-      .then(() => {
-        this.props.message({ success: 'Saved' });
-        this.setState({ loading: false, tripObj: tripObject });
+      .then((res) => {
+        this.props.redirect('/trips/'.concat(res.data));
+        // this.props.message({ success: 'Saved' });
+        //        this.setState({ loading: false, tripObj: tripObject });
         // TODO: redirct to new link
       })
       .catch((err) => {
@@ -72,9 +73,10 @@ export class TripDetailsDA extends React.Component {
       headers: { Authorization: authorizationHeader },
     })
       .then(() => {
-        this.props.message({ success: 'Removed' });
-        this.setState({ loading: false, tripObj: null });
-        // TODO: redirct to new link
+        // this.props.message({ success: 'Removed' });
+        // this.setState({ loading: false, tripObj: null });
+        // // TODO: redirct to new link
+        this.props.redirect('/');
       })
       .catch((err) => {
         this.setState({ loading: false });

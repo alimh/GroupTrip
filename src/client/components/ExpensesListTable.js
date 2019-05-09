@@ -1,5 +1,6 @@
 import React from 'react';
-// import Button from 'react-bulma-components/lib/components/button';
+import Button from 'react-bootstrap/Button';
+import ListGroup from 'react-bootstrap/ListGroup';
 
 export const ExpensesListTable = (props) => {
   const { expenses, onRemove, onEdit } = props;
@@ -12,43 +13,33 @@ export const ExpensesListTable = (props) => {
     const p = t.slice(0, t.length - 2);
 
     return (
-      <div key={exp.id}>
-        <div>
-          <div xs={4}>{exp.date || ''}</div>
-          <div xs={4}>{exp.note || ''}</div>
-          <div xs={4}>{exp.amount || ''}</div>
-        </div>
-        <div>
-          <div>
-            <div>
-              Category:
-              {exp.category.name || ''}
-              <br />
-              Split By: {p}
-              <br />
-              {exp.paidBy.name || ''}
-              <br />
-            </div>
-            <div>
-              <button
-                variant="contained"
-                color="primary"
-                name="Edit"
-                onClick={() => onEdit(n)}
-              >
-                Edit
-              </button>
-              <button value="x" onClick={() => onRemove(exp.id)}>
-                Remove
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <ListGroup.Item key={exp.id} active={exp.active || false}>
+        <h4>{exp.note || ''}</h4>
+        {exp.date || ''}
+        <div>{exp.amount || ''}</div>
+        <div>Category: {exp.category.name || ''}</div>
+        <div>Split By: {p}</div>
+        <div>Paid By: {exp.paidBy.name || ''}</div>
+        <Button
+          variant="secondary"
+          name="Edit"
+          onClick={() => onEdit(n)}
+          disabled={exp.buttonsDisabled || false}
+        >
+          Edit
+        </Button>
+        <Button
+          variant="light"
+          onClick={() => onRemove(exp.id)}
+          disabled={exp.buttonsDisabled || false}
+        >
+          Remove
+        </Button>
+      </ListGroup.Item>
     );
   });
 
-  return rows;
+  return <ListGroup>{rows}</ListGroup>;
 };
 
 export default ExpensesListTable;

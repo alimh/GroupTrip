@@ -17,8 +17,6 @@ router.get('/all', (req, res) => {
 });
 
 router.post('/save', (req, res) => {
-  console.log('saving expense...');
-  console.log(req.body);
   const expenseDetails = {
     tripId: req.body.tripId,
     date: req.body.date,

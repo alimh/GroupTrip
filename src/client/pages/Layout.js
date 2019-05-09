@@ -3,13 +3,9 @@ import { Link } from 'react-router-dom';
 
 export const Layout = props => (
   <div className="app-container">
-    <header>
-      <ul>
-        <li>
-          <Link to="/">Home</Link>
-        </li>
-      </ul>
-    </header>
+    <h1>
+      <Link to="/">GroupTrip!</Link>
+    </h1>
 
     <div className="app-content">{props.children}</div>
 

@@ -1,9 +1,6 @@
 import React from 'react';
-// import Card from 'react-bulma-components/lib/components/card';
-// import {
-//   Field,
-//   Control,
-// } from 'react-bulma-components/lib/components/form';
+import Card from 'react-bootstrap/Card';
+
 import { FormBuilder } from './FormComponents';
 import {
   checkValidDateError,
@@ -11,17 +8,18 @@ import {
 } from '../utils/FormValidation';
 
 export const ExpenseForm = (props) => {
-  const {
- travelers, categories, onSave, onCancel 
-} = props;
+  const { travelers, categories } = props;
+  const { onSave, onCancel } = props;
 
-  const {
- date, paidBy, note, amount, category, splitBy 
-} =
-    props.expenseObj || {};
+  const { date, paidBy, note } = props.expenseObj || {};
+  const { amount, category, splitBy } = props.expenseObj || {};
 
-  console.log(props);
+  const { borderVariant } = props || 'light';
+
   const today = new Date();
+  const keyForm = Math.random();
+
+  const heading = !props.expenseObj ? 'Add New Expense' : 'Edit Expense';
 
   const fields = [
     {
@@ -76,19 +74,22 @@ export const ExpenseForm = (props) => {
       options: travelers ? travelers.map((u, n) => ({ key: n, value: u })) : [],
     },
   ];
-  console.log('rendeirng expense form');
+
   return (
-    <div>
-      <div>
+    <Card border={borderVariant}>
+      <Card.Body>
+        <Card.Title>{heading}</Card.Title>
+
         <FormBuilder
+          key={keyForm}
           fields={fields}
           onSave={fieldValues => onSave(fieldValues)}
           onCancel={() => onCancel()}
           formatItem={(field, key) => <div key={key}>{field}</div>}
           formatWrapper={e => <div>{e}</div>}
         />
-      </div>
-    </div>
+      </Card.Body>
+    </Card>
   );
 };
 

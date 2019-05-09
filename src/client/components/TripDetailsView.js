@@ -1,5 +1,8 @@
 import React from 'react';
-import { Prompt } from 'react-router-dom';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import Card from 'react-bootstrap/Card';
 import { SettingsViewWithNew } from './SettingsViewWithNew';
 import { InputBox } from './FormComponents';
 import { checkNotBlankError } from '../utils/FormValidation';
@@ -22,6 +25,7 @@ export class TripDetailsView extends React.Component {
         name: f => checkNotBlankError(f),
       },
       unsaved: false,
+      modalRemove: false,
     };
   }
 
@@ -86,58 +90,81 @@ export class TripDetailsView extends React.Component {
     e.preventDefault();
 
     this.props.onRemove();
-    this.setState({ unsaved: false });
+    this.setState({ unsaved: false, modalRemove: false });
+  }
+  handleModalShow() {
+    this.setState({ modalRemove: true });
+  }
+  handleModalHide() {
+    this.setState({ modalRemove: false });
   }
 
   render() {
     return (
       <div>
-        <form onSubmit={e => this.handleSave(e)}>
-          <Prompt
-            when={this.state.unsaved}
-            message="You have unsaved changes"
-          />
-          <strong>Give a name for your trip</strong>
-          <br />
-          <InputBox
-            id="TripName"
-            onUpdate={name => this.handleUpdateName(name)}
-            value={this.state.tripObj.name}
-            errMsg={this.state.errors.name}
-          />
-          <strong>Who is going on the trip?</strong>
-          <SettingsViewWithNew
-            key="travelers"
-            settings={this.state.tripObj.travelers}
-            onNew={newValue => this.handleNewSetting('travelers', newValue)}
-            onRemove={i => this.handleRemoveSetting('travelers', i)}
-          />
-          <br />
-          <strong>Add some categories</strong>
-          <SettingsViewWithNew
-            key="categories"
-            settings={this.state.tripObj.categories}
-            onNew={newValue => this.handleNewSetting('categories', newValue)}
-            onRemove={i => this.handleRemoveSetting('categories', i)}
-          />
-          <button
-            key="save-button"
-            type="submit"
-            variant="contained"
-            color="primary"
-          >
-            Save
-          </button>
-          <button
-            key="remove-button"
-            type="cancel"
-            variant="contained"
-            disabled={this.state.tripObj.tripId === null}
-            onClick={e => this.handleRemove(e)}
-          >
-            Remove
-          </button>
-        </form>
+        <Card border="light">
+          <Card.Body>
+            <Card.Title>Trip Settings</Card.Title>
+            <Form onSubmit={e => this.handleSave(e)}>
+              <InputBox
+                id="TripName"
+                label="Give a name for your trip"
+                onUpdate={name => this.handleUpdateName(name)}
+                value={this.state.tripObj.name}
+                errMsg={this.state.errors.name}
+              />
+              <Form.Group controlId="travelers">
+                <Form.Label>Who is going on the trip?</Form.Label>
+                <SettingsViewWithNew
+                  key="travelers"
+                  settings={this.state.tripObj.travelers}
+                  onNew={newValue =>
+                    this.handleNewSetting('travelers', newValue)
+                  }
+                  onRemove={i => this.handleRemoveSetting('travelers', i)}
+                />
+              </Form.Group>
+              <Form.Group controlId="categories">
+                <Form.Label>Add some categories</Form.Label>
+                <SettingsViewWithNew
+                  key="categories"
+                  settings={this.state.tripObj.categories}
+                  onNew={newValue =>
+                    this.handleNewSetting('categories', newValue)
+                  }
+                  onRemove={i => this.handleRemoveSetting('categories', i)}
+                />
+              </Form.Group>
+              <Button key="save-button" type="submit" variant="primary">
+                Save
+              </Button>
+              <Button
+                key="remove-button"
+                type="cancel"
+                variant="light"
+                disabled={this.state.tripObj.tripId === null}
+                onClick={(e) => {
+                  e.preventDefault();
+                  this.handleModalShow();
+                }}
+              >
+                Remove
+              </Button>
+            </Form>
+          </Card.Body>
+        </Card>
+
+        <Modal show={this.state.modalRemove}>
+          <Modal.Body>Are you sure you want to remove this trip?</Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => this.handleModalHide()}>
+              Cancel
+            </Button>
+            <Button variant="danger" onClick={e => this.handleRemove(e)}>
+              Remove
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </div>
     );
   }

@@ -1,7 +1,7 @@
 import React from 'react';
+import { Redirect } from 'react-router-dom';
 import { TripDetailsDA } from '../data-access/TripDetailsDA';
-import { ErrorView } from '../components/ErrorView';
-import { SuccessView } from '../components/SuccessView';
+import { DisappearingAlert } from '../components/DisappearingAlert';
 
 export class NewTripPage extends React.Component {
   constructor(props) {
@@ -13,29 +13,36 @@ export class NewTripPage extends React.Component {
         success: null,
         error: null,
       },
+      redirect: null,
     };
   }
 
   handleMessage(k, m) {
     // display message
-    console.log('handling message');
-    console.log(m);
     this.setState({ messages: { ...m } });
+  }
+
+  handleRedirect(path) {
+    this.setState({ redirect: path });
   }
 
   render() {
     return (
       <div>
         <h1>New Trip</h1>
-        <ErrorView error={this.state.messages.error} />
-        <SuccessView msg={this.state.messages.success} />
+        <DisappearingAlert msg={this.state.messages.error} variant="danger" />
 
-        <TripDetailsDA
-          key={this.state.keyNewTrip}
-          message={message =>
-            this.handleMessage(this.state.keyNewTrip, message)
-          }
-        />
+        {this.state.redirect ? (
+          <Redirect push to={this.state.redirect} />
+        ) : (
+          <TripDetailsDA
+            key={this.state.keyNewTrip}
+            message={message =>
+              this.handleMessage(this.state.keyNewTrip, message)
+            }
+            redirect={path => this.handleRedirect(path)}
+          />
+        )}
       </div>
     );
   }

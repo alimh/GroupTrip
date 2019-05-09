@@ -1,23 +1,32 @@
 import React from 'react';
 import Axios from 'axios';
 import Auth from '../utils/Auth';
-import { LoadingView } from './LoadingView';
-import { SummaryTable } from './SummaryTable';
+import { LoadingView } from '../components/LoadingView';
+import { SummaryTable } from '../components/SummaryTable';
+import { ExpensesListTable } from '../components/ExpensesListTable';
+import { ExpenseDetail } from '../data-access/ExpenseDetailDA';
 
-export class Summary extends React.Component {
+export class ExpenseSummaryDA extends React.Component {
   constructor(props) {
     super(props);
 
+    const tripId = props.tripId || null;
+
     this.state = {
       loading: true,
-      expenses: null,
+      tripId,
+      expenses: [],
       summary: [],
+      expensesAttention: [],
     };
   }
 
   componentDidMount() {
     const authorizationHeader = 'bearer '.concat(Auth.getToken());
-    Axios.get('/api/expenses/all', { headers: { Authorization: authorizationHeader } })
+    Axios.get('/api/expenses/all', {
+      headers: { Authorization: authorizationHeader },
+      params: { id: this.state.tripId },
+    })
       .then((response) => {
         const { data } = response;
         this.setState({ loading: false, expenses: data });
@@ -46,7 +55,9 @@ export class Summary extends React.Component {
       const each = exp.amount / count;
       exp.splitBy.forEach((split) => {
         const namePresentSplit = acc[split.name] !== undefined;
-        if (!namePresentSplit) newAcc[split.name] = { name: split.name, paid: 0, owe: 0 };
+        if (!namePresentSplit) {
+          newAcc[split.name] = { name: split.name, paid: 0, owe: 0 };
+        }
         newAcc[split.name] = {
           ...newAcc[split.name],
           owe: each + acc[split.name].owe,
@@ -58,15 +69,22 @@ export class Summary extends React.Component {
 
       return newAcc;
     }, {});
-
     this.setState({ summary });
-    if (expensesAttention.length > 0) this.props.expensesAttention(expensesAttention);
+    if (expensesAttention.length > 0) {
+      this.setState({ expensesAttention });
+    }
   }
 
   render() {
     if (this.state.loading) return <LoadingView />;
     return (
       <div>
+        <ExpensesListTable
+          expenses={this.state.expensesAttention}
+          onRemove={id => this.handleRemove(id)}
+          onEdit={n => this.handleEdit(n)}
+        />
+
         <h3>Summary</h3>
         <SummaryTable summary={this.state.summary} />
       </div>
@@ -74,4 +92,4 @@ export class Summary extends React.Component {
   }
 }
 
-export default Summary;
+export default ExpenseSummaryDA;
