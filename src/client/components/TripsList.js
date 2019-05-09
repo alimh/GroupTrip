@@ -1,18 +1,17 @@
 import React from 'react';
+import ListGroup from 'react-bootstrap/ListGroup';
 import { Link } from 'react-router-dom';
 
 export const TripsList = (props) => {
   const { trips } = props;
   return (
-    <div>
-      <ul>
-        {trips.map(t => (
-          <li key={t.id}>
-            <Link to={'/trips/'.concat(t.id)}>{t.name}</Link>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <ListGroup>
+      {trips.map(t => (
+        <ListGroup.Item key={t.id}>
+          <Link to={'/trips/'.concat(t.id)}>{t.name}</Link>
+        </ListGroup.Item>
+      ))}
+    </ListGroup>
   );
 };
 

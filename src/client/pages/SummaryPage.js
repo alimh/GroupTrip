@@ -1,6 +1,9 @@
 import React from 'react';
-import { ExpenseSummaryDA } from '../data-access/ExpenseSummaryDA';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import { DisappearingAlert } from '../components/DisappearingAlert';
+import { ExpenseSummaryDA } from '../data-access/ExpenseSummaryDA';
 import { TripLinks } from '../components/TripLinks';
 
 export class SummaryPage extends React.Component {
@@ -25,16 +28,26 @@ export class SummaryPage extends React.Component {
     return (
       <div className="home">
         <TripLinks tripId={this.state.tripId} />
-        <h2>Expense Summary</h2>
-        <DisappearingAlert msg={this.state.messages.error} variant="danger" />
-        <DisappearingAlert
-          msg={this.state.messages.success}
-          variant="success"
-        />
-        <ExpenseSummaryDA
-          message={message => this.handleMessage(message)}
-          tripId={this.state.tripId}
-        />
+        <Container>
+          <DisappearingAlert
+            msg={this.state.messages.error}
+            variant="danger"
+            disapper={false}
+          />
+          <DisappearingAlert
+            msg={this.state.messages.success}
+            variant="success"
+          />
+          <Row>
+            <Col>
+              <h2>Summary</h2>
+              <ExpenseSummaryDA
+                message={message => this.handleMessage(message)}
+                tripId={this.state.tripId}
+              />
+            </Col>
+          </Row>
+        </Container>
       </div>
     );
   }

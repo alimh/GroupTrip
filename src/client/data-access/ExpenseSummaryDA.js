@@ -3,8 +3,6 @@ import Axios from 'axios';
 import Auth from '../utils/Auth';
 import { LoadingView } from '../components/LoadingView';
 import { SummaryTable } from '../components/SummaryTable';
-import { ExpensesListTable } from '../components/ExpensesListTable';
-import { ExpenseDetail } from '../data-access/ExpenseDetailDA';
 
 export class ExpenseSummaryDA extends React.Component {
   constructor(props) {
@@ -77,18 +75,7 @@ export class ExpenseSummaryDA extends React.Component {
 
   render() {
     if (this.state.loading) return <LoadingView />;
-    return (
-      <div>
-        <ExpensesListTable
-          expenses={this.state.expensesAttention}
-          onRemove={id => this.handleRemove(id)}
-          onEdit={n => this.handleEdit(n)}
-        />
-
-        <h3>Summary</h3>
-        <SummaryTable summary={this.state.summary} />
-      </div>
-    );
+    return <SummaryTable summary={this.state.summary} />;
   }
 }
 

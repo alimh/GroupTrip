@@ -1,7 +1,11 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { DisappearingAlert } from "../components/DisappearingAlert";
-import { AllTripsDA } from "../data-access/AllTripsDA";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import ListGroup from 'react-bootstrap/ListGroup';
+import { DisappearingAlert } from '../components/DisappearingAlert';
+import { AllTripsDA } from '../data-access/AllTripsDA';
 
 export class AllTrips extends React.Component {
   constructor() {
@@ -26,22 +30,33 @@ export class AllTrips extends React.Component {
   render() {
     return (
       <div className="home">
-        <Link to="/new">New Trip</Link>
-        <h1>Trips</h1>
-        <DisappearingAlert msg={this.state.messages.error} variant="danger" />
-        <DisappearingAlert
-          msg={this.state.messages.success}
-          variant="success"
-        />
+        <Container>
+          <h3>Trips</h3>
+          <DisappearingAlert
+            msg={this.state.messages.error}
+            variant="danger"
+            disapper={false}
+          />
+          <DisappearingAlert
+            msg={this.state.messages.success}
+            variant="success"
+          />
 
-        <div spacing={24}>
-          <div sm={6}>
-            <AllTripsDA
-              key={this.state.keys.trips}
-              message={m => this.handleMessage(this.state.keys.trips, m)}
-            />
-          </div>
-        </div>
+          <Row className="justify-content-md-center">
+            <Col>
+              <ListGroup>
+                <ListGroup.Item variant="primary">
+                  <Link to="/new">Add a new trip</Link>
+                </ListGroup.Item>
+              </ListGroup>
+              <br />
+              <AllTripsDA
+                key={this.state.keys.trips}
+                message={m => this.handleMessage(this.state.keys.trips, m)}
+              />
+            </Col>
+          </Row>
+        </Container>
       </div>
     );
   }
