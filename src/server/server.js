@@ -3,16 +3,11 @@
 import path from 'path';
 import { Server } from 'http';
 import Express from 'express';
-// import React from 'react';
 import Mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
-// import { renderToString } from 'react-dom/server';
-// import { StaticRouter as Router } from 'react-router-dom';
-// import { App } from '../client/App';
 import ApiExpenses from './api/expenses';
 import ApiTrips from './api/trips';
-// import template from '../../public/template';
 
 dotenv.config();
 
@@ -21,10 +16,6 @@ const server = new Server(app);
 
 Mongoose.Promise = Promise;
 Mongoose.connect(process.env.MONGO_DB);
-
-// // use ejs templates
-// app.set('view engine', 'ejs');
-// app.set('views', path.join(__dirname, 'views'));
 
 // define the folder that will be used for static assets
 app.use(Express.static('dist'));
@@ -78,6 +69,5 @@ server.listen(port, (err) => {
   }
   return console.info(`
       Server running on http://localhost:${port} [${env}]
-      Universal rendering: ${process.env.UNIVERSAL ? 'enabled' : 'disabled'}
     `);
 });

@@ -5,7 +5,9 @@ import Button from 'react-bootstrap/Button';
 
 export const InputBox = props => (
   <Form.Group controlId={props.id}>
-    <Form.Label>{props.label}</Form.Label>
+    <Form.Label>
+      {props.formatLabel ? props.formatLabel(props.label) : props.label}
+    </Form.Label>
     <InputGroup>
       {props.prepend ? (
         <InputGroup.Prepend>
@@ -24,6 +26,18 @@ export const InputBox = props => (
         style={props.errMsg ? { border: '2px solid red' } : {}}
         disabled={props.disabled || false}
       />
+      {props.append ? (
+        <InputGroup.Append>
+          <InputGroup.Text>{props.append}</InputGroup.Text>
+        </InputGroup.Append>
+      ) : (
+        <div />
+      )}
+      {props.appendButton ? (
+        <InputGroup.Append>{props.appendButton}</InputGroup.Append>
+      ) : (
+        <div />
+      )}
       <Form.Control.Feedback type="invalid">
         {props.errMsg}
       </Form.Control.Feedback>

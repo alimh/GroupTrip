@@ -40,7 +40,7 @@ export class SummaryPage extends React.Component {
           />
           <Row>
             <Col>
-              <h2>Summary</h2>
+              <h3>Summary</h3>
               <ExpenseSummaryDA
                 message={message => this.handleMessage(message)}
                 tripId={this.state.tripId}

@@ -8,10 +8,7 @@ export const Layout = props => (
     </h1>
 
     <div className="app-content">{props.children}</div>
-
-    <footer>
-      <p>Alim Haji</p>
-    </footer>
+    <footer className="page-footer font-small blue pt-4" />
   </div>
 );
 

@@ -19,10 +19,7 @@ router.get('/get', (req, res) => {
   const { id } = req.query;
   TripObjs.findById(id, (err, trip) => {
     if (!trip || err || trip.removed_at) {
-      return res
-        .status(400)
-        .send({ message: 'test' })
-        .end();
+      return res.status(400).end();
     }
     return res
       .status(200)

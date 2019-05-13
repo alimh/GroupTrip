@@ -24,14 +24,14 @@ export class TripDetailsView extends React.Component {
       errorChecks: {
         name: f => checkNotBlankError(f),
       },
-      unsaved: false,
+      unsavedName: false,
       modalRemove: false,
     };
   }
 
   handleUpdateName(name) {
     const tripObj = { ...this.state.tripObj, name };
-    this.setState({ tripObj, unsaved: true });
+    this.setState({ tripObj, unsavedName: true });
   }
 
   handleNewSetting(settingGroup, newValue) {
@@ -71,7 +71,7 @@ export class TripDetailsView extends React.Component {
       return acc || errors[field] !== false;
     }, false);
 
-    if (error) this.setState({ errors, unsaved: true });
+    if (error) this.setState({ errors, unsavedName: true });
     else {
       const categories = this.state.tripObj.categories.map((c) => {
         const { unsaved, ...rest } = c;
@@ -82,7 +82,7 @@ export class TripDetailsView extends React.Component {
         return rest;
       });
       this.props.onSave({ ...this.state.tripObj, categories, travelers });
-      this.setState({ unsaved: false });
+      this.setState({ unsavedName: false });
     }
   }
 
@@ -90,7 +90,7 @@ export class TripDetailsView extends React.Component {
     e.preventDefault();
 
     this.props.onRemove();
-    this.setState({ unsaved: false, modalRemove: false });
+    this.setState({ unsavedName: false, modalRemove: false });
   }
   handleModalShow() {
     this.setState({ modalRemove: true });
@@ -112,6 +112,7 @@ export class TripDetailsView extends React.Component {
                 onUpdate={name => this.handleUpdateName(name)}
                 value={this.state.tripObj.name}
                 errMsg={this.state.errors.name}
+                formatLabel={t => (this.state.unsavedName ? <i>{t}</i> : t)}
               />
               <Form.Group controlId="travelers">
                 <Form.Label>Who is going on the trip?</Form.Label>
@@ -122,10 +123,12 @@ export class TripDetailsView extends React.Component {
                     this.handleNewSetting('travelers', newValue)
                   }
                   onRemove={i => this.handleRemoveSetting('travelers', i)}
+                  formatDirty={t => <i>{t}</i>}
+                  formatRemove={t => <del>{t}</del>}
                 />
               </Form.Group>
               <Form.Group controlId="categories">
-                <Form.Label>Add some categories</Form.Label>
+                <Form.Label>Add some categories:</Form.Label>
                 <SettingsViewWithNew
                   key="categories"
                   settings={this.state.tripObj.categories}
@@ -133,23 +136,27 @@ export class TripDetailsView extends React.Component {
                     this.handleNewSetting('categories', newValue)
                   }
                   onRemove={i => this.handleRemoveSetting('categories', i)}
+                  formatDirty={t => <i>{t}</i>}
+                  formatRemove={t => <del>{t}</del>}
                 />
               </Form.Group>
-              <Button key="save-button" type="submit" variant="primary">
-                Save
-              </Button>
-              <Button
-                key="remove-button"
-                type="cancel"
-                variant="light"
-                disabled={this.state.tripObj.tripId === null}
-                onClick={(e) => {
-                  e.preventDefault();
-                  this.handleModalShow();
-                }}
-              >
-                Remove
-              </Button>
+              <div>
+                <Button key="save-button" type="submit" variant="primary">
+                  Save
+                </Button>
+                <Button
+                  key="remove-button"
+                  type="cancel"
+                  variant="light"
+                  disabled={this.state.tripObj.tripId === null}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    this.handleModalShow();
+                  }}
+                >
+                  Remove
+                </Button>
+              </div>
             </Form>
           </Card.Body>
         </Card>
