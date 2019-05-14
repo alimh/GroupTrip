@@ -4,11 +4,11 @@
   "description": "A React application to showcase rendering with Universal JavaScript",
   "main": "server.js",
   "scripts": {
-    "build": "webpack --mode development",
+    "build": "webpack --mode production",
     "client": "webpack-dev-server --mode development --devtool inline-source-map --hot",
     "server": "nodemon src/server/server.js",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "start": "node src/server/server.js"
+    "start": "babel-node src/server/server.js"
   },
   "author": "Alim",
   "dependencies": {
