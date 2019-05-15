@@ -8,7 +8,7 @@ export const TripLinks = (props) => {
   const linkSummary = '/trips/'.concat(props.tripId).concat('/summary');
   const linkTripIndex = '/trips/'.concat(props.tripId);
   return (
-    <Navbar bg="light">
+    <Navbar collapseOnSelect expand="lg" bg="light">
       <Navbar.Brand href={linkTripIndex} as="div">
         <Link to={linkTripIndex}>{props.tripName || 'Trip Home'}</Link>
       </Navbar.Brand>

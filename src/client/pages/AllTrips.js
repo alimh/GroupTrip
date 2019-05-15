@@ -31,7 +31,7 @@ export class AllTrips extends React.Component {
     return (
       <div className="home">
         <Container>
-          <h3>Trips</h3>
+          <h3>Select a Trip</h3>
           <DisappearingAlert
             msg={this.state.messages.error}
             variant="danger"

@@ -2,6 +2,7 @@ import React from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Modal from 'react-bootstrap/Modal';
 import { DisappearingAlert } from '../components/DisappearingAlert';
 import { TripLinks } from '../components/TripLinks';
 import { ExpenseDetail } from '../data-access/ExpenseDetailDA';
@@ -96,6 +97,23 @@ export class TripIndexPage extends React.Component {
             </Col>
           </Row>
         </Container>
+        <Modal show={this.state.expenseObject !== null}>
+          <Modal.Header>
+            <Modal.Title>Edit Expense</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <ExpenseDetail
+              key={this.state.keyNewExpense}
+              tripId={this.state.tripId}
+              message={message =>
+                this.handleMessage(this.state.keyNewExpense, message)
+              }
+              expenseObj={this.state.expenseObject}
+              onCancel={() => this.handleCancel()}
+              borderVariant={this.state.expenseObject ? 'primary' : null}
+            />
+          </Modal.Body>
+        </Modal>
       </div>
     );
   }
