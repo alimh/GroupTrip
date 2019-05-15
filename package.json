@@ -8,7 +8,7 @@
     "client": "webpack-dev-server --mode development --devtool inline-source-map --hot",
     "server": "nodemon src/server/server.js",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "start": "babel-node src/server/server.js"
+    "start": "node dist/server-es5.js"
   },
   "author": "Alim",
   "dependencies": {
