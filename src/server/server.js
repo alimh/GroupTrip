@@ -29,7 +29,7 @@ app.use('/api/trips', ApiTrips);
 // universal routing and rendering
 app.get(
   '/*',
-  (req, res) => res.sendFile(path.join(__dirname, '../../dist/index.html'))
+  (req, res) => res.sendFile(path.join(__dirname, 'index.html'))
   // const markup = '';
   // const status = 200;
   //   console.log('getting: ');
