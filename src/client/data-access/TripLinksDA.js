@@ -7,7 +7,7 @@ import { LoadingView } from '../components/LoadingView';
 export class TripLinks extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props);
+
     const tripId = props.tripId || null;
 
     this.state = {
@@ -28,10 +28,11 @@ export class TripLinks extends React.Component {
         .then((response) => {
           const { data } = response;
           this.setState({ loading: false, tripName: data });
+          this.props.message({ success: true });
         })
         .catch((err) => {
           this.setState({ loading: false });
-          this.props.message({ err: err.toString() });
+          this.props.message({ error: err.toString() });
         });
     }
   }

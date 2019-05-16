@@ -32,7 +32,7 @@ export class TripDetailsDA extends React.Component {
         })
         .catch((err) => {
           this.setState({ loading: false });
-          this.props.message({ err: err.toString() });
+          this.props.message({ error: err.toString() });
         });
     }
   }

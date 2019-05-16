@@ -6,6 +6,9 @@ import Col from 'react-bootstrap/Col';
 
 import ListGroup from 'react-bootstrap/ListGroup';
 
+const formatMoney = a =>
+  '$ '.concat(a.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'));
+
 export const ExpensesListTable = (props) => {
   const { expenses, onRemove, onEdit } = props;
 
@@ -28,7 +31,7 @@ export const ExpensesListTable = (props) => {
             <Col xs={8}>{exp.dateFormatted || ''}</Col>
             <Col>
               <h4>
-                <div>{exp.amountFormatted || ''}</div>
+                <div>{formatMoney(exp.amount) || ''}</div>
               </h4>
             </Col>
           </Row>

@@ -3,7 +3,6 @@ import { Redirect } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import { TripDetailsDA } from '../data-access/TripDetailsDA';
 import { DisappearingAlert } from '../components/DisappearingAlert';
-import { TripLinks } from '../data-access/TripLinksDA';
 
 export class TripSettingsPage extends React.Component {
   constructor(props) {
@@ -47,9 +46,12 @@ export class TripSettingsPage extends React.Component {
   render() {
     return (
       <div>
-        <TripLinks tripId={this.state.tripId} />
         <Container>
-          <DisappearingAlert msg={this.state.messages.error} variant="danger" />
+          <DisappearingAlert
+            msg={this.state.messages.error}
+            variant="danger"
+            disappear={false}
+          />
 
           {this.state.redirect ? (
             <Redirect push to={this.state.redirect} />

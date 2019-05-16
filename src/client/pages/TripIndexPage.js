@@ -6,7 +6,6 @@ import Col from 'react-bootstrap/Col';
 import Modal from 'react-bootstrap/Modal';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { DisappearingAlert } from '../components/DisappearingAlert';
-import { TripLinks } from '../data-access/TripLinksDA';
 import { ExpenseDetail } from '../data-access/ExpenseDetailDA';
 import { ExpensesList } from '../data-access/ExpensesListDA';
 
@@ -28,7 +27,11 @@ export class TripIndexPage extends React.Component {
 
   handleMessage(k, m) {
     // display message
-    this.setState({ messages: m });
+    const messages = {
+      ...this.state.messages,
+      ...m,
+    };
+    this.setState({ messages });
 
     // if success message came from New Expense, reset both, otherwise just the one it came from
     if (m.success && k === this.state.keyNewExpense) {
@@ -48,7 +51,7 @@ export class TripIndexPage extends React.Component {
 
   handleEdit(expObjToEdit) {
     this.setState({
-      messages: { success: null },
+      messages: { success: null, error: null },
       expenseObject: expObjToEdit,
     });
   }
@@ -64,10 +67,6 @@ export class TripIndexPage extends React.Component {
   render() {
     return (
       <div className="home">
-        <TripLinks
-          tripId={this.state.tripId}
-          message={msg => this.handleMessage('0', msg)}
-        />
         <Container>
           <DisappearingAlert
             msg={this.state.messages.error}
@@ -88,7 +87,7 @@ export class TripIndexPage extends React.Component {
                   onClick={() =>
                     this.setState({ keyNewExpense: Math.random() })
                   }
-                  disabled={this.state.messages.error !== null}
+                  disabled={!(this.state.messages.error === null)}
                 >
                   Add an expense
                 </ListGroup.Item>
@@ -110,8 +109,9 @@ export class TripIndexPage extends React.Component {
             this.state.expenseObject !== null ||
             this.state.keyNewExpense !== null
           }
+          onHide={() => this.handleCancel()}
         >
-          <Modal.Header>
+          <Modal.Header closeButton>
             <Modal.Title>Edit Expense</Modal.Title>
           </Modal.Header>
           <Modal.Body>

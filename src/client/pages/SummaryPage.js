@@ -4,7 +4,6 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { DisappearingAlert } from '../components/DisappearingAlert';
 import { ExpenseSummaryDA } from '../data-access/ExpenseSummaryDA';
-import { TripLinks } from '../data-access/TripLinksDA';
 
 export class SummaryPage extends React.Component {
   constructor(props) {
@@ -27,7 +26,6 @@ export class SummaryPage extends React.Component {
   render() {
     return (
       <div className="home">
-        <TripLinks tripId={this.state.tripId} />
         <Container>
           <DisappearingAlert
             msg={this.state.messages.error}
