@@ -1,5 +1,6 @@
 import React from 'react';
 import Alert from 'react-bootstrap/Alert';
+import Collapse from 'react-bootstrap/Collapse';
 
 export class DisappearingAlert extends React.Component {
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -14,7 +15,7 @@ export class DisappearingAlert extends React.Component {
     this.state = {
       msg: null,
       disappear: true,
-      timeout: 3000,
+      timeout: 5000,
       expired: false,
       variant: 'secondary',
       heading: null,
@@ -32,13 +33,15 @@ export class DisappearingAlert extends React.Component {
   }
 
   render() {
-    return this.state.msg ? (
-      <Alert variant={this.state.variant}>
-        <Alert.Heading>{this.state.heading}</Alert.Heading>
-        <p>{this.state.msg}</p>
-      </Alert>
-    ) : (
-      <div />
+    return (
+      <Collapse in={this.state.msg != null}>
+        <div>
+          <Alert variant={this.state.variant}>
+            <Alert.Heading>{this.state.heading}</Alert.Heading>
+            <p>{this.state.msg}</p>
+          </Alert>
+        </div>
+      </Collapse>
     );
   }
 }

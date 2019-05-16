@@ -28,6 +28,19 @@ router.get('/get', (req, res) => {
   });
 });
 
+router.get('/getName', (req, res) => {
+  const { id } = req.query;
+  TripObjs.findById(id, (err, trip) => {
+    if (!trip || err || trip.removed_at) {
+      return res.status(400).end();
+    }
+    return res
+      .status(200)
+      .json(trip.name)
+      .end();
+  });
+});
+
 router.post('/save', (req, res) => {
   const categories = req.body.categories.map(c => ({
     label: c.label || '',

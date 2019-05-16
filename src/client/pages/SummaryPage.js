@@ -4,7 +4,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { DisappearingAlert } from '../components/DisappearingAlert';
 import { ExpenseSummaryDA } from '../data-access/ExpenseSummaryDA';
-import { TripLinks } from '../components/TripLinks';
+import { TripLinks } from '../data-access/TripLinksDA';
 
 export class SummaryPage extends React.Component {
   constructor(props) {

@@ -51,6 +51,7 @@ export class NewTripPage extends React.Component {
                     this.handleMessage(this.state.keyNewTrip, message)
                   }
                   redirect={path => this.handleRedirect(path)}
+                  goBack={() => this.props.history.goBack()}
                 />
               </Col>
             </Row>

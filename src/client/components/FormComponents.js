@@ -220,11 +220,17 @@ export class FormBuilder extends React.Component {
       <Button
         key="cancel-button"
         type="cancel"
-        variant="light"
+        variant="outline-secondary"
         onClick={e => this.handleCancel(e)}
       >
         {text}
       </Button>
+    );
+    const space = <span key="space">&nbsp;</span>;
+    const floatRight = e => (
+      <div key="float-right" className="float-right">
+        {e}
+      </div>
     );
 
     const saveButtonText = this.props.saveButtonText || 'Save';
@@ -275,10 +281,11 @@ export class FormBuilder extends React.Component {
 
     const buttons = [
       saveButton(saveButtonText),
+      space,
       cancelButton(cancelButtonText),
     ];
 
-    const combine = [elements, buttons].map(e => e);
+    const combine = [elements, floatRight(buttons)].map(e => e);
 
     return (
       <Form onSubmit={e => this.handleSave(e)}>{formatWrapper(combine)}</Form>

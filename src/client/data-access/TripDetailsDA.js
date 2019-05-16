@@ -84,6 +84,13 @@ export class TripDetailsDA extends React.Component {
       });
   }
 
+  handleCancel() {
+    // Go back to where we came from
+    // if there is a tripObj, go back to the trip page
+    // if there is no tripObj, go back to the root page
+    this.props.redirect(this.state.tripId ? '/trips/'.concat(this.state.tripId) : '/');
+  }
+
   render() {
     if (this.state.loading) return <LoadingView />;
     return (
@@ -91,6 +98,7 @@ export class TripDetailsDA extends React.Component {
         tripObj={this.state.tripObj}
         onSave={tripObj => this.handleSave(tripObj)}
         onRemove={() => this.handleRemove()}
+        onCancel={() => this.handleCancel()}
       />
     );
   }

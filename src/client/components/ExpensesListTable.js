@@ -1,5 +1,9 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+
 import ListGroup from 'react-bootstrap/ListGroup';
 
 export const ExpensesListTable = (props) => {
@@ -14,27 +18,49 @@ export const ExpensesListTable = (props) => {
 
     return (
       <ListGroup.Item key={exp.id} active={exp.active || false}>
-        <h4>{exp.note || ''}</h4>
-        {exp.dateFormatted || ''}
-        <div>{exp.amountFormatted || ''}</div>
-        <div>Category: {exp.category.name || ''}</div>
-        <div>Split By: {p}</div>
-        <div>Paid By: {exp.paidBy.name || ''}</div>
-        <Button
-          variant="secondary"
-          name="Edit"
-          onClick={() => onEdit(n)}
-          disabled={exp.buttonsDisabled || false}
-        >
-          Edit
-        </Button>
-        <Button
-          variant="light"
-          onClick={() => onRemove(exp.id)}
-          disabled={exp.buttonsDisabled || false}
-        >
-          Remove
-        </Button>
+        <Container>
+          <Row>
+            <Col>
+              <h4>{exp.note || ''}</h4>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={8}>{exp.dateFormatted || ''}</Col>
+            <Col>
+              <h4>
+                <div>{exp.amountFormatted || ''}</div>
+              </h4>
+            </Col>
+          </Row>
+          <Row>
+            <Col>Category: {exp.category.name || ''}</Col>
+            <Col>Split By: {p}</Col>
+            <Col>Paid By: {exp.paidBy.name || ''}</Col>
+          </Row>
+          <Row>
+            <Col>&nbsp;</Col>
+          </Row>
+          <Row className="float-right">
+            <Col>
+              <Button
+                variant="outline-secondary"
+                name="Edit"
+                onClick={() => onEdit(n)}
+                disabled={exp.buttonsDisabled || false}
+              >
+                Edit
+              </Button>
+              &nbsp;
+              <Button
+                variant="outline-danger"
+                onClick={() => onRemove(exp.id)}
+                disabled={exp.buttonsDisabled || false}
+              >
+                Remove
+              </Button>
+            </Col>
+          </Row>
+        </Container>
       </ListGroup.Item>
     );
   });

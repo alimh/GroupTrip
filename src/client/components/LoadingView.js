@@ -1,9 +1,12 @@
 import React from 'react';
+import DissappearingAlert from './DisappearingAlert';
 
 export const LoadingView = () => (
-  <div className="loading">
-    <p>Loading data from the server</p>
-  </div>
+  <DissappearingAlert
+    msg="Loading data from the server"
+    variant="warning"
+    disappear={false}
+  />
 );
 
 export default LoadingView;

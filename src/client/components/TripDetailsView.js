@@ -3,6 +3,8 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Card from 'react-bootstrap/Card';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import { SettingsViewWithNew } from './SettingsViewWithNew';
 import { InputBox } from './FormComponents';
 import { checkNotBlankError } from '../utils/FormValidation';
@@ -31,7 +33,7 @@ export class TripDetailsView extends React.Component {
 
   handleUpdateName(name) {
     const tripObj = { ...this.state.tripObj, name };
-    this.setState({ tripObj, unsavedName: true });
+    this.setState({ tripObj, unsaved: true });
   }
 
   handleNewSetting(settingGroup, newValue) {
@@ -44,7 +46,7 @@ export class TripDetailsView extends React.Component {
     };
 
     const tripObj = { ...this.state.tripObj, [settingGroup]: newSetting };
-    this.setState({ tripObj });
+    this.setState({ tripObj, unsaved: true });
   }
 
   handleRemoveSetting(settingGroup, i) {
@@ -57,7 +59,7 @@ export class TripDetailsView extends React.Component {
     const newSetting = currentSetting;
     newSetting[i] = newSettingItem;
     const tripObj = { ...this.state.tripObj, [settingGroup]: newSetting };
-    this.setState({ tripObj });
+    this.setState({ tripObj, unsaved: true });
   }
 
   handleSave(e) {
@@ -140,23 +142,45 @@ export class TripDetailsView extends React.Component {
                   formatRemove={t => <del>{t}</del>}
                 />
               </Form.Group>
-              <div>
-                <Button key="save-button" type="submit" variant="primary">
-                  Save
-                </Button>
-                <Button
-                  key="remove-button"
-                  type="cancel"
-                  variant="light"
-                  disabled={this.state.tripObj.tripId === null}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    this.handleModalShow();
-                  }}
-                >
-                  Remove
-                </Button>
-              </div>
+              <Row>
+                <Col>
+                  <Button
+                    key="remove-button"
+                    variant="outline-danger"
+                    disabled={this.state.tripObj.tripId === null}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      this.handleModalShow();
+                    }}
+                  >
+                    Remove
+                  </Button>
+                </Col>
+                <Col>
+                  <Button
+                    className="float-right"
+                    key="cancel-button"
+                    type="cancel"
+                    variant="outline-secondary"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      this.props.onCancel();
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <span className="float-right">&nbsp;</span>
+                  <Button
+                    className="float-right"
+                    key="save-button"
+                    type="submit"
+                    variant="primary"
+                    disabled={!this.state.unsaved}
+                  >
+                    Save
+                  </Button>
+                </Col>
+              </Row>
             </Form>
           </Card.Body>
         </Card>

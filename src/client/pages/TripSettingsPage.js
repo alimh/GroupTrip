@@ -3,7 +3,7 @@ import { Redirect } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import { TripDetailsDA } from '../data-access/TripDetailsDA';
 import { DisappearingAlert } from '../components/DisappearingAlert';
-import { TripLinks } from '../components/TripLinks';
+import { TripLinks } from '../data-access/TripLinksDA';
 
 export class TripSettingsPage extends React.Component {
   constructor(props) {

@@ -1,10 +1,12 @@
 import React from 'react';
+
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Modal from 'react-bootstrap/Modal';
+import ListGroup from 'react-bootstrap/ListGroup';
 import { DisappearingAlert } from '../components/DisappearingAlert';
-import { TripLinks } from '../components/TripLinks';
+import { TripLinks } from '../data-access/TripLinksDA';
 import { ExpenseDetail } from '../data-access/ExpenseDetailDA';
 import { ExpensesList } from '../data-access/ExpensesListDA';
 
@@ -13,7 +15,7 @@ export class TripIndexPage extends React.Component {
     super(props);
 
     this.state = {
-      keyNewExpense: Math.random(),
+      keyNewExpense: null,
       keyExpenseList: Math.random(),
       tripId: props.tripId || null,
       messages: {
@@ -31,8 +33,9 @@ export class TripIndexPage extends React.Component {
     // if success message came from New Expense, reset both, otherwise just the one it came from
     if (m.success && k === this.state.keyNewExpense) {
       this.setState({
-        keyNewExpense: Math.random(),
+        keyNewExpense: null,
         keyExpenseList: Math.random(),
+        expenseObject: null,
       });
     }
     if (m.success && k === this.state.keyExpenseList) {
@@ -52,15 +55,19 @@ export class TripIndexPage extends React.Component {
 
   handleCancel() {
     this.setState({
-      keyExpenseList: Math.random(), // forces re-render on expense list
+      keyNewExpense: null,
       expenseObject: null,
+      keyExpenseList: Math.random(), // force re-render
     });
   }
 
   render() {
     return (
       <div className="home">
-        <TripLinks tripId={this.state.tripId} />
+        <TripLinks
+          tripId={this.state.tripId}
+          message={msg => this.handleMessage('0', msg)}
+        />
         <Container>
           <DisappearingAlert
             msg={this.state.messages.error}
@@ -73,19 +80,20 @@ export class TripIndexPage extends React.Component {
           />
           <Row>
             <Col>
-              <ExpenseDetail
-                key={this.state.keyNewExpense}
-                tripId={this.state.tripId}
-                message={message =>
-                  this.handleMessage(this.state.keyNewExpense, message)
-                }
-                expenseObj={this.state.expenseObject}
-                onCancel={() => this.handleCancel()}
-                borderVariant={this.state.expenseObject ? 'primary' : null}
-              />
-            </Col>
-            <Col>
               <h3>Expense List</h3>
+              <ListGroup>
+                <ListGroup.Item
+                  action
+                  variant="primary"
+                  onClick={() =>
+                    this.setState({ keyNewExpense: Math.random() })
+                  }
+                  disabled={this.state.messages.error !== null}
+                >
+                  Add an expense
+                </ListGroup.Item>
+              </ListGroup>
+              <br />
               <ExpensesList
                 key={this.state.keyExpenseList}
                 tripId={this.state.tripId}
@@ -97,7 +105,12 @@ export class TripIndexPage extends React.Component {
             </Col>
           </Row>
         </Container>
-        <Modal show={this.state.expenseObject !== null}>
+        <Modal
+          show={
+            this.state.expenseObject !== null ||
+            this.state.keyNewExpense !== null
+          }
+        >
           <Modal.Header>
             <Modal.Title>Edit Expense</Modal.Title>
           </Modal.Header>
@@ -110,7 +123,6 @@ export class TripIndexPage extends React.Component {
               }
               expenseObj={this.state.expenseObject}
               onCancel={() => this.handleCancel()}
-              borderVariant={this.state.expenseObject ? 'primary' : null}
             />
           </Modal.Body>
         </Modal>
