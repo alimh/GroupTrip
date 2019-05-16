@@ -34,7 +34,7 @@ export class AllTrips extends React.Component {
         <Jumbotron>
           <Container>
             <Row className="justify-content-md-center">
-              <h2 className="display-2">Share Costs Between Friends</h2>
+              <h2 className="display-3">Share Costs Between Friends</h2>
             </Row>
             <Row className="justify-content-md-center">
               <h2 className="display-4">Stay Friends!</h2>
@@ -42,7 +42,10 @@ export class AllTrips extends React.Component {
           </Container>
         </Jumbotron>
         <Container>
-          <h3>Select a Trip</h3>
+          <h3>Get Started</h3>
+          <h3>
+            <small className="text-muted">Select a Trip</small>
+          </h3>
           <DisappearingAlert
             msg={this.state.messages.error}
             variant="danger"

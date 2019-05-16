@@ -12,7 +12,7 @@ export const TripLinksBanner = (props) => {
     tripName.length > 13 ? tripName.substring(0, 10).concat('...') : tripName;
 
   return (
-    <Navbar collapseOnSelect expand="lg" bg="light">
+    <Navbar collapseOnSelect expand="lg" bg="light" variant="dark">
       <Navbar.Brand href={linkTripIndex} as="div">
         <Link to={linkTripIndex}>{tripNameTrunc}</Link>
       </Navbar.Brand>

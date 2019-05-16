@@ -19,7 +19,7 @@ export const ExpenseForm = (props) => {
   const today = new Date();
   const keyForm = Math.random();
 
-  const heading = !props.expenseObj ? 'Add New Expense' : 'Edit Expense';
+  // const heading = !props.expenseObj ? 'Add New Expense' : 'Edit Expense';
 
   const fields = [
     {
@@ -86,8 +86,6 @@ export const ExpenseForm = (props) => {
   return (
     <Card border={borderVariant}>
       <Card.Body>
-        <Card.Title>{heading}</Card.Title>
-
         <FormBuilder
           key={keyForm}
           fields={fields}
