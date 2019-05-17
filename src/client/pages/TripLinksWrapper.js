@@ -73,6 +73,7 @@ export class TripLinksWrapper extends React.Component {
           tripId={this.state.tripId}
           message={msg => this.handleMessage(msg)}
         />
+        <br />
         {this.state.messages.success ? child() : <div />}
       </div>
     );
