@@ -9,7 +9,7 @@ export const Layout = props => (
         <Navbar.Brand>
           <img
             alt=""
-            src="/public/logo.svg"
+            src="logo.svg"
             width="52"
             height="52"
             className="d-inline-block align-center"
