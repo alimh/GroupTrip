@@ -32,6 +32,7 @@ export class NewTripPage extends React.Component {
   render() {
     return (
       <div>
+        <br />
         <Container>
           <h3>New Trip Details</h3>
           <DisappearingAlert
@@ -39,7 +40,6 @@ export class NewTripPage extends React.Component {
             variant="danger"
             disappear={false}
           />
-
           {this.state.redirect ? (
             <Redirect push to={this.state.redirect} />
           ) : (

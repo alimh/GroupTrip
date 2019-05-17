@@ -143,7 +143,7 @@ export class TripDetailsView extends React.Component {
                 />
               </Form.Group>
               <Row>
-                <Col>
+                <Col xs={4}>
                   <Button
                     key="remove-button"
                     variant="outline-danger"

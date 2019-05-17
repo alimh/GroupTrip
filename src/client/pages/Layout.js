@@ -4,17 +4,22 @@ import { LinkContainer } from 'react-router-bootstrap';
 
 export const Layout = props => (
   <div className="app-container">
-    <Navbar bg="light" variant="light">
+    <Navbar bg="light">
       <LinkContainer to="/">
         <Navbar.Brand>
           <img
             alt=""
-            src="./logo.svg"
-            width="52"
-            height="52"
+            src="/logo.svg"
+            width="60"
+            height="60"
             className="d-inline-block align-center"
+            style={{
+              filter:
+                'invert(38%) sepia(42%) saturate(566%) hue-rotate(170deg) brightness(97%) contrast(90%)',
+            }}
           />
-          &nbsp;&nbsp;GroupTrip!
+          &nbsp;&nbsp;
+          <span className="text-primary font-weight-bold">GroupTrip!</span>
         </Navbar.Brand>
       </LinkContainer>
     </Navbar>
