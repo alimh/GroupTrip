@@ -1,12 +1,23 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Navbar from 'react-bootstrap/Navbar';
+import { LinkContainer } from 'react-router-bootstrap';
 
 export const Layout = props => (
   <div className="app-container">
-    <h1>
-      <Link to="/">GroupTrip!</Link>
-    </h1>
-
+    <Navbar bg="light" variant="light">
+      <LinkContainer to="/">
+        <Navbar.Brand>
+          <img
+            alt=""
+            src="/public/logo.svg"
+            width="52"
+            height="52"
+            className="d-inline-block align-center"
+          />
+          &nbsp;&nbsp;GroupTrip!
+        </Navbar.Brand>
+      </LinkContainer>
+    </Navbar>
     <div className="app-content">{props.children}</div>
     <footer className="page-footer font-small blue pt-4" />
   </div>
