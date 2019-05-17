@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const outputDirectory = 'dist';
 
@@ -42,9 +43,15 @@ module.exports = [
     plugins: [
       new CleanWebpackPlugin([outputDirectory]),
       new HtmlWebpackPlugin({
-        template: './public/index.ejs',
+        template: './templates/index.ejs',
         historyApiFallback: true,
       }),
+      new CopyWebpackPlugin([
+        {
+          from: 'public',
+          to: './',
+        },
+      ]),
     ],
   },
   {
