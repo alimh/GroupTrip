@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { LinkContainer } from 'react-router-bootstrap';
 import Jumbotron from 'react-bootstrap/Jumbotron';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -59,9 +59,11 @@ export class AllTrips extends React.Component {
           <Row className="justify-content-md-center">
             <Col>
               <ListGroup>
-                <ListGroup.Item variant="primary">
-                  <Link to="/new">Add a new trip</Link>
-                </ListGroup.Item>
+                <LinkContainer to="/new">
+                  <ListGroup.Item action variant="primary">
+                    Add a new trip
+                  </ListGroup.Item>
+                </LinkContainer>
               </ListGroup>
               <br />
               <AllTripsDA
