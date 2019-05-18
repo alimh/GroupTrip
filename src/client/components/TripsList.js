@@ -7,7 +7,7 @@ export const TripsList = (props) => {
   return (
     <ListGroup>
       {trips.map(t => (
-        <LinkContainer to={'/trips/'.concat(t.id)}>
+        <LinkContainer key={t.id} to={'/trips/'.concat(t.id)}>
           <ListGroup.Item action key={t.id}>
             {t.name}
           </ListGroup.Item>
