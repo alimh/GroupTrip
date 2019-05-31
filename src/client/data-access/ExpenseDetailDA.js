@@ -85,16 +85,8 @@ export class ExpenseDetail extends React.Component {
     return this.state.tripObj ? (
       <ExpenseForm
         key={this.state.keyExpenseForm}
-        categories={
-          this.state.tripObj.categories
-            .filter(c => c.active)
-            .map(c => c.label) || []
-        }
-        travelers={
-          this.state.tripObj.travelers
-            .filter(t => t.active)
-            .map(t => t.label) || []
-        }
+        categories={this.state.tripObj.categories || []}
+        travelers={this.state.tripObj.travelers || []}
         expenseObj={this.state.expenseObj}
         onSave={expenseObject => this.handleSave(expenseObject)}
         onCancel={() => this.handleCancel()}

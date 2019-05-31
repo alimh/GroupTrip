@@ -19,7 +19,15 @@ export const ExpenseForm = (props) => {
   const today = new Date();
   const keyForm = Math.random();
 
-  // const heading = !props.expenseObj ? 'Add New Expense' : 'Edit Expense';
+  // Filter out inactive travelers that are not already selected in the splitBy list
+  const splitByActive = travelers.filter(t =>
+    (t.active ? true : (splitBy || []).filter(s => s.id === t.id).length > 0));
+
+  const categoryActive = categories.filter(c =>
+    (c.active ? true : (category || { id: null }).id === c.id));
+
+  const paidByActive = travelers.filter(t =>
+    (t.active ? true : (paidBy || { id: null }).id === t.id));
 
   const fields = [
     {
@@ -54,32 +62,42 @@ export const ExpenseForm = (props) => {
       id: 'category',
       label: 'Category',
       initialValue: category
-        ? { value: category.name, key: category.id }
+        ? { value: categories[category.id].label, key: category.id }
         : null,
-      options: categories
-        ? categories.map((c, n) => ({ key: n, value: c }))
-        : [],
+      options: categoryActive.map(c => ({
+        key: c.id,
+        value: c.label,
+      })),
     },
     {
       type: 'multi-select',
       id: 'splitBy',
       label: 'Split By',
       options:
-        travelers.map((user, n) => ({
-          value: user,
-          key: n,
+        splitByActive.map(user => ({
+          value: user.label,
+          key: user.id,
           checked: false,
         })) || [],
       initialValue: splitBy
-        ? splitBy.map((s, n) => ({ value: s, key: n, checked: true }))
+        ? splitBy.map(s => ({
+          value: travelers[s.id || 0].label,
+          key: s.id,
+          checked: true,
+        }))
         : [],
     },
     {
       type: 'select-box',
       id: 'paidBy',
       label: 'Paid By',
-      initialValue: paidBy ? { value: paidBy.name, key: paidBy.id } : null,
-      options: travelers ? travelers.map((u, n) => ({ key: n, value: u })) : [],
+      initialValue: paidBy
+        ? { value: travelers[paidBy.id].label, key: paidBy.id }
+        : null,
+      options: paidByActive.map(u => ({
+        key: u.id,
+        value: travelers[u.id || 0].label,
+      })),
     },
   ];
 

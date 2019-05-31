@@ -31,7 +31,7 @@ export const ExpensesListTable = (props) => {
             <Col xs={4}>{exp.dateFormatted || ''}</Col>
             <Col>
               <h4>
-                <div>{formatMoney(exp.amount) || ''}</div>
+                <div>{formatMoney(exp.amount || 0) || ''}</div>
               </h4>
             </Col>
           </Row>
