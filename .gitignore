@@ -43,3 +43,5 @@ jspm_packages
 dist/bundle.js
 dist/index.html
 dist/server-es5.js
+
+.env

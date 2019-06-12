@@ -37,6 +37,17 @@ expensesSchema.virtual('amountFormatted').get(function () {
   return '$ '.concat(this.amount);
 });
 
+expensesSchema.virtual('needsAttention').get(function () {
+  return (
+    this.date === null ||
+    this.amount === null ||
+    this.note === '' ||
+    this.splitBy.length === 0 ||
+    this.category.id === '' ||
+    this.paidBy === ''
+  );
+});
+
 expensesSchema.set('toJSON', { virtuals: true });
 
 const Expenses = mongoose.model('Expense', expensesSchema);

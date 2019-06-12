@@ -10,15 +10,21 @@ import 'react-table/react-table.css';
 import ListGroup from 'react-bootstrap/ListGroup';
 
 const formatMoney = a =>
-  '$ '.concat(a.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'));
+  (a !== null
+    ? "$ ".concat(a.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,"))
+    : "");
 
 export const ExpensesTableView = (props) => {
   const { expenses, onRemove, onEdit } = props;
-
   const expensesFiltered = expenses.map(e => ({
     date: e.dateFormatted,
     note: e.note,
     amount: formatMoney(e.amount),
+    category: e.category.name,
+    paidBy: e.paidBy.name,
+    splitBy: e.splitBy
+      .reduce((acc, i) => acc.concat(i.name).concat(', '), '')
+      .slice(0, -2),
   }));
   // const rows = expenses.map((exp, n) => {
   //   const t = exp.splitBy.reduce(
@@ -82,10 +88,14 @@ export const ExpensesTableView = (props) => {
       <ReactTable
         data={expensesFiltered}
         filterable
+        minRows={0}
         columns={[
           { Header: 'Date', accessor: 'date' },
           { Header: 'Note', accessor: 'note' },
           { Header: 'Amount', accessor: 'amount' },
+          { Header: 'Category', accessor: 'category' },
+          { Header: 'Paid By', accessor: 'paidBy' },
+          { Header: 'Split By', accessor: 'splitBy' },
         ]}
       />
     </div>

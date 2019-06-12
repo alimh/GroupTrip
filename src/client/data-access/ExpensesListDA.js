@@ -33,7 +33,7 @@ export class ExpensesList extends React.Component {
   getExpenses() {
     if (this.state.tripId) {
       const authorizationHeader = 'bearer '.concat(Auth.getToken());
-      Axios.get('/api/expenses/all', {
+      Axios.get('/api/expenses/recent', {
         headers: {
           Authorization: authorizationHeader,
         },

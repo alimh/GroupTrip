@@ -16,6 +16,20 @@ router.get('/all', (req, res) => {
   });
 });
 
+// fetch recent expenses
+router.get('/recent', (req, res) => {
+  const { id } = req.query;
+  const { n = 3 } = req.query;
+  Expense.find({ tripId: id, removed_at: null }, (err, expenses) => {
+    if (err) return res.status(403).end();
+    const recents = expenses.slice(-1 * n).reverse();
+    return res
+      .status(200)
+      .json(recents)
+      .end();
+  });
+});
+
 router.post('/save', (req, res) => {
   const expenseDetails = {
     tripId: req.body.tripId,

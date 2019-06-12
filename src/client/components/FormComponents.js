@@ -62,7 +62,7 @@ export const SelectBox = props => (
         id: props.id,
       }}
     >
-      <option key="0" value=" " name=" ">
+      <option key="0" value="" name="">
         {props.placeholder}
       </option>
       {props.options.map(option => (

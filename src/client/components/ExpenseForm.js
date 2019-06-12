@@ -11,14 +11,14 @@ export const ExpenseForm = (props) => {
   const { travelers, categories } = props;
   const { onSave, onCancel } = props;
 
-  const { dateFormatted, paidBy, note } = props.expenseObj || {};
-  const { amount, category, splitBy } = props.expenseObj || {};
+  const { dateFormatted, paidBy = { id: '' }, note } = props.expenseObj || {};
+  const { amount, category = { id: '' }, splitBy } = props.expenseObj || {};
 
   const { borderVariant } = props || 'light';
 
   const today = new Date();
   const keyForm = Math.random();
-
+  console.log(category);
   // Filter out inactive travelers that are not already selected in the splitBy list
   const splitByActive = travelers.filter(t =>
     (t.active ? true : (splitBy || []).filter(s => s.id === t.id).length > 0));
@@ -61,9 +61,10 @@ export const ExpenseForm = (props) => {
       type: 'select-box',
       id: 'category',
       label: 'Category',
-      initialValue: category
-        ? { value: categories[category.id].label, key: category.id }
-        : null,
+      initialValue:
+        category.id !== ''
+          ? { value: categories[category.id].label, key: category.id }
+          : null,
       options: categoryActive.map(c => ({
         key: c.id,
         value: c.label,
@@ -91,9 +92,10 @@ export const ExpenseForm = (props) => {
       type: 'select-box',
       id: 'paidBy',
       label: 'Paid By',
-      initialValue: paidBy
-        ? { value: travelers[paidBy.id].label, key: paidBy.id }
-        : null,
+      initialValue:
+        paidBy.id !== ''
+          ? { value: travelers[paidBy.id].label, key: paidBy.id }
+          : null,
       options: paidByActive.map(u => ({
         key: u.id,
         value: travelers[u.id || 0].label,

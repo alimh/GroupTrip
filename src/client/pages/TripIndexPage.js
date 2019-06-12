@@ -79,7 +79,6 @@ export class TripIndexPage extends React.Component {
           />
           <Row>
             <Col>
-              <h3>Expense List</h3>
               <ListGroup>
                 <ListGroup.Item
                   action
@@ -92,6 +91,12 @@ export class TripIndexPage extends React.Component {
                   Add an expense
                 </ListGroup.Item>
               </ListGroup>
+            </Col>
+          </Row>
+          <br />
+          <Row>
+            <Col>
+              <h3>Most Recent Expenses</h3>
               <br />
               <ExpensesList
                 key={this.state.keyExpenseList}
