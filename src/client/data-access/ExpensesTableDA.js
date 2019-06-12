@@ -4,30 +4,28 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Auth from '../utils/Auth';
 import { LoadingView } from '../components/LoadingView';
-import { ExpensesListView } from '../components/ExpensesListView';
+import { ExpensesTableView } from '../components/ExpensesTableView';
 
 // import { ExpenseDetail } from '../data-access/ExpenseDetailDA';
 
-export class ExpensesList extends React.Component {
+export class ExpensesTable extends React.Component {
   constructor(props) {
     super(props);
 
-    const { expenses } = props;
     const tripId = props.tripId || null;
 
     this.state = {
       // key: Math.random(),
       // keyEditExpense: null,
-      loading: expenses === undefined,
-      expenses: expenses || null,
-      idRemove: null,
+      loading: true,
+      expenses: null,
       // expenseObjectToEdit: null,
       tripId,
     };
   }
 
   componentDidMount() {
-    if (this.state.expenses === null) this.getExpenses();
+    this.getExpenses();
   }
 
   getExpenses() {
@@ -97,34 +95,11 @@ export class ExpensesList extends React.Component {
     this.props.onEdit(this.state.expenses[n]);
   }
 
-  // handleMessage(k, m) {
-  //   // if user cancelled
-  //   if (m.cancel) {
-  //     this.setState({ keyEditExpense: null });
-  //   }
-  //   if (m.success) {
-  //     this.setState({ keyEditExpense: null });
-  //     this.props.message(m);
-  //   }
-  // }
-
   render() {
-    // const EditExpenseView = (
-    //   <ExpenseDetail
-    //     key={this.state.keyEditExpense}
-    //     message={message =>
-    //       this.handleMessage(this.state.keyEditExpense, message)
-    //     }
-    //     expenseObj={this.state.expenseObjectToEdit}
-    //     tripId={this.state.tripId}
-    //     onCancel={() => this.setState({ keyEditExpense: null })}
-    //   />
-    // );
-
-    const ExpenseListTable =
+    const TableView =
       this.state.expenses !== null && this.state.expenses.length > 0 ? (
         <div>
-          <ExpensesListView
+          <ExpensesTableView
             expenses={this.state.expenses}
             onRemove={id => this.showRemoveDialog(id)}
             onEdit={n => this.handleEdit(n)}
@@ -152,9 +127,8 @@ export class ExpensesList extends React.Component {
       );
 
     if (this.state.loading) return <LoadingView />;
-    // return this.state.keyEditExpense ? EditExpenseView : ExpenseListTable;
-    return ExpenseListTable;
+    return TableView;
   }
 }
 
-export default ExpensesList;
+export default ExpensesTable;

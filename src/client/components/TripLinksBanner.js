@@ -5,6 +5,7 @@ import Nav from 'react-bootstrap/Nav';
 
 export const TripLinksBanner = (props) => {
   const linkSettings = '/trips/'.concat(props.tripId).concat('/settings');
+  const linkExpenses = '/trips/'.concat(props.tripId).concat('/expenses');
   const linkSummary = '/trips/'.concat(props.tripId).concat('/summary');
   const linkTripIndex = '/trips/'.concat(props.tripId);
   const tripName = props.tripName || 'Trip Home';
@@ -21,6 +22,9 @@ export const TripLinksBanner = (props) => {
         <Nav className="mr-auto">
           <LinkContainer to={linkSettings}>
             <Nav.Link>Settings</Nav.Link>
+          </LinkContainer>
+          <LinkContainer to={linkExpenses}>
+            <Nav.Link>Expenses</Nav.Link>
           </LinkContainer>
           <LinkContainer to={linkSummary}>
             <Nav.Link>Summary</Nav.Link>

@@ -9,7 +9,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 const formatMoney = a =>
   '$ '.concat(a.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'));
 
-export const ExpensesListTable = (props) => {
+export const ExpensesListView = (props) => {
   const { expenses, onRemove, onEdit } = props;
 
   const rows = expenses.map((exp, n) => {
@@ -71,4 +71,4 @@ export const ExpensesListTable = (props) => {
   return <ListGroup>{rows}</ListGroup>;
 };
 
-export default ExpensesListTable;
+export default ExpensesListView;
