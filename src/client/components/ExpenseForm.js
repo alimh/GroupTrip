@@ -18,7 +18,7 @@ export const ExpenseForm = (props) => {
 
   const today = new Date();
   const keyForm = Math.random();
-  console.log(category);
+
   // Filter out inactive travelers that are not already selected in the splitBy list
   const splitByActive = travelers.filter(t =>
     (t.active ? true : (splitBy || []).filter(s => s.id === t.id).length > 0));

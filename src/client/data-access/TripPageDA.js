@@ -48,7 +48,6 @@ export class TripPageDA extends React.Component {
   render() {
     if (this.state.loading) return <LoadingView />;
     if (this.state.tripObj) {
-      console.log(this.state.tripObj);
       return <TripIndexPage tripObj={this.state.tripObj} />;
     }
     return <div />;
