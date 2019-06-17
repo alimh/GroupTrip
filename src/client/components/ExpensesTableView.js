@@ -1,13 +1,8 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
-
-import ListGroup from 'react-bootstrap/ListGroup';
 
 const formatMoney = a =>
   (a !== null
@@ -16,7 +11,9 @@ const formatMoney = a =>
 
 export const ExpensesTableView = (props) => {
   const { expenses, onRemove, onEdit } = props;
-  const expensesFiltered = expenses.map(e => ({
+  const expensesFiltered = expenses.map((e, n) => ({
+    id: e.id,
+    n,
     date: e.dateFormatted,
     note: e.note,
     amount: formatMoney(e.amount),
@@ -26,76 +23,118 @@ export const ExpensesTableView = (props) => {
       .reduce((acc, i) => acc.concat(i.name).concat(', '), '')
       .slice(0, -2),
   }));
-  // const rows = expenses.map((exp, n) => {
-  //   const t = exp.splitBy.reduce(
-  //     (acc, i) => acc.concat(i.name).concat(', '),
-  //     ''
-  //   );
-  //   const p = t.slice(0, t.length - 2);
 
-  //   return (
-  //     <div>
-  //       <ListGroup.Item key={exp.id} active={exp.active || false}>
-  //         <Container>
-  //           <Row>
-  //             <Col>
-  //               <h4>{exp.note || ''}</h4>
-  //             </Col>
-  //           </Row>
-  //           <Row>
-  //             <Col xs={4}>{exp.dateFormatted || ''}</Col>
-  //             <Col>
-  //               <h4>
-  //                 <div>{formatMoney(exp.amount || 0) || ''}</div>
-  //               </h4>
-  //             </Col>
-  //           </Row>
-  //           <Row>
-  //             <Col>Category: {exp.category.name || ''}</Col>
-  //             <Col>Split By: {p}</Col>
-  //             <Col>Paid By: {exp.paidBy.name || ''}</Col>
-  //           </Row>
-  //           <Row>
-  //             <Col>&nbsp;</Col>
-  //           </Row>
-  //           <Row className="float-right">
-  //             <Col>
-  //               <Button
-  //                 variant="outline-secondary"
-  //                 name="Edit"
-  //                 onClick={() => onEdit(n)}
-  //                 disabled={exp.buttonsDisabled || false}
-  //               >
-  //                 Edit
-  //               </Button>
-  //               &nbsp;
-  //               <Button
-  //                 variant="outline-danger"
-  //                 onClick={() => onRemove(exp.id)}
-  //                 disabled={exp.buttonsDisabled || false}
-  //               >
-  //                 Remove
-  //               </Button>
-  //             </Col>
-  //           </Row>
-  //         </Container>
-  //       </ListGroup.Item>
-  //     </div>
-  //   );
-  // });
+  const distinctCategories = [
+    ...new Set(expenses.map(e => e.category.name)),
+  ].filter(f => f !== '');
+  const distinctPaidBy = [...new Set(expenses.map(e => e.paidBy.name))].filter(f => f !== '');
+  const distinctSplitBy = [
+    ...new Set(expenses
+        .map(e => e.splitBy)
+        .flat()
+        .map(f => f.name)),
+  ];
   return (
     <div>
       <ReactTable
         data={expensesFiltered}
         filterable
-        minRows={0}
+        minRows={2}
         columns={[
           { Header: 'Date', accessor: 'date' },
-          { Header: 'Note', accessor: 'note' },
-          { Header: 'Amount', accessor: 'amount' },
-          { Header: 'Category', accessor: 'category' },
-          { Header: 'Paid By', accessor: 'paidBy' },
-          { Header: 'Split By', accessor: 'splitBy' },
+          {
+            Header: 'Note',
+            accessor: 'note',
+            filterMethod: (filter, row) =>
+              row[filter.id].toLowerCase().includes(filter.value.toLowerCase()),
+          },
+          {
+            Header: 'Amount',
+            accessor: 'amount',
+            filterMethod: (filter, row) =>
+              row[filter.id].includes(filter.value),
+          },
+          {
+            Header: 'Category',
+            accessor: 'category',
+            Filter: ({ filter, onChange }) => (
+              <select
+                onChange={event => onChange(event.target.value)}
+                style={{ width: '100%' }}
+                value={filter ? filter.value : ''}
+              >
+                <option key="(all)" value="" />
+                {distinctCategories.map(c => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            ),
+          },
+          {
+            Header: 'Paid By',
+            accessor: 'paidBy',
+            Filter: ({ filter, onChange }) => (
+              <select
+                onChange={event => onChange(event.target.value)}
+                style={{ width: '100%' }}
+                value={filter ? filter.value : ''}
+              >
+                <option key="(all)" value="" />
+                {distinctPaidBy.map(p => (
+                  <option key={p} value={p}>
+                    {p}
+                  </option>
+                ))}
+              </select>
+            ),
+          },
+          {
+            Header: 'Split By',
+            accessor: 'splitBy',
+            Filter: ({ filter, onChange }) => (
+              <select
+                onChange={event => onChange(event.target.value)}
+                style={{ width: '100%' }}
+                value={filter ? filter.value : ''}
+              >
+                <option key="(all)" value="" />
+                {distinctSplitBy.map(s => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            ),
+            filterMethod: (filter, row) =>
+              row[filter.id].includes(filter.value),
+          },
+          {
+            Header: '',
+            accessor: 'n',
+            Cell: row => (
+              <Button
+                variant="outline-secondary"
+                name="Edit"
+                onClick={() => onEdit(row.value)}
+              >
+                Edit
+              </Button>
+            ),
+          },
+          {
+            Header: '',
+            accessor: 'id',
+            Cell: row => (
+              <Button
+                variant="outline-danger"
+                onClick={() => onRemove(row.value)}
+              >
+                Remove
+              </Button>
+            ),
+          },
         ]}
       />
     </div>
