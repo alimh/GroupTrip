@@ -2,6 +2,9 @@ import React from 'react';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import './FormComponents.css';
 
 export const InputBox = props => (
   <Form.Group controlId={props.id}>
@@ -38,6 +41,26 @@ export const InputBox = props => (
       ) : (
         <div />
       )}
+      <Form.Control.Feedback type="invalid">
+        {props.errMsg}
+      </Form.Control.Feedback>
+    </InputGroup>
+  </Form.Group>
+);
+
+export const DatePickerBox = props => (
+  <Form.Group controlId={props.id}>
+    <Form.Label>
+      {props.formatLabel ? props.formatLabel(props.label) : props.label}
+    </Form.Label>
+    <InputGroup>
+      <DatePicker
+        className="date-picker-box form-control"
+        selected={props.value}
+        onSelect={d => props.onUpdate(d)}
+        placeholderText={props.placeholder}
+        disabled={props.disabled || false}
+      />
       <Form.Control.Feedback type="invalid">
         {props.errMsg}
       </Form.Control.Feedback>
@@ -240,6 +263,17 @@ export class FormBuilder extends React.Component {
     //    const formatButtons = this.props.formatButtons || formatItem;
 
     const elements = this.props.fields.map((field) => {
+      if (field.type === 'date-picker') {
+        return formatItem(
+          DatePickerBox({
+            ...field,
+            value: this.state.values[field.id],
+            onUpdate: value => this.handleUpdate(field.id, value),
+            errMsg: this.state.errors[field.id],
+          }),
+          field.id
+        );
+      }
       if (field.type === 'multi-select') {
         return formatItem(
           MultiSelect({
