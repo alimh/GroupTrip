@@ -8,13 +8,19 @@ const formatMoney = a =>
   (a !== null
     ? "$ ".concat(a.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,"))
     : "");
+const formatDate = d =>
+  new Date(d).toLocaleDateString('en-US', {
+    month: '2-digit',
+    day: '2-digit',
+    year: 'numeric',
+  });
 
 export const ExpensesTableView = (props) => {
   const { expenses, onRemove, onEdit } = props;
   const expensesFiltered = expenses.map((e, n) => ({
     id: e.id,
     n,
-    date: e.dateFormatted,
+    date: formatDate(e.date),
     note: e.note,
     amount: formatMoney(e.amount),
     category: e.category.name,
@@ -41,7 +47,11 @@ export const ExpensesTableView = (props) => {
         filterable
         minRows={2}
         columns={[
-          { Header: 'Date', accessor: 'date' },
+          {
+            Header: 'Date',
+            accessor: 'date',
+            Filter: () => <div />,
+          },
           {
             Header: 'Note',
             accessor: 'note',
@@ -113,6 +123,7 @@ export const ExpensesTableView = (props) => {
           {
             Header: '',
             accessor: 'n',
+            Filter: () => <div />,
             Cell: row => (
               <Button
                 variant="outline-secondary"
@@ -126,6 +137,7 @@ export const ExpensesTableView = (props) => {
           {
             Header: '',
             accessor: 'id',
+            Filter: () => <div />,
             Cell: row => (
               <Button
                 variant="outline-danger"
