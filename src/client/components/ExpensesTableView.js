@@ -125,13 +125,16 @@ export const ExpensesTableView = (props) => {
             accessor: 'n',
             Filter: () => <div />,
             Cell: row => (
-              <Button
-                variant="outline-secondary"
-                name="Edit"
-                onClick={() => onEdit(row.value)}
-              >
-                Edit
-              </Button>
+              <div style={{ textAlign: 'center' }}>
+                <Button
+                  style={{ margin: '0 auto' }}
+                  variant="outline-secondary"
+                  name="Edit"
+                  onClick={() => onEdit(row.value)}
+                >
+                  Edit
+                </Button>
+              </div>
             ),
           },
           {
@@ -139,12 +142,14 @@ export const ExpensesTableView = (props) => {
             accessor: 'id',
             Filter: () => <div />,
             Cell: row => (
-              <Button
-                variant="outline-danger"
-                onClick={() => onRemove(row.value)}
-              >
-                Remove
-              </Button>
+              <div style={{ textAlign: 'center' }}>
+                <Button
+                  variant="outline-danger"
+                  onClick={() => onRemove(row.value)}
+                >
+                  Remove
+                </Button>
+              </div>
             ),
           },
         ]}
