@@ -2,6 +2,7 @@ import React from 'react';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Button from 'react-bootstrap/Button';
 import { InputBox } from './FormComponents';
+import { checkNotBlankError } from '../utils/FormValidation';
 
 export class SettingsViewWithNew extends React.Component {
   constructor(props) {
@@ -10,18 +11,26 @@ export class SettingsViewWithNew extends React.Component {
     this.state = {
       settings: props.settings,
       newValue: '',
+      error: false,
     };
   }
 
   handleChange(newValue) {
+    // check for error
+
     this.setState({ newValue });
   }
 
   sendNewValue(e) {
     e.preventDefault();
 
-    this.setState({ newValue: '' });
-    this.props.onNew(this.state.newValue);
+    const error = checkNotBlankError(this.state.newValue);
+    if (!error) {
+      this.setState({ newValue: '', error: false });
+      this.props.onNew(this.state.newValue);
+    } else {
+      this.setState({ error });
+    }
   }
 
   render() {
@@ -59,6 +68,7 @@ export class SettingsViewWithNew extends React.Component {
           placeholder="New"
           value={this.state.newValue}
           onUpdate={newValue => this.handleChange(newValue)}
+          errMsg={this.state.error}
           appendButton={
             <Button
               variant="outline-secondary"

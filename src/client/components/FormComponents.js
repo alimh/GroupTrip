@@ -26,8 +26,8 @@ export const InputBox = props => (
         onChange={e => props.onUpdate(e.target.value)}
         onBlur={e => props.onUpdate(e.target.value)}
         placeholder={props.placeholder}
-        style={props.errMsg ? { border: '2px solid red' } : {}}
         disabled={props.disabled || false}
+        isInvalid={!!props.errMsg}
       />
       {props.append ? (
         <InputGroup.Append>
@@ -60,6 +60,7 @@ export const DatePickerBox = props => (
         onSelect={d => props.onUpdate(d)}
         placeholderText={props.placeholder}
         disabled={props.disabled || false}
+        isInvalid={!!props.errMsg}
       />
       <Form.Control.Feedback type="invalid">
         {props.errMsg}
@@ -74,6 +75,7 @@ export const SelectBox = props => (
     <Form.Control
       as="select"
       value={props.value.key}
+      isInvalid={!!props.errMsg}
       onChange={e =>
         props.onUpdate({
           value: e.target.namedItem(e.target.value).innerText,
@@ -107,6 +109,7 @@ export const MultiSelect = props => (
           key={option.key}
           id={option.key}
           label={option.value}
+          isInvalid={!!props.errMsg}
           onUpdate={() => {
             const newOptions = props.options;
             newOptions[n].checked = !newOptions[n].checked;
@@ -218,8 +221,10 @@ export class FormBuilder extends React.Component {
       return acc || errors[field] !== false;
     }, false);
 
-    if (error) this.setState({ errors });
-    else {
+    if (error) {
+      e.preventDefault();
+      this.setState({ errors });
+    } else {
       this.props.onSave(this.state.values);
       this.resetForm();
     }
@@ -322,7 +327,9 @@ export class FormBuilder extends React.Component {
     const combine = [elements, floatRight(buttons)].map(e => e);
 
     return (
-      <Form onSubmit={e => this.handleSave(e)}>{formatWrapper(combine)}</Form>
+      <Form validated={false} onSubmit={e => this.handleSave(e)}>
+        {formatWrapper(combine)}
+      </Form>
     );
   }
 }

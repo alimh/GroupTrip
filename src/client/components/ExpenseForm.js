@@ -5,6 +5,7 @@ import { FormBuilder } from './FormComponents';
 import {
   checkValidDateError,
   checkPositiveNumberError,
+  checkNotBlankError,
 } from '../utils/FormValidation';
 
 export const ExpenseForm = (props) => {
@@ -50,6 +51,7 @@ export const ExpenseForm = (props) => {
       label: 'Note',
       initialValue: note,
       placeholder: 'What is the expense for?',
+      errorChecks: value => checkNotBlankError(value),
     },
     {
       id: 'amount',
