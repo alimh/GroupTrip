@@ -49,6 +49,7 @@ export class ExpenseDetail extends React.Component {
   }
 
   handleSave(expenseObject) {
+    console.log(expenseObject);
     const payload = {
       ...expenseObject,
       tripId: this.state.tripId,

@@ -4,10 +4,14 @@ import path from 'path';
 import { Server } from 'http';
 import Express from 'express';
 import Mongoose from 'mongoose';
+import Passport from 'passport';
+import Strategy from 'passport-local';
+import Session from 'express-session';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import ApiExpenses from './api/expenses';
 import ApiTrips from './api/trips';
+import auth from './auth';
 
 dotenv.config();
 
@@ -17,48 +21,30 @@ const server = new Server(app);
 Mongoose.Promise = Promise;
 Mongoose.connect(process.env.MONGO_DB);
 
+// passport setup
+Passport.use(new Strategy((user, pass, done) => done(null, user)));
+Passport.serializeUser((user, cb) => {
+  cb(null, 1);
+});
+Passport.deserializeUser((id, cb) => {
+  cb(null, 1);
+});
+
 // define the folder that will be used for static assets
 app.use(Express.static('dist'));
 
 app.use(bodyParser.json());
+app.use(Session({ secret: 'keyboard', resave: false, saveUninitialized: false }));
+app.use(Passport.initialize());
+app.use(Passport.session());
 
 // app.use('/api', checkAuth);
 app.use('/api/expenses', ApiExpenses);
 app.use('/api/trips', ApiTrips);
+app.use('/auth', auth);
 
-// universal routing and rendering
-app.get(
-  '/*',
-  (req, res) => res.sendFile(path.join(__dirname, 'index.html'))
-  // const markup = '';
-  // const status = 200;
-  //   console.log('getting: ');
-  //   console.log(req.url);
-
-  //   if (!process.env.UNIVERSAL) {
-  //     const context = {};
-  //     console.log('rendering universal');
-  //     // eslint-disable-next-line function-paren-newline
-  //     markup = renderToString(
-  //       <Router location={req.url} context={context}>
-  //         <App />
-  //       </Router>);
-
-  //     // context.url will contain the URL to redirect to if a <Redirect> was used
-  //     if (context.url) {
-  //       return res.redirect(302, context.url);
-  //     }
-
-  //     if (context.is404) {
-  //       status = 404;
-  //     }
-  //   }
-
-  // return res.status(status).send(template({
-  //     body: markup,
-  //     title: req.url,
-  //   }));
-);
+// routing and rendering
+app.get('/*', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 
 // start the server
 const port = process.env.PORT || 8080;

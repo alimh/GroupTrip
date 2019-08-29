@@ -3,6 +3,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Modal from 'react-bootstrap/Modal';
+import ListGroup from 'react-bootstrap/ListGroup';
 import { DisappearingAlert } from '../components/DisappearingAlert';
 import { ExpensesTable } from '../data-access/ExpensesTableDA';
 import { ExpenseDetail } from '../data-access/ExpenseDetailDA';
@@ -65,6 +66,24 @@ export class ExpensesPage extends React.Component {
             msg={this.state.messages.success}
             variant="success"
           />
+          <Row>
+            <Col>
+              <ListGroup>
+                <ListGroup.Item
+                  action
+                  variant="primary"
+                  onClick={() =>
+                    this.setState({ keyNewExpense: Math.random() })
+                  }
+                  disabled={!(this.state.messages.error === null)}
+                >
+                  Add an expense
+                </ListGroup.Item>
+              </ListGroup>
+            </Col>
+          </Row>
+          <br />
+
           <Row>
             <Col>
               <h3>Expenses</h3>

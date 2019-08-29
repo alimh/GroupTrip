@@ -76,12 +76,15 @@ export const SelectBox = props => (
       as="select"
       value={props.value.key}
       isInvalid={!!props.errMsg}
-      onChange={e =>
+      onChange={(e) => {
         props.onUpdate({
-          value: e.target.namedItem(e.target.value).innerText,
+          value:
+            e.target.value !== ''
+              ? e.target.namedItem(e.target.value).innerText
+              : '',
           key: e.target.value,
-        })
-      }
+        });
+      }}
       inputprops={{
         name: props.id,
         id: props.id,
