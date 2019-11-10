@@ -20,6 +20,7 @@ const tripObjSchema = new Schema({
   ],
   updated_at: Date,
   removed_at: Date,
+  owner: String,
 });
 
 tripObjSchema.set('toJSON', { virtuals: true });

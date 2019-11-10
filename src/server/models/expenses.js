@@ -23,6 +23,7 @@ const expensesSchema = new Schema({
     id: String,
   },
   updated_at: Date,
+  owner: String,
 });
 
 expensesSchema.virtual('dateFormatted').get(function () {

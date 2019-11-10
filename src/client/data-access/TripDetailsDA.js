@@ -12,6 +12,9 @@ export class TripDetailsDA extends React.Component {
 
     this.state = {
       loading: tripId !== null,
+      authorizationHeader: Auth.getToken()
+        ? 'bearer '.concat(Auth.getToken())
+        : null,
       tripObj: null,
       tripId,
     };
@@ -19,10 +22,9 @@ export class TripDetailsDA extends React.Component {
 
   componentDidMount() {
     if (this.state.tripId) {
-      const authorizationHeader = 'bearer '.concat(Auth.getToken());
       Axios.get('/api/trips/get', {
         headers: {
-          Authorization: authorizationHeader,
+          Authorization: this.state.authorizationHeader,
         },
         params: { id: this.state.tripId },
       })
@@ -46,11 +48,9 @@ export class TripDetailsDA extends React.Component {
     }
     */
     const payload = tripObject;
-    const authorizationHeader = 'bearer '.concat(Auth.getToken());
-
     this.setState({ loading: true });
     Axios.post('/api/trips/save', payload, {
-      headers: { Authorization: authorizationHeader },
+      headers: { Authorization: this.state.authorizationHeader },
     })
       .then((res) => {
         this.props.redirect('/trips/'.concat(res.data));
@@ -66,11 +66,9 @@ export class TripDetailsDA extends React.Component {
 
   handleRemove() {
     const payload = { id: this.state.tripId };
-    const authorizationHeader = 'bearer '.concat(Auth.getToken());
-
     this.setState({ loading: true });
     Axios.post('/api/trips/remove', payload, {
-      headers: { Authorization: authorizationHeader },
+      headers: { Authorization: this.state.authorizationHeader },
     })
       .then(() => {
         // this.props.message({ success: 'Removed' });

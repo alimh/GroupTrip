@@ -4,8 +4,9 @@ import TripObjs from '../models/trips';
 const router = new express.Router();
 
 router.get('/all', (req, res) => {
-  TripObjs.find({ removed_at: null }, (err, trips) => {
-    if (err) {
+  const token = req.headers.authorization.split(' ')[1] || null;
+  TripObjs.find({ removed_at: null, owner: token }, (err, trips) => {
+    if (err || token === null) {
       return res.status(403).end();
     }
     return res
@@ -42,6 +43,9 @@ router.get('/getName', (req, res) => {
 });
 
 router.post('/save', (req, res) => {
+  const token = req.headers.authorization.split(' ')[1] || null;
+  if (token === null) return res.status(403).end();
+
   const categories = req.body.categories.map(c => ({
     label: c.label || '',
     id: c.id !== undefined ? c.id : null,
@@ -59,6 +63,7 @@ router.post('/save', (req, res) => {
     travelers,
     updated_at: new Date(),
     removed_at: null,
+    owner: token,
   };
 
   const newTrip = TripObjs({ ...tripDetails });
@@ -80,6 +85,9 @@ router.post('/save', (req, res) => {
 });
 
 router.post('/remove', (req, res) => {
+  const token = req.headers.authorization.split(' ')[1] || null;
+  if (token === null) return res.status(403).end();
+
   TripObjs.findByIdAndUpdate(req.body.id, { removed_at: new Date() }, (err) => {
     if (err) throw err;
   });

@@ -2,19 +2,22 @@ import React from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
 import { Redirect } from 'react-router-dom';
-import { LoginPageDA } from '../data-access/LoginPageDA';
+// import { AccountPageDA } from '../data-access/AccountPageDA';
+import Auth from '../utils/Auth';
 import { DisappearingAlert } from '../components/DisappearingAlert';
 
-export class LoginPage extends React.Component {
+export class AccountPage extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
-      loginSuccess: false,
       messages: {
         success: null,
         error: null,
       },
+      redirect: null,
     };
   }
 
@@ -23,19 +26,19 @@ export class LoginPage extends React.Component {
     this.setState({ messages: { ...m } });
   }
 
-  handleLogin() {
-    this.setState({ loginSuccess: true });
-    //   this.props.onLogin(token, userName);
+  handleLogout() {
+    Auth.deauthenticateUser();
+    this.setState({ redirect: true });
   }
 
   render() {
-    return this.state.loginSuccess ? (
-      <Redirect push to="/account" />
+    return this.state.redirect ? (
+      <Redirect push to="/login" />
     ) : (
       <div>
         <br />
         <Container>
-          <h3>Login</h3>
+          <h3>Account</h3>
           <DisappearingAlert
             msg={this.state.messages.error}
             variant="danger"
@@ -43,11 +46,17 @@ export class LoginPage extends React.Component {
           />
           <Row className="justify-content-md-center">
             <Col>
-              <LoginPageDA
-                // onLogin={(t, u) => this.handleLogin(t, u)}
-                onLogin={() => this.handleLogin()}
+              <span>Account Info goes here</span>
+              <Button
+                variant="outline-danger"
+                onClick={() => this.handleLogout()}
+              >
+                Logout
+              </Button>
+              {/* <LoginPageDA
+                {...this.props}
                 message={message => this.handleMessage(message)}
-              />
+              /> */}
             </Col>
           </Row>
         </Container>
@@ -56,4 +65,4 @@ export class LoginPage extends React.Component {
   }
 }
 
-export default LoginPage;
+export default AccountPage;

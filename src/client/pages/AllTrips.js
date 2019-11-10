@@ -9,10 +9,11 @@ import { DisappearingAlert } from '../components/DisappearingAlert';
 import { AllTripsDA } from '../data-access/AllTripsDA';
 
 export class AllTrips extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     this.state = {
+      token: props.token || null,
       keys: {
         trips: Math.random(),
       },
@@ -68,6 +69,7 @@ export class AllTrips extends React.Component {
               <br />
               <AllTripsDA
                 key={this.state.keys.trips}
+                token={this.state.token}
                 message={m => this.handleMessage(this.state.keys.trips, m)}
               />
             </Col>

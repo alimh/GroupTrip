@@ -9,6 +9,9 @@ export class AllTripsDA extends React.Component {
     super(props);
 
     this.state = {
+      authorizationHeader: Auth.getToken()
+        ? 'bearer '.concat(Auth.getToken())
+        : null,
       trips: [],
     };
   }
@@ -28,10 +31,9 @@ export class AllTripsDA extends React.Component {
       }
     ]
     */
-    const authorizationHeader = 'bearer '.concat(Auth.getToken());
     Axios.get('/api/trips/all', {
       headers: {
-        Authorization: authorizationHeader,
+        Authorization: this.state.authorizationHeader,
       },
     })
       .then((response) => {
