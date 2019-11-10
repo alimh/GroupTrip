@@ -15,7 +15,6 @@ export const LoginPageDA = (props) => {
       .then((res) => {
         Auth.authenticateUser(res.data.token);
         props.onLogin();
-        // props.onLogin(res.data.token, res.data.userName);
       })
       .catch((err) => {
         props.message({ error: err.toString() });

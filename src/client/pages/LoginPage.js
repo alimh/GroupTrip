@@ -25,12 +25,11 @@ export class LoginPage extends React.Component {
 
   handleLogin() {
     this.setState({ loginSuccess: true });
-    //   this.props.onLogin(token, userName);
   }
 
   render() {
     return this.state.loginSuccess ? (
-      <Redirect push to="/account" />
+      <Redirect push to="/" />
     ) : (
       <div>
         <br />
@@ -44,7 +43,6 @@ export class LoginPage extends React.Component {
           <Row className="justify-content-md-center">
             <Col>
               <LoginPageDA
-                // onLogin={(t, u) => this.handleLogin(t, u)}
                 onLogin={() => this.handleLogin()}
                 message={message => this.handleMessage(message)}
               />
