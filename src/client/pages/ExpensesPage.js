@@ -13,6 +13,7 @@ export class ExpensesPage extends React.Component {
     super(props);
 
     this.state = {
+      keyNewExpense: null,
       keyExpenseList: Math.random(),
       tripId: props.tripId || null,
       messages: {
@@ -23,7 +24,7 @@ export class ExpensesPage extends React.Component {
     };
   }
 
-  handleMessage(m) {
+  handleMessage(k, m) {
     // display message
     const messages = {
       ...this.state.messages,
@@ -31,12 +32,27 @@ export class ExpensesPage extends React.Component {
     };
     this.setState({ messages });
 
-    if (m.success) {
+    // if success message came from New Expense, reset both, otherwise just the one it came from
+    if (m.success && k === this.state.keyNewExpense) {
+      this.setState({
+        keyNewExpense: null,
+        keyExpenseList: Math.random(),
+        expenseObject: null,
+      });
+    }
+    if (m.success && k === this.state.keyExpenseList) {
       this.setState({
         keyExpenseList: Math.random(),
         expenseObject: null,
       });
     }
+
+    // if (m.success) {
+    //   this.setState({
+    //     keyExpenseList: Math.random(),
+    //     expenseObject: null,
+    //   });
+    // }
   }
 
   handleEdit(expObjToEdit) {
@@ -48,6 +64,7 @@ export class ExpensesPage extends React.Component {
 
   handleCancel() {
     this.setState({
+      keyNewExpense: null,
       expenseObject: null,
       keyExpenseList: Math.random(), // force re-render
     });
@@ -97,7 +114,10 @@ export class ExpensesPage extends React.Component {
           </Row>
         </Container>
         <Modal
-          show={this.state.expenseObject !== null}
+          show={
+            this.state.expenseObject !== null ||
+            this.state.keyNewExpense !== null
+          }
           onHide={() => this.handleCancel()}
         >
           <Modal.Header closeButton>
@@ -107,7 +127,9 @@ export class ExpensesPage extends React.Component {
             <ExpenseDetail
               key={this.state.keyNewExpense}
               tripId={this.state.tripId}
-              message={message => this.handleMessage(message)}
+              message={message =>
+                this.handleMessage(this.state.keyNewExpense, message)
+              }
               expenseObj={this.state.expenseObject}
               onCancel={() => this.handleCancel()}
             />
