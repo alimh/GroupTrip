@@ -20,9 +20,13 @@ export const TripLinksBanner = (props) => {
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
-          <LinkContainer to={linkSettings}>
-            <Nav.Link>Settings</Nav.Link>
-          </LinkContainer>
+          {props.isOwner ? (
+            <LinkContainer to={linkSettings}>
+              <Nav.Link>Settings</Nav.Link>
+            </LinkContainer>
+          ) : (
+            <div />
+          )}
           <LinkContainer to={linkExpenses}>
             <Nav.Link>Expenses</Nav.Link>
           </LinkContainer>

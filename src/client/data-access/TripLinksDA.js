@@ -27,7 +27,11 @@ export class TripLinks extends React.Component {
       })
         .then((response) => {
           const { data } = response;
-          this.setState({ loading: false, tripName: data });
+          this.setState({
+            loading: false,
+            tripName: data.name,
+            isOwner: data.isOwner,
+          });
           this.props.message({ success: true });
         })
         .catch((err) => {
@@ -43,6 +47,7 @@ export class TripLinks extends React.Component {
       <TripLinksBanner
         tripId={this.state.tripId}
         tripName={this.state.tripName}
+        isOwner={this.state.isOwner}
       />
     );
   }

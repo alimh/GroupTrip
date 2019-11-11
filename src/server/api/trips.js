@@ -18,26 +18,34 @@ router.get('/all', (req, res) => {
 
 router.get('/get', (req, res) => {
   const { id } = req.query;
+  const token = req.headers.authorization.split(' ')[1] || null;
+
   TripObjs.findById(id, (err, trip) => {
     if (!trip || err || trip.removed_at) {
       return res.status(400).end();
     }
+    const tripObj = trip.toObject({ getters: true });
+    const { owner } = tripObj;
+    const tripObjWithOwner = { ...tripObj, isOwner: owner === token };
+
     return res
       .status(200)
-      .json(trip.toObject({ getters: true }))
+      .json(tripObjWithOwner)
       .end();
   });
 });
 
 router.get('/getName', (req, res) => {
   const { id } = req.query;
+  const token = req.headers.authorization.split(' ')[1] || null;
   TripObjs.findById(id, (err, trip) => {
     if (!trip || err || trip.removed_at) {
       return res.status(400).end();
     }
+    const tripObj = { name: trip.name, isOwner: trip.owner === token };
     return res
       .status(200)
-      .json(trip.name)
+      .json(tripObj)
       .end();
   });
 });
