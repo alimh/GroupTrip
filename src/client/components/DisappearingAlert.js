@@ -30,6 +30,7 @@ export class DisappearingAlert extends React.Component {
 
   expire() {
     this.setState({ msg: null, expired: true });
+    if (this.props.onDisappear) this.props.onDisappear();
   }
 
   render() {

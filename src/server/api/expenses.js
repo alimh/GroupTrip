@@ -1,10 +1,12 @@
 import express from 'express';
 import Expense from '../models/expenses';
+import TripObjs from '../models/trips';
 
 const router = new express.Router();
 
 router.get('/all', (req, res) => {
   const { id } = req.query;
+
   Expense.find({ tripId: id, removed_at: null }, (err, expenses) => {
     if (err) {
       return res.status(403).end();
@@ -31,6 +33,7 @@ router.get('/recent', (req, res) => {
 });
 
 router.post('/save', (req, res) => {
+  const token = req.headers.authorization.split(' ')[1] || null;
   const expenseDetails = {
     tripId: req.body.tripId,
     date: req.body.date,
@@ -57,22 +60,51 @@ router.post('/save', (req, res) => {
     removed_at: null,
   };
 
-  const newExpense = Expense({ ...expenseDetails });
+  const newExpense = Expense({ ...expenseDetails, owner: token });
 
   if (req.body.id) {
-    Expense.findByIdAndUpdate(req.body.id, { ...expenseDetails }, (err) => {
-      if (err) throw err;
+    // if we are updating an expense
+    Expense.findById(req.body.id, (err, expense) => {
+      // check to see if owner exists for this expennse and if it doesn't match
+      if (expense.owner === null || expense.owner === token) {
+        // we can update
+        expense.update(expenseDetails, (errExpUpdate) => {
+          if (errExpUpdate) throw err;
+          return res
+            .status(200)
+            .json(expenseDetails)
+            .end();
+        });
+      } else {
+        // check the trip owner
+        TripObjs.findById(expense.tripId, (errTrip, trip) => {
+          // check to see if the token matches the trip owner
+          if (trip.owner === token) {
+            // we can update
+            expense.update(expenseDetails, (errExpUpdate) => {
+              if (errExpUpdate) throw err;
+              return res
+                .status(200)
+                .json(expense)
+                .end();
+            });
+          } else {
+            // send 403
+            return res.status(403).end();
+          }
+          return true;
+        });
+      }
     });
   } else {
     newExpense.save((err) => {
       if (err) throw err;
+      return res
+        .status(200)
+        .json(newExpense)
+        .end();
     });
   }
-
-  return res
-    .status(200)
-    .json(req.body.id || newExpense.id)
-    .end();
 });
 
 router.post('/remove', (req, res) => {

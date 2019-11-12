@@ -71,11 +71,20 @@ export class TripIndexPage extends React.Component {
           <DisappearingAlert
             msg={this.state.messages.error}
             variant="danger"
-            disappear={false}
+            onDisappear={() => {
+              this.setState({
+                messages: { ...this.state.messages, error: null },
+              });
+            }}
           />
           <DisappearingAlert
             msg={this.state.messages.success}
             variant="success"
+            onDisappear={() => {
+              this.setState({
+                messages: { ...this.state.messages, success: null },
+              });
+            }}
           />
           <Row>
             <Col>

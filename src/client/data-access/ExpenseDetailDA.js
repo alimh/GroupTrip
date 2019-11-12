@@ -19,6 +19,9 @@ export class ExpenseDetail extends React.Component {
 
     this.state = {
       loading: true,
+      authorizationHeader: Auth.getToken()
+        ? 'bearer '.concat(Auth.getToken())
+        : null,
       tripObj,
       tripId,
       expenseObj,
@@ -28,10 +31,9 @@ export class ExpenseDetail extends React.Component {
 
   componentDidMount() {
     if (this.state.tripId) {
-      const authorizationHeader = 'bearer '.concat(Auth.getToken());
       Axios.get('/api/trips/get', {
         headers: {
-          Authorization: authorizationHeader,
+          Authorization: this.state.authorizationHeader,
         },
         params: { id: this.state.tripId },
       })
@@ -53,25 +55,19 @@ export class ExpenseDetail extends React.Component {
       ...expenseObject,
       tripId: this.state.tripId,
       id: this.state.expenseObj ? this.state.expenseObj.id : null,
+      owner: Auth.getToken(),
     };
-    const authorizationHeader = 'bearer '.concat(Auth.getToken());
 
     this.setState({ loading: true });
     Axios.post('/api/expenses/save', payload, {
-      headers: { Authorization: authorizationHeader },
+      headers: { Authorization: this.state.authorizationHeader },
     })
       .then(() => {
         this.props.message({ success: 'Saved' });
-        // TODO: renable this if component is not destroyed by parent
-        // this.setState({
-        //   loading: false,
-        //   expenseObj: null,
-        //   // expenseObj: expenseObject,
-        //   // keyExpenseForm: Math.random(),
-        // });
       })
       .catch((err) => {
         this.props.message({ error: err.toString() });
+        this.handleCancel();
       });
   }
 
