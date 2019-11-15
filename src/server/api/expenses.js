@@ -1,35 +1,52 @@
 import express from 'express';
 import Expense from '../models/expenses';
-import TripObjs from '../models/trips';
+import Trip from '../models/trips';
 
 const router = new express.Router();
 
+const getExpenses = (tripId, token, res, num = 0) => {
+  Expense.find({ tripId, removed_at: null }, (err, expenses) => {
+    if (err) return res.status(504).end();
+
+    const expObj = expenses.map(e => e.toObject({ getters: true }));
+
+    // find trip owner
+    Trip.findById(tripId, (errTrip, trip) => {
+      if (errTrip) return res.status(504).end();
+
+      const tripObj = trip.toObject({ getters: true });
+      const tripOwner = tripObj.owner;
+
+      const expObjWithOwner = expObj.map(e => ({
+        ...e,
+        canEdit: e.owner === token || tripOwner === token,
+      }));
+
+      return res
+        .status(200)
+        .json(num > 0 ? expObjWithOwner.slice(-1 * num).reverse() : expObjWithOwner)
+        .end();
+    });
+    return true;
+  });
+};
+
 router.get('/all', (req, res) => {
   const { id } = req.query;
+  const token = req.headers.authorization.split(' ')[1] || null;
 
-  Expense.find({ tripId: id, removed_at: null }, (err, expenses) => {
-    if (err) {
-      return res.status(403).end();
-    }
-    return res
-      .status(200)
-      .json(expenses)
-      .end();
-  });
+  getExpenses(id, token, res);
+  return true;
 });
 
 // fetch recent expenses
 router.get('/recent', (req, res) => {
   const { id } = req.query;
   const { n = 3 } = req.query;
-  Expense.find({ tripId: id, removed_at: null }, (err, expenses) => {
-    if (err) return res.status(403).end();
-    const recents = expenses.slice(-1 * n).reverse();
-    return res
-      .status(200)
-      .json(recents)
-      .end();
-  });
+  const token = req.headers.authorization.split(' ')[1] || null;
+
+  getExpenses(id, token, res, n);
+  return true;
 });
 
 router.post('/save', (req, res) => {
@@ -72,12 +89,12 @@ router.post('/save', (req, res) => {
           if (errExpUpdate) throw err;
           return res
             .status(200)
-            .json(expenseDetails)
+            .json(expense.id)
             .end();
         });
       } else {
         // check the trip owner
-        TripObjs.findById(expense.tripId, (errTrip, trip) => {
+        Trip.findById(expense.tripId, (errTrip, trip) => {
           // check to see if the token matches the trip owner
           if (trip.owner === token) {
             // we can update
@@ -85,7 +102,7 @@ router.post('/save', (req, res) => {
               if (errExpUpdate) throw err;
               return res
                 .status(200)
-                .json(expense)
+                .json(expense.id)
                 .end();
             });
           } else {
@@ -101,23 +118,40 @@ router.post('/save', (req, res) => {
       if (err) throw err;
       return res
         .status(200)
-        .json(newExpense)
+        .json(newExpense.id)
         .end();
     });
   }
 });
 
 router.post('/remove', (req, res) => {
-  Expense.findOneAndRemove(
-    {
-      _id: req.body.id,
-    },
-    (err) => {
-      if (err) throw err;
+  const token = req.headers.authorization.split(' ')[1] || null;
+  Expense.findById(req.body.id, (err, expense) => {
+    // check to see if owner exists for this expennse and if it doesn't match
+    if (expense.owner === null || expense.owner === token) {
+      // we can update
+      expense.update({ removed_at: new Date() }, (errExpUpdate) => {
+        if (errExpUpdate) throw err;
+        return res.status(200).end();
+      });
+    } else {
+      // check the trip owner
+      Trip.findById(expense.tripId, (errTrip, trip) => {
+        // check to see if the token matches the trip owner
+        if (trip.owner === token) {
+          // we can update
+          expense.update({ removed_at: new Date() }, (errExpUpdate) => {
+            if (errExpUpdate) throw err;
+            return res.status(200).end();
+          });
+        } else {
+          // send 403
+          return res.status(403).end();
+        }
+        return true;
+      });
     }
-  );
-
-  return res.status(200).end();
+  });
 });
 
 export default router;

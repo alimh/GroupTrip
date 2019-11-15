@@ -73,11 +73,12 @@ export class ExpensesList extends React.Component {
       .then(() => {
         this.props.message({
           success: 'Removed Expense',
-          id: null,
-          showRemoveDialog: false,
         });
       })
-      .catch(err => this.props.message({ error: err.toString() }));
+      .catch((err) => {
+        this.props.message({ error: err.toString() });
+        this.setState({ showRemoveDialog: false });
+      });
   }
 
   handleEdit(n) {

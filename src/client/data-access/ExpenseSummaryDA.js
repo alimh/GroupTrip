@@ -190,11 +190,12 @@ export class ExpenseSummaryDA extends React.Component {
       .then(() => {
         this.props.message({
           success: 'Removed Expense',
-          id: null,
-          showRemoveDialog: false,
         });
       })
-      .catch(err => this.props.message({ error: err.toString() }));
+      .catch((err) => {
+        this.props.message({ error: err.toString() });
+        this.setState({ showRemoveDialog: false });
+      });
   }
 
   handleEdit(n) {
@@ -245,7 +246,6 @@ export class ExpenseSummaryDA extends React.Component {
         <div />
       );
 
-    console.log(this.state);
     if (this.state.loading) return <LoadingView />;
     return (
       <div>

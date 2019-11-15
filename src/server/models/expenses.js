@@ -23,6 +23,7 @@ const expensesSchema = new Schema({
     id: String,
   },
   updated_at: Date,
+  removed_at: Date,
   owner: String,
 });
 

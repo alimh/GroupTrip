@@ -71,14 +71,19 @@ router.post('/save', (req, res) => {
     travelers,
     updated_at: new Date(),
     removed_at: null,
-    owner: token,
   };
 
-  const newTrip = TripObjs({ ...tripDetails });
+  const newTrip = TripObjs({ ...tripDetails, owner: token });
 
   if (req.body.id) {
-    TripObjs.findByIdAndUpdate(req.body.id, { ...tripDetails }, (err) => {
+    TripObjs.findById(req.body.id, (err, trip) => {
       if (err) throw err;
+      if (trip.owner !== token) return res.status(403).end();
+      trip.update(tripDetails, (errTripUpdate) => {
+        if (errTripUpdate) throw err;
+        return true;
+      });
+      return true;
     });
   } else {
     newTrip.save((err) => {
@@ -96,11 +101,16 @@ router.post('/remove', (req, res) => {
   const token = req.headers.authorization.split(' ')[1] || null;
   if (token === null) return res.status(403).end();
 
-  TripObjs.findByIdAndUpdate(req.body.id, { removed_at: new Date() }, (err) => {
+  TripObjs.findById(req.body.id, (err, trip) => {
     if (err) throw err;
+    if (token === null || trip.owner !== token) return res.status(403).end();
+    trip.update({ removed_at: new Date() }, (errTripUpdate) => {
+      if (errTripUpdate) throw err;
+      return res.status(200).end();
+    });
+    return true;
   });
-
-  return res.status(200).end();
+  return true;
 });
 
 export default router;

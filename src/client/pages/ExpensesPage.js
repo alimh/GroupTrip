@@ -115,7 +115,7 @@ export class ExpensesPage extends React.Component {
               <h3>Expenses</h3>
               <ExpensesTable
                 key={this.state.keyExpenseList}
-                message={message => this.handleMessage(message)}
+                message={message => this.handleMessage(null, message)}
                 tripId={this.state.tripId}
                 onEdit={expObjToEdit => this.handleEdit(expObjToEdit)}
               />

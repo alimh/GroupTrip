@@ -25,6 +25,7 @@ export const ExpensesTableView = (props) => {
     amount: formatMoney(e.amount),
     category: e.category.name,
     paidBy: e.paidBy.name,
+    canEdit: e.canEdit,
     splitBy: e.splitBy
       .reduce((acc, i) => acc.concat(i.name).concat(', '), '')
       .slice(0, -2),
@@ -126,14 +127,19 @@ export const ExpensesTableView = (props) => {
             Filter: () => <div />,
             Cell: row => (
               <div style={{ textAlign: 'center' }}>
-                <Button
-                  style={{ margin: '0 auto' }}
-                  variant="outline-secondary"
-                  name="Edit"
-                  onClick={() => onEdit(row.value)}
-                >
-                  Edit
-                </Button>
+                {row.original.canEdit ? (
+                  <Button
+                    style={{ margin: '0 auto' }}
+                    variant="outline-secondary"
+                    name="Edit"
+                    onClick={() => onEdit(row.value)}
+                    disabled={!row.original.canEdit || false}
+                  >
+                    Edit
+                  </Button>
+                ) : (
+                  <div />
+                )}
               </div>
             ),
           },
@@ -143,12 +149,17 @@ export const ExpensesTableView = (props) => {
             Filter: () => <div />,
             Cell: row => (
               <div style={{ textAlign: 'center' }}>
-                <Button
-                  variant="outline-danger"
-                  onClick={() => onRemove(row.value)}
-                >
-                  Remove
-                </Button>
+                {row.original.canEdit ? (
+                  <Button
+                    variant="outline-danger"
+                    onClick={() => onRemove(row.value)}
+                    disabled={!row.original.canEdit || false}
+                  >
+                    Remove
+                  </Button>
+                ) : (
+                  <div />
+                )}
               </div>
             ),
           },
