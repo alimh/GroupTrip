@@ -6,7 +6,14 @@ export class DisappearingAlert extends React.Component {
   static getDerivedStateFromProps(nextProps, prevState) {
     const newState = !prevState.expired ? nextProps : {};
 
-    return { ...newState, expired: false };
+    return {
+      timeout:
+        newState.variant === 'danger'
+          ? prevState.timeout * 2
+          : prevState.timeout,
+      ...newState,
+      expired: false,
+    };
   }
 
   constructor(props) {
@@ -15,7 +22,7 @@ export class DisappearingAlert extends React.Component {
     this.state = {
       msg: null,
       disappear: true,
-      timeout: 5000,
+      timeout: 1000,
       expired: false,
       variant: 'secondary',
       heading: null,

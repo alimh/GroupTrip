@@ -1,6 +1,6 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button';
-
+import Badge from 'react-bootstrap/Badge';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 
@@ -26,6 +26,7 @@ export const ExpensesTableView = (props) => {
     category: e.category.name,
     paidBy: e.paidBy.name,
     canEdit: e.canEdit,
+    needsAttention: e.needsAttention,
     splitBy: e.splitBy
       .reduce((acc, i) => acc.concat(i.name).concat(', '), '')
       .slice(0, -2),
@@ -157,6 +158,20 @@ export const ExpensesTableView = (props) => {
                   >
                     Remove
                   </Button>
+                ) : (
+                  <div />
+                )}
+              </div>
+            ),
+          },
+          {
+            Header: '',
+            //              accessor: 'id',
+            Filter: () => <div />,
+            Cell: row => (
+              <div style={{ textAlign: 'center' }}>
+                {row.original.canEdit && row.original.needsAttention ? (
+                  <Badge variant="warning">Needs Attention</Badge>
                 ) : (
                   <div />
                 )}

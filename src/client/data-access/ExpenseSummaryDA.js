@@ -120,7 +120,7 @@ export class ExpenseSummaryDA extends React.Component {
       return c !== null ? T[c] : false;
     };
 
-    do {
+    while (P.length > 0 && N.length > 0) {
       P.sort((a, b) => b.owe - a.owe);
       N.sort((a, b) => b.owe - a.owe);
       let I = [];
@@ -163,8 +163,9 @@ export class ExpenseSummaryDA extends React.Component {
           N.shift();
         }
       }
-    } while (P.length > 0 && N.length > 0);
+    }
     this.setState({ paybackLog: L });
+    console.log(this.state.expensesAttention.length > 0 ? 'Expenses need attention' : L);
   }
 
   showRemoveDialog(id) {

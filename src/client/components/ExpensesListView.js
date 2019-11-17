@@ -3,6 +3,7 @@ import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Badge from 'react-bootstrap/Badge';
 
 import ListGroup from 'react-bootstrap/ListGroup';
 
@@ -19,7 +20,11 @@ export const ExpensesListView = (props) => {
     // );
     // const p = t.slice(0, t.length - 2);
 
-    <ListGroup.Item key={exp.id} active={exp.active || false}>
+    <ListGroup.Item
+      key={exp.id}
+      active={exp.active || false}
+      //      variant={exp.canEdit && exp.needsAttention ? 'warning' : ''}
+    >
       <Container>
         <Row>
           <Col>
@@ -30,6 +35,13 @@ export const ExpensesListView = (props) => {
             <h4>
               <div>{formatMoney(exp.amount || 0) || ''}</div>
             </h4>
+          </Col>
+          <Col>
+            {exp.canEdit && exp.needsAttention ? (
+              <Badge variant="warning">Needs Attention</Badge>
+            ) : (
+              <div />
+            )}
           </Col>
         </Row>
         <Row>
@@ -67,7 +79,11 @@ export const ExpensesListView = (props) => {
     </ListGroup.Item>
   ));
 
-  return <ListGroup>{rows}</ListGroup>;
+  const rowsWithAdd = [
+    rows,
+    <ListGroup.Item key="show-all">...</ListGroup.Item>,
+  ];
+  return <ListGroup>{rowsWithAdd}</ListGroup>;
 };
 
 export default ExpensesListView;

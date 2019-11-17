@@ -46,7 +46,7 @@ expensesSchema.virtual('needsAttention').get(function () {
     this.note === '' ||
     this.splitBy.length === 0 ||
     this.category.id === '' ||
-    this.paidBy === ''
+    this.paidBy.id === ''
   );
 });
 

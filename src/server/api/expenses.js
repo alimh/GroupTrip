@@ -21,10 +21,15 @@ const getExpenses = (tripId, token, res, num = 0) => {
         ...e,
         canEdit: e.owner === token || tripOwner === token,
       }));
+      const expNeedAttention = expObjWithOwner.filter(e => e.needsAttention && e.canEdit);
+      const expNormal = expObjWithOwner.filter(e => !(e.needsAttention && e.canEdit));
+      const expNormalTrunc =
+        num > 0 ? expNormal.slice(-1 * num).reverse() : expNormal;
+      const expReturn = [...expNeedAttention, ...expNormalTrunc];
 
       return res
         .status(200)
-        .json(num > 0 ? expObjWithOwner.slice(-1 * num).reverse() : expObjWithOwner)
+        .json(expReturn)
         .end();
     });
     return true;
