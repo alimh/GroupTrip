@@ -3,6 +3,8 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { DisappearingAlert } from '../components/DisappearingAlert';
+import { ExpensesList } from '../data-access/ExpensesListDA';
+import { ExpenseModal } from '../components/ExpenseModal';
 import { ExpenseSummaryDA } from '../data-access/ExpenseSummaryDA';
 
 export class SummaryPage extends React.Component {
@@ -15,12 +17,38 @@ export class SummaryPage extends React.Component {
         success: null,
         error: null,
       },
+      expenseObject: null,
     };
   }
 
-  handleMessage(m) {
+  handleMessage(k, m) {
     // display message
-    this.setState({ messages: m });
+    const messages = {
+      ...this.state.messages,
+      ...m,
+    };
+    this.setState({ messages });
+
+    // if success message came from New Expense, reset both, otherwise just the one it came from
+    if (m.success && k === this.state.keyExpenseList) {
+      this.setState({
+        keyExpenseList: Math.random(),
+        expenseObject: null,
+      });
+    }
+  }
+
+  handleEdit(expObjToEdit) {
+    this.setState({
+      messages: { success: null, error: null },
+      expenseObject: expObjToEdit,
+    });
+  }
+  handleCloseModal() {
+    this.setState({
+      expenseObject: null,
+      // keyExpenseList: Math.random(), // force re-render
+    });
   }
 
   render() {
@@ -39,6 +67,24 @@ export class SummaryPage extends React.Component {
           <Row>
             <Col>
               <h3>Summary</h3>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <ExpensesList
+                key={this.state.keyExpenseList}
+                tripId={this.state.tripId}
+                message={message =>
+                  this.handleMessage(this.state.keyExpenseList, message)
+                }
+                onEdit={expObjToEdit => this.handleEdit(expObjToEdit)}
+                apiEndpoint="incomplete"
+              />
+            </Col>
+          </Row>
+          <br />
+          <Row>
+            <Col>
               <ExpenseSummaryDA
                 message={message => this.handleMessage(message)}
                 tripId={this.state.tripId}
@@ -46,6 +92,18 @@ export class SummaryPage extends React.Component {
             </Col>
           </Row>
         </Container>
+        {this.state.expenseObject !== null ? (
+          <ExpenseModal
+            tripId={this.state.tripId}
+            message={message =>
+              this.handleMessage(this.state.keyNewExpense, message)
+            }
+            expenseObj={this.state.expenseObject}
+            onClose={() => this.handleCloseModal()}
+          />
+        ) : (
+          <div />
+        )}
       </div>
     );
   }

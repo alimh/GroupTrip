@@ -236,9 +236,24 @@ export class FormBuilder extends React.Component {
   handleCancel(e) {
     e.preventDefault();
 
-    this.state.handleCancel();
+    if (this.state.confirmRemove) {
+      this.setState({ confirmRemove: false });
+    } else {
+      this.state.handleCancel();
+    }
   }
 
+  showConfirmRemoveButton(e) {
+    e.preventDefault();
+
+    this.setState({ confirmRemove: true });
+  }
+
+  handleRemove(e) {
+    e.preventDefault();
+
+    if (this.props.onRemove) this.props.onRemove();
+  }
   render() {
     const noFormatItem = (field, key) => <div key={key}>{field}</div>;
     const noFormatWrapper = fields => <div>{fields}</div>;
@@ -257,6 +272,25 @@ export class FormBuilder extends React.Component {
         {text}
       </Button>
     );
+    const removeButton = text => (
+      <Button
+        key="remove-button"
+        variant="outline-danger"
+        onClick={e => this.showConfirmRemoveButton(e)}
+      >
+        {text}
+      </Button>
+    );
+    const confirmRemoveButton = text => (
+      <Button
+        key="confirm-remove-button"
+        variant="danger"
+        onClick={e => this.handleRemove(e)}
+      >
+        {text}
+      </Button>
+    );
+
     const space = <span key="space">&nbsp;</span>;
     const floatRight = e => (
       <div key="float-right" className="float-right">
@@ -266,6 +300,10 @@ export class FormBuilder extends React.Component {
 
     const saveButtonText = this.props.saveButtonText || 'Save';
     const cancelButtonText = this.props.cancelButtonText || 'Cancel';
+    const removeButtonText = this.props.removeButtonText || 'Remove';
+    const confirmRemoveButtonText =
+      this.props.confirmRemoveButtonText || 'Confirm';
+
     const formatItem = this.props.formatItem || noFormatItem;
     const formatWrapper = this.props.formatWrapper || noFormatWrapper;
     //    const formatButtons = this.props.formatButtons || formatItem;
@@ -322,12 +360,26 @@ export class FormBuilder extends React.Component {
     });
 
     const buttons = [
-      saveButton(saveButtonText),
+      !this.state.confirmRemove ? (
+        saveButton(saveButtonText)
+      ) : (
+        <div key="blank-save-button" />
+      ),
       space,
       cancelButton(cancelButtonText),
     ];
 
-    const combine = [elements, floatRight(buttons)].map(e => e);
+    const removeButtonSelector = () => {
+      if (this.props.onRemove && !this.state.confirmRemove) {
+        return removeButton(removeButtonText);
+      }
+      if (this.state.confirmRemove) {
+        return confirmRemoveButton(confirmRemoveButtonText);
+      }
+      return true;
+    };
+
+    const combine = [elements, removeButtonSelector(), floatRight(buttons)].map(e => e);
 
     return (
       <Form validated={false} onSubmit={e => this.handleSave(e)}>

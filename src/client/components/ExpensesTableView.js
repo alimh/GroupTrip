@@ -171,7 +171,7 @@ export const ExpensesTableView = (props) => {
             Cell: row => (
               <div style={{ textAlign: 'center' }}>
                 {row.original.canEdit && row.original.needsAttention ? (
-                  <Badge variant="warning">Needs Attention</Badge>
+                  <Badge variant="warning">Incomplete</Badge>
                 ) : (
                   <div />
                 )}

@@ -5,6 +5,10 @@ import Trip from '../models/trips';
 const router = new express.Router();
 
 const getExpenses = (tripId, token, res, num = 0) => {
+  // num: controls which expenses to get:
+  //    -1: only incopmlete expenses
+  //    0: all expenses
+  //    n: capped at that number
   Expense.find({ tripId, removed_at: null }, (err, expenses) => {
     if (err) return res.status(504).end();
 
@@ -25,7 +29,10 @@ const getExpenses = (tripId, token, res, num = 0) => {
       const expNormal = expObjWithOwner.filter(e => !(e.needsAttention && e.canEdit));
       const expNormalTrunc =
         num > 0 ? expNormal.slice(-1 * num).reverse() : expNormal;
-      const expReturn = [...expNeedAttention, ...expNormalTrunc];
+      const expReturn =
+        num < 0
+          ? [...expNeedAttention]
+          : [...expNeedAttention, ...expNormalTrunc];
 
       return res
         .status(200)
@@ -51,6 +58,15 @@ router.get('/recent', (req, res) => {
   const token = req.headers.authorization.split(' ')[1] || null;
 
   getExpenses(id, token, res, n);
+  return true;
+});
+
+router.get('/incomplete', (req, res) => {
+  const { id } = req.query;
+  const token = req.headers.authorization.split(' ')[1] || null;
+
+  getExpenses(id, token, res, -1);
+
   return true;
 });
 

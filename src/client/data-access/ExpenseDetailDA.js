@@ -71,6 +71,21 @@ export class ExpenseDetail extends React.Component {
       });
   }
 
+  handleRemove() {
+    const payload = { id: this.state.expenseObj.id };
+    Axios.post('/api/expenses/remove', payload, {
+      headers: { Authorization: this.state.authorizationHeader },
+    })
+      .then(() => {
+        this.props.message({
+          success: 'Removed Expense',
+        });
+      })
+      .catch((err) => {
+        this.props.message({ error: err.toString() });
+      });
+  }
+
   handleCancel() {
     this.setState({ keyExpenseForm: Math.random() });
     if (this.props.onCancel) this.props.onCancel();
@@ -86,6 +101,7 @@ export class ExpenseDetail extends React.Component {
         expenseObj={this.state.expenseObj}
         onSave={expenseObject => this.handleSave(expenseObject)}
         onCancel={() => this.handleCancel()}
+        onRemove={() => this.handleRemove()}
         borderVariant={this.state.borderVariant}
       />
     ) : (

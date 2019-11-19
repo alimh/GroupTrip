@@ -1,11 +1,8 @@
 import React from 'react';
 import Axios from 'axios';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
 import Auth from '../utils/Auth';
 import { LoadingView } from '../components/LoadingView';
 import { SummaryTable } from '../components/SummaryTable';
-import { ExpensesListView } from '../components/ExpensesListView';
 
 export class ExpenseSummaryDA extends React.Component {
   constructor(props) {
@@ -168,89 +165,10 @@ export class ExpenseSummaryDA extends React.Component {
     console.log(this.state.expensesAttention.length > 0 ? 'Expenses need attention' : L);
   }
 
-  showRemoveDialog(id) {
-    this.setState({
-      idRemove: id,
-      showRemoveDialog: true,
-    });
-  }
-
-  hideRemoveDialog() {
-    this.setState({
-      idRemove: null,
-      showRemoveDialog: false,
-    });
-  }
-
-  handleRemove() {
-    const payload = { id: this.state.idRemove };
-    const authorizationHeader = 'bearer '.concat(Auth.getToken());
-    Axios.post('/api/expenses/remove', payload, {
-      headers: { Authorization: authorizationHeader },
-    })
-      .then(() => {
-        this.props.message({
-          success: 'Removed Expense',
-        });
-      })
-      .catch((err) => {
-        this.props.message({ error: err.toString() });
-        this.setState({ showRemoveDialog: false });
-      });
-  }
-
-  handleEdit(n) {
-    // remove active from the others and disable buttons
-    const expenses = this.state.expenses.map(e => ({
-      ...e,
-      buttonsDisabled: true,
-      active: false,
-    }));
-    expenses[n].active = true;
-
-    this.setState({
-      //      keyEditExpense: Math.random(),
-      //      expenseObjectToEdit: this.state.expenses[n],
-      expenses,
-    });
-    this.props.onEdit(this.state.expenses[n]);
-  }
-
   render() {
-    const ExpenseListTable =
-      this.state.expensesAttention.length > 0 ? (
-        <div>
-          <ExpensesListView
-            expenses={this.state.expensesAttention}
-            onRemove={id => this.showRemoveDialog(id)}
-            onEdit={n => this.handleEdit(n)}
-          />
-          <br />
-          <Modal show={this.state.showRemoveDialog}>
-            <Modal.Body>
-              Are you sure you want to remove this expense?
-            </Modal.Body>
-            <Modal.Footer>
-              <Button
-                variant="secondary"
-                onClick={() => this.hideRemoveDialog()}
-              >
-                Cancel
-              </Button>
-              <Button variant="danger" onClick={e => this.handleRemove(e)}>
-                Remove
-              </Button>
-            </Modal.Footer>
-          </Modal>
-        </div>
-      ) : (
-        <div />
-      );
-
     if (this.state.loading) return <LoadingView />;
     return (
       <div>
-        {ExpenseListTable}
         <SummaryTable summary={this.state.summary} />
       </div>
     );

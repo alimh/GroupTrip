@@ -10,7 +10,7 @@ import {
 
 export const ExpenseForm = (props) => {
   const { travelers, categories } = props;
-  const { onSave, onCancel } = props;
+  const { onSave, onCancel, onRemove } = props;
 
   const { date, paidBy = { id: '' }, note } = props.expenseObj || {};
   const { amount, category = { id: '' }, splitBy } = props.expenseObj || {};
@@ -35,14 +35,6 @@ export const ExpenseForm = (props) => {
       id: 'date',
       label: 'Date',
       type: 'date-picker',
-      // initialValue:
-      //   dateFormatted ||
-      //   today.toLocaleDateString('en-US', {
-      //     weekday: 'short',
-      //     month: 'long',
-      //     day: '2-digit',
-      //     year: 'numeric',
-      //   }),
       initialValue: date ? new Date(date) : today,
       errorChecks: value => checkValidDateError(value),
     },
@@ -107,6 +99,8 @@ export const ExpenseForm = (props) => {
     },
   ];
 
+  const showRemoveButton = props.expenseObj ? () => onRemove() : false;
+
   return (
     <Card border={borderVariant}>
       <Card.Body>
@@ -115,6 +109,7 @@ export const ExpenseForm = (props) => {
           fields={fields}
           onSave={fieldValues => onSave(fieldValues)}
           onCancel={() => onCancel()}
+          onRemove={showRemoveButton}
           formatItem={(field, key) => <div key={key}>{field}</div>}
           formatWrapper={e => <div>{e}</div>}
         />

@@ -11,20 +11,10 @@ const formatMoney = a =>
   '$ '.concat(a.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'));
 
 export const ExpensesListView = (props) => {
-  const { expenses, onRemove, onEdit } = props;
+  const { expenses, onEdit } = props;
 
   const rows = expenses.map((exp, n) => (
-    // const t = exp.splitBy.reduce(
-    //   (acc, i) => acc.concat(i.name).concat(', '),
-    //   ''
-    // );
-    // const p = t.slice(0, t.length - 2);
-
-    <ListGroup.Item
-      key={exp.id}
-      active={exp.active || false}
-      //      variant={exp.canEdit && exp.needsAttention ? 'warning' : ''}
-    >
+    <ListGroup.Item key={exp.id} active={exp.active || false}>
       <Container>
         <Row>
           <Col>
@@ -38,7 +28,7 @@ export const ExpensesListView = (props) => {
           </Col>
           <Col>
             {exp.canEdit && exp.needsAttention ? (
-              <Badge variant="warning">Needs Attention</Badge>
+              <Badge variant="warning">Incomplete</Badge>
             ) : (
               <div />
             )}
@@ -57,18 +47,6 @@ export const ExpensesListView = (props) => {
                 disabled={!exp.canEdit || false}
               >
                 Edit
-              </Button>
-            ) : (
-              <div />
-            )}
-            &nbsp;
-            {exp.canEdit ? (
-              <Button
-                variant="outline-danger"
-                onClick={() => onRemove(exp.id)}
-                disabled={!exp.canEdit || false}
-              >
-                Remove
               </Button>
             ) : (
               <div />
