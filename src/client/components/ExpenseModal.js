@@ -6,7 +6,7 @@ export const ExpenseModal = props => (
   <div>
     <Modal show onHide={() => props.onClose()}>
       <Modal.Header closeButton>
-        <Modal.Title>Edit Expense</Modal.Title>
+        <Modal.Title>Expense Details</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <ExpenseDetail

@@ -39,18 +39,13 @@ export const ExpensesListView = (props) => {
         </Row>
         <Row className="float-right">
           <Col>
-            {exp.canEdit ? (
-              <Button
-                variant="outline-secondary"
-                name="Edit"
-                onClick={() => onEdit(n)}
-                disabled={!exp.canEdit || false}
-              >
-                Edit
-              </Button>
-            ) : (
-              <div />
-            )}
+            <Button
+              variant="outline-secondary"
+              name="View"
+              onClick={() => onEdit(n)}
+            >
+              View
+            </Button>
           </Col>
         </Row>
       </Container>

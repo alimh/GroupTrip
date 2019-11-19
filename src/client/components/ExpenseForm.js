@@ -112,6 +112,7 @@ export const ExpenseForm = (props) => {
           onRemove={showRemoveButton}
           formatItem={(field, key) => <div key={key}>{field}</div>}
           formatWrapper={e => <div>{e}</div>}
+          viewOnly={!props.expenseObj.canEdit}
         />
       </Card.Body>
     </Card>

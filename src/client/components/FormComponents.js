@@ -26,7 +26,7 @@ export const InputBox = props => (
         onChange={e => props.onUpdate(e.target.value)}
         onBlur={e => props.onUpdate(e.target.value)}
         placeholder={props.placeholder}
-        disabled={props.disabled || false}
+        readOnly={!!props.disabled}
         isInvalid={!!props.errMsg}
       />
       {props.append ? (
@@ -69,39 +69,48 @@ export const DatePickerBox = props => (
   </Form.Group>
 );
 
-export const SelectBox = props => (
-  <Form.Group>
-    <Form.Label>{props.label}</Form.Label>
-    <Form.Control
-      as="select"
-      value={props.value.key}
-      isInvalid={!!props.errMsg}
-      onChange={(e) => {
-        props.onUpdate({
-          value:
-            e.target.value !== ''
-              ? e.target.namedItem(e.target.value).innerText
-              : '',
-          key: e.target.value,
-        });
-      }}
-      inputprops={{
-        name: props.id,
-        id: props.id,
-      }}
-    >
-      <option key="0" value="" name="">
-        {props.placeholder}
-      </option>
-      {props.options.map(option => (
-        <option key={option.key} value={option.key} name={option.key}>
-          {option.value}
+export const SelectBox = props =>
+  (!props.disabled ? (
+    <Form.Group>
+      <Form.Label>{props.label}</Form.Label>
+      <Form.Control
+        as="select"
+        value={props.value.key}
+        isInvalid={!!props.errMsg}
+        onChange={e => {
+          props.onUpdate({
+            value:
+              e.target.value !== ""
+                ? e.target.namedItem(e.target.value).innerText
+                : "",
+            key: e.target.value,
+          });
+        }}
+        inputprops={{
+          name: props.id,
+          id: props.id,
+        }}
+      >
+        <option key="0" value="" name="">
+          {props.placeholder}
         </option>
-      ))}
-    </Form.Control>
-    <Form.Control.Feedback type="invalid">{props.errMsg}</Form.Control.Feedback>
-  </Form.Group>
-);
+        {props.options.map(option => (
+          <option key={option.key} value={option.key} name={option.key}>
+            {option.value}
+          </option>
+        ))}
+      </Form.Control>
+      <Form.Control.Feedback type="invalid">
+        {props.errMsg}
+      </Form.Control.Feedback>
+    </Form.Group>
+  ) : (
+    InputBox({
+      value: props.options.find(o => o.key === props.value.key).value,
+      disabled: true,
+      label: props.label,
+    })
+  ));
 
 export const MultiSelect = props => (
   <div>
@@ -124,6 +133,7 @@ export const MultiSelect = props => (
       ))}
     </div>
     <div color="danger">{props.errMsg}</div>
+    <br />
   </div>
 );
 
@@ -136,6 +146,7 @@ export const CheckboxElement = props => (
       checked={props.checked}
       type="checkbox"
       label={props.label}
+      disabled={props.disabled}
     />
   </div>
 );
@@ -187,11 +198,13 @@ export class FormBuilder extends React.Component {
     );
 
     const onCancel = props.onCancel || (() => this.resetForm());
+    const viewOnly = props.viewOnly || false;
 
     this.state = {
       ...initialState,
       initial: initialState,
       handleCancel: onCancel,
+      viewOnly,
     };
   }
 
@@ -316,6 +329,7 @@ export class FormBuilder extends React.Component {
             value: this.state.values[field.id],
             onUpdate: value => this.handleUpdate(field.id, value),
             errMsg: this.state.errors[field.id],
+            disabled: field.disabled || this.state.viewOnly,
           }),
           field.id
         );
@@ -327,7 +341,7 @@ export class FormBuilder extends React.Component {
             label: field.label,
             options: this.state.values[field.id],
             onUpdate: options => this.handleUpdate(field.id, options),
-            disabled: field.disabled,
+            disabled: field.disabled || this.state.viewOnly,
             errMsg: this.state.errors[field.id],
           }),
           field.id
@@ -340,7 +354,7 @@ export class FormBuilder extends React.Component {
             label: field.label,
             value: { key: this.state.values[field.id].key },
             onUpdate: selected => this.handleUpdate(field.id, selected),
-            disabled: field.disabled,
+            disabled: field.disabled || this.state.viewOnly,
             errMsg: this.state.errors[field.id],
             options: field.options || [],
             placeholder: field.placeholder,
@@ -354,6 +368,7 @@ export class FormBuilder extends React.Component {
           value: this.state.values[field.id],
           onUpdate: value => this.handleUpdate(field.id, value),
           errMsg: this.state.errors[field.id],
+          disabled: field.disabled || this.state.viewOnly,
         }),
         field.id
       );
@@ -379,7 +394,9 @@ export class FormBuilder extends React.Component {
       return true;
     };
 
-    const combine = [elements, removeButtonSelector(), floatRight(buttons)].map(e => e);
+    const combine = !this.state.viewOnly
+      ? [elements, removeButtonSelector(), floatRight(buttons)].map(e => e)
+      : elements;
 
     return (
       <Form validated={false} onSubmit={e => this.handleSave(e)}>
