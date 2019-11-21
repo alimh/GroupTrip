@@ -11,6 +11,8 @@ import {
 export const ExpenseForm = (props) => {
   const { travelers, categories } = props;
   const { onSave, onCancel, onRemove } = props;
+  // if the expense is editable based on login or if it is a new expense
+  const canEdit = props.expenseObj.canEdit || props.expenseObj === null;
 
   const { date, paidBy = { id: '' }, note } = props.expenseObj || {};
   const { amount, category = { id: '' }, splitBy } = props.expenseObj || {};
@@ -112,7 +114,7 @@ export const ExpenseForm = (props) => {
           onRemove={showRemoveButton}
           formatItem={(field, key) => <div key={key}>{field}</div>}
           formatWrapper={e => <div>{e}</div>}
-          viewOnly={!props.expenseObj.canEdit}
+          viewOnly={!canEdit}
         />
       </Card.Body>
     </Card>
