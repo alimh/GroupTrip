@@ -12,7 +12,7 @@ export const ExpenseForm = (props) => {
   const { travelers, categories } = props;
   const { onSave, onCancel, onRemove } = props;
   // if the expense is editable based on login or if it is a new expense
-  const canEdit = props.expenseObj.canEdit || props.expenseObj === null;
+  const canEdit = props.expenseObj === null || props.expenseObj.canEdit;
 
   const { date, paidBy = { id: '' }, note } = props.expenseObj || {};
   const { amount, category = { id: '' }, splitBy } = props.expenseObj || {};

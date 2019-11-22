@@ -63,7 +63,15 @@ export class TripIndexPage extends React.Component {
     });
   }
 
+  handleAddExpense() {
+    this.setState({
+      messages: { success: null, error: null },
+      keyNewExpense: Math.random(),
+    });
+  }
+
   render() {
+    console.log(this.state);
     return (
       <div className="home">
         <Container>
@@ -79,6 +87,7 @@ export class TripIndexPage extends React.Component {
           <DisappearingAlert
             msg={this.state.messages.success}
             variant="success"
+            timeout={5000}
             onDisappear={() => {
               this.setState({
                 messages: { ...this.state.messages, success: null },
@@ -91,9 +100,7 @@ export class TripIndexPage extends React.Component {
                 <ListGroup.Item
                   action
                   variant="primary"
-                  onClick={() =>
-                    this.setState({ keyNewExpense: Math.random() })
-                  }
+                  onClick={() => this.handleAddExpense()}
                   disabled={!(this.state.messages.error === null)}
                 >
                   Add an expense

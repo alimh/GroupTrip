@@ -18,11 +18,11 @@ export class DisappearingAlert extends React.Component {
 
   constructor(props) {
     super(props);
-
+    console.log('CREATING ALERT');
     this.state = {
       msg: null,
       disappear: true,
-      timeout: 1000,
+      timeout: props.timeout || 1000,
       expired: false,
       variant: 'secondary',
       heading: null,
