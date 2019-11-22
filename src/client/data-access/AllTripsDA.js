@@ -42,7 +42,8 @@ export class AllTripsDA extends React.Component {
       })
       .catch((err) => {
         this.setState({ loading: false });
-        this.props.message({ error: err.toString() });
+        if (this.props.message) this.props.message({ error: err.toString() });
+        else throw err;
       });
   }
 

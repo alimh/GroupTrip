@@ -1,10 +1,10 @@
-import React from 'react';
-import Axios from 'axios';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
-import Auth from '../utils/Auth';
-import { LoadingView } from '../components/LoadingView';
-import { ExpensesTableView } from '../components/ExpensesTableView';
+import React from "react";
+import Axios from "axios";
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
+import Auth from "../utils/Auth";
+import { LoadingView } from "../components/LoadingView";
+import { ExpensesTableView } from "../components/ExpensesTableView";
 
 // import { ExpenseDetail } from '../data-access/ExpenseDetailDA';
 
@@ -30,20 +30,21 @@ export class ExpensesTable extends React.Component {
 
   getExpenses() {
     if (this.state.tripId) {
-      const authorizationHeader = 'bearer '.concat(Auth.getToken());
-      Axios.get('/api/expenses/all', {
+      const authorizationHeader = "bearer ".concat(Auth.getToken());
+      Axios.get("/api/expenses/all", {
         headers: {
           Authorization: authorizationHeader,
         },
         params: { id: this.state.tripId },
       })
-        .then((response) => {
+        .then(response => {
           const { data } = response;
           this.setState({ loading: false, expenses: data });
         })
-        .catch((err) => {
+        .catch(err => {
           this.setState({ loading: false });
-          this.props.message({ error: err.toString() });
+          if (this.props.message) this.props.message({ error: err.toString() });
+          else throw err;
         });
     }
   }
@@ -64,17 +65,18 @@ export class ExpensesTable extends React.Component {
 
   handleRemove() {
     const payload = { id: this.state.idRemove };
-    const authorizationHeader = 'bearer '.concat(Auth.getToken());
-    Axios.post('/api/expenses/remove', payload, {
+    const authorizationHeader = "bearer ".concat(Auth.getToken());
+    Axios.post("/api/expenses/remove", payload, {
       headers: { Authorization: authorizationHeader },
     })
       .then(() => {
         this.props.message({
-          success: 'Removed Expense',
+          success: "Removed Expense",
         });
       })
-      .catch((err) => {
-        this.props.message({ error: err.toString() });
+      .catch(err => {
+        if (this.props.message) this.props.message({ error: err.toString() });
+        else throw err;
         this.setState({ showRemoveDialog: false });
       });
   }

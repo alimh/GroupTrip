@@ -1,8 +1,8 @@
-import React from 'react';
-import Axios from 'axios';
-import Auth from '../utils/Auth';
-import { ExpenseForm } from '../components/ExpenseForm';
-import { LoadingView } from '../components/LoadingView';
+import React from "react";
+import Axios from "axios";
+import Auth from "../utils/Auth";
+import { ExpenseForm } from "../components/ExpenseForm";
+import { LoadingView } from "../components/LoadingView";
 
 export class ExpenseDetail extends React.Component {
   static getDerivedStateFromProps(nextProps) {
@@ -20,7 +20,7 @@ export class ExpenseDetail extends React.Component {
     this.state = {
       loading: true,
       authorizationHeader: Auth.getToken()
-        ? 'bearer '.concat(Auth.getToken())
+        ? "bearer ".concat(Auth.getToken())
         : null,
       tripObj,
       tripId,
@@ -31,22 +31,23 @@ export class ExpenseDetail extends React.Component {
 
   componentDidMount() {
     if (this.state.tripId) {
-      Axios.get('/api/trips/get', {
+      Axios.get("/api/trips/get", {
         headers: {
           Authorization: this.state.authorizationHeader,
         },
         params: { id: this.state.tripId },
       })
-        .then((response) => {
+        .then(response => {
           const { data } = response;
           this.setState({ loading: false, tripObj: data });
         })
-        .catch((err) => {
+        .catch(err => {
           this.setState({ loading: false });
-          this.props.message({ error: err.toString() });
+          if (this.props.message) this.props.message({ error: err.toString() });
+          else throw err;
         });
     } else {
-      this.props.message({ error: 'Trip ID not valid' });
+      this.props.message({ error: "Trip ID not valid" });
     }
   }
 
@@ -59,30 +60,32 @@ export class ExpenseDetail extends React.Component {
     };
 
     this.setState({ loading: true });
-    Axios.post('/api/expenses/save', payload, {
+    Axios.post("/api/expenses/save", payload, {
       headers: { Authorization: this.state.authorizationHeader },
     })
       .then(() => {
-        this.props.message({ success: 'Saved' });
+        this.props.message({ success: "Saved" });
       })
-      .catch((err) => {
-        this.props.message({ error: err.toString() });
+      .catch(err => {
+        if (this.props.message) this.props.message({ error: err.toString() });
+        else throw err;
         this.handleCancel();
       });
   }
 
   handleRemove() {
     const payload = { id: this.state.expenseObj.id };
-    Axios.post('/api/expenses/remove', payload, {
+    Axios.post("/api/expenses/remove", payload, {
       headers: { Authorization: this.state.authorizationHeader },
     })
       .then(() => {
         this.props.message({
-          success: 'Removed Expense',
+          success: "Removed Expense",
         });
       })
-      .catch((err) => {
-        this.props.message({ error: err.toString() });
+      .catch(err => {
+        if (this.props.message) this.props.message({ error: err.toString() });
+        else throw err;
       });
   }
 
