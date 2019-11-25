@@ -1,7 +1,6 @@
 import React from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
 import Card from 'react-bootstrap/Card';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -27,7 +26,6 @@ export class TripDetailsView extends React.Component {
         name: f => checkNotBlankError(f),
       },
       unsavedName: false,
-      modalRemove: false,
     };
   }
 
@@ -92,16 +90,69 @@ export class TripDetailsView extends React.Component {
     e.preventDefault();
 
     this.props.onRemove();
-    this.setState({ unsavedName: false, modalRemove: false });
+    this.setState({ unsavedName: false });
   }
-  handleModalShow() {
-    this.setState({ modalRemove: true });
+  showConfirmRemoveButton(e) {
+    e.preventDefault();
+
+    this.setState({ confirmRemove: true });
   }
-  handleModalHide() {
-    this.setState({ modalRemove: false });
+  handleCancel(e) {
+    e.preventDefault();
+
+    if (this.state.confirmRemove) {
+      this.setState({ confirmRemove: false });
+    } else {
+      this.props.onCancel();
+    }
   }
 
   render() {
+    const removeButton = () => (
+      <Button
+        key="remove-button"
+        variant="outline-danger"
+        disabled={this.state.tripObj.tripId === null}
+        onClick={e => this.showConfirmRemoveButton(e)}
+      >
+        Remove
+      </Button>
+    );
+    const confirmRemoveButton = () => (
+      <Button
+        key="confirm-remove-button"
+        variant="danger"
+        onClick={e => this.handleRemove(e)}
+      >
+        Confirm
+      </Button>
+    );
+
+    const removeButtonSelector = () => {
+      if (!this.state.confirmRemove) {
+        return removeButton();
+      }
+      if (this.state.confirmRemove) {
+        return confirmRemoveButton();
+      }
+      return true;
+    };
+
+    const saveButtonSelector = () =>
+      (!this.state.confirmRemove ? (
+        <Button
+          className="float-right"
+          key="save-button"
+          type="submit"
+          variant="primary"
+          disabled={!this.state.unsaved}
+        >
+          Save
+        </Button>
+      ) : (
+        <div key="blank-save-button" />
+      ));
+
     return (
       <div>
         <Card border="light">
@@ -143,59 +194,24 @@ export class TripDetailsView extends React.Component {
                 />
               </Form.Group>
               <Row>
-                <Col xs={4}>
-                  <Button
-                    key="remove-button"
-                    variant="outline-danger"
-                    disabled={this.state.tripObj.tripId === null}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      this.handleModalShow();
-                    }}
-                  >
-                    Remove
-                  </Button>
-                </Col>
+                <Col xs={4}>{removeButtonSelector()} </Col>
                 <Col>
                   <Button
                     className="float-right"
                     key="cancel-button"
                     type="cancel"
                     variant="outline-secondary"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      this.props.onCancel();
-                    }}
+                    onClick={e => this.handleCancel(e)}
                   >
                     Cancel
                   </Button>
                   <span className="float-right">&nbsp;</span>
-                  <Button
-                    className="float-right"
-                    key="save-button"
-                    type="submit"
-                    variant="primary"
-                    disabled={!this.state.unsaved}
-                  >
-                    Save
-                  </Button>
+                  {saveButtonSelector()}
                 </Col>
               </Row>
             </Form>
           </Card.Body>
         </Card>
-
-        <Modal show={this.state.modalRemove}>
-          <Modal.Body>Are you sure you want to remove this trip?</Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={() => this.handleModalHide()}>
-              Cancel
-            </Button>
-            <Button variant="danger" onClick={e => this.handleRemove(e)}>
-              Remove
-            </Button>
-          </Modal.Footer>
-        </Modal>
       </div>
     );
   }

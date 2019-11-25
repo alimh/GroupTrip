@@ -1,6 +1,8 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import { TripDetailsDA } from '../data-access/TripDetailsDA';
 import { DisappearingAlert } from '../components/DisappearingAlert';
 
@@ -10,33 +12,13 @@ export class TripSettingsPage extends React.Component {
 
     this.state = {
       tripId: props.tripId || null,
-      messages: {
-        success: null,
-        error: null,
-      },
+      messageObj: null,
       redirect: null,
     };
   }
-  handleMessage(k, m) {
-    // display message
-    this.setState({ messages: m }, () =>
-      setTimeout(
-        () => this.setState({ messages: { success: null, error: null } }),
-        3000
-      ));
 
-    // if success message came from New Expense, reset both, otherwise just the one it came from
-    if (m.success && k === this.state.keyNewExpense) {
-      this.setState({
-        keyNewExpense: Math.random(),
-        keyExpenseList: Math.random(),
-      });
-    }
-    if (m.success && k === this.state.keyExpenseList) {
-      this.setState({
-        keyExpenseList: Math.random(),
-      });
-    }
+  handleMessage(m) {
+    this.setState({ messageObj: m });
   }
 
   handleRedirect(path) {
@@ -47,21 +29,17 @@ export class TripSettingsPage extends React.Component {
     return (
       <div>
         <Container>
-          <DisappearingAlert
-            msg={this.state.messages.error}
-            variant="danger"
-            disappear={false}
-          />
-
+          <Row>
+            <Col>
+              <DisappearingAlert messageObj={this.state.messageObj} />
+            </Col>
+          </Row>
           {this.state.redirect ? (
             <Redirect push to={this.state.redirect} />
           ) : (
             <TripDetailsDA
-              key={this.state.keyNewTrip}
               tripId={this.state.tripId}
-              message={message =>
-                this.handleMessage(this.state.keyNewTrip, message)
-              }
+              message={m => this.handleMessage(m)}
               redirect={path => this.handleRedirect(path)}
             />
           )}

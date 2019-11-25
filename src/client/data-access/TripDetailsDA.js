@@ -34,8 +34,9 @@ export class TripDetailsDA extends React.Component {
         })
         .catch((err) => {
           this.setState({ loading: false });
-          if (this.props.message) this.props.message({ error: err.toString() });
-          else throw err;
+          if (this.props.message) {
+            this.props.message({ text: err.toString(), variant: 'error' });
+          } else throw err;
         });
     }
   }
@@ -80,8 +81,9 @@ export class TripDetailsDA extends React.Component {
       })
       .catch((err) => {
         this.setState({ loading: false });
-        if (this.props.message) this.props.message({ error: err.toString() });
-        else throw err;
+        if (this.props.message) {
+          this.props.message({ text: err.toString(), variant: 'error' });
+        } else throw err;
       });
   }
 
