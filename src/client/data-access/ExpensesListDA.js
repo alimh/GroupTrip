@@ -25,12 +25,15 @@ export class ExpensesList extends React.Component {
     const { expenses } = props;
     const tripId = props.tripId || null;
 
+    const blankFunc = () => true;
+
     this.state = {
       loading: expenses === undefined,
       expenses: expenses || null,
       tripId,
       apiEndpoint: props.apiEndpoint || 'recent',
       active: false,
+      sendExpenses: props.getExpenses || blankFunc,
     };
   }
 
@@ -50,6 +53,7 @@ export class ExpensesList extends React.Component {
         .then((response) => {
           const { data } = response;
           this.setState({ loading: false, expenses: data });
+          this.state.sendExpenses(data);
         })
         .catch((err) => {
           this.setState({ loading: false });

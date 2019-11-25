@@ -3,6 +3,7 @@ import Axios from 'axios';
 import Auth from '../utils/Auth';
 import { LoadingView } from '../components/LoadingView';
 import { SummaryTable } from '../components/SummaryTable';
+import { PaybackList } from '../components/PaybackList';
 
 export class ExpenseSummaryDA extends React.Component {
   constructor(props) {
@@ -162,8 +163,9 @@ export class ExpenseSummaryDA extends React.Component {
         }
       }
     }
-    this.setState({ paybackLog: L });
-    console.log(this.state.expensesAttention.length > 0 ? 'Expenses need attention' : L);
+    this.setState({
+      paybackLog: L.map((i, n) => ({ ...i, id: n })),
+    });
   }
 
   render() {
@@ -171,6 +173,8 @@ export class ExpenseSummaryDA extends React.Component {
     return (
       <div>
         <SummaryTable summary={this.state.summary} />
+        <br />
+        <PaybackList paybackList={this.state.paybackLog} />
       </div>
     );
   }

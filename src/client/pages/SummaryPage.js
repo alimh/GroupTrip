@@ -13,78 +13,67 @@ export class SummaryPage extends React.Component {
 
     this.state = {
       tripId: props.tripId || null,
-      messages: {
-        success: null,
-        error: null,
-      },
-      expenseObject: null,
+      activeExpenseObject: null,
+      messageObj: null,
+      lengthIncomplete: 0,
     };
   }
-
-  handleMessage(k, m) {
-    // display message
-    const messages = {
-      ...this.state.messages,
-      ...m,
-    };
-    this.setState({ messages });
-
-    // if success message came from New Expense, reset both, otherwise just the one it came from
-    if (m.success && k === this.state.keyExpenseList) {
-      this.setState({
-        keyExpenseList: Math.random(),
-        expenseObject: null,
-      });
-    }
-  }
-
   handleEdit(expObjToEdit) {
     this.setState({
-      messages: { success: null, error: null },
-      expenseObject: expObjToEdit,
-    });
-  }
-  handleCloseModal() {
-    this.setState({
-      expenseObject: null,
-      // keyExpenseList: Math.random(), // force re-render
+      activeExpenseObject: expObjToEdit,
     });
   }
 
+  handleCloseModal() {
+    this.setState({
+      activeExpenseObject: null,
+    });
+  }
+  handleMessage(m) {
+    this.setState({ messageObj: m });
+  }
+  handleGetExpenses(exp) {
+    console.log('here');
+    this.setState({ lengthIncomplete: exp.length });
+  }
   render() {
     return (
       <div className="home">
         <Container>
-          <DisappearingAlert
-            msg={this.state.messages.error}
-            variant="danger"
-            disapper={false}
-          />
-          <DisappearingAlert
-            msg={this.state.messages.success}
-            variant="success"
-          />
+          <Row>
+            <Col>
+              <DisappearingAlert messageObj={this.state.messageObj} />
+            </Col>
+          </Row>
+
           <Row>
             <Col>
               <h3>Summary</h3>
+              <br />
             </Col>
           </Row>
           <Row>
             <Col>
+              {this.state.lengthIncomplete > 0 ? (
+                <h4>Expenses that are incomplete</h4>
+              ) : (
+                <div />
+              )}
               <ExpensesList
                 key={this.state.keyExpenseList}
                 tripId={this.state.tripId}
-                message={message =>
-                  this.handleMessage(this.state.keyExpenseList, message)
-                }
                 onEdit={expObjToEdit => this.handleEdit(expObjToEdit)}
+                active={this.state.activeExpenseObject}
+                message={m => this.handleMessage(m)}
                 apiEndpoint="incomplete"
+                getExpenses={exp => this.handleGetExpenses(exp)}
               />
             </Col>
           </Row>
           <br />
           <Row>
             <Col>
+              <h4>Summary Table</h4>
               <ExpenseSummaryDA
                 message={message => this.handleMessage(message)}
                 tripId={this.state.tripId}
@@ -92,18 +81,18 @@ export class SummaryPage extends React.Component {
             </Col>
           </Row>
         </Container>
-        {this.state.expenseObject !== null ? (
-          <ExpenseModal
-            tripId={this.state.tripId}
-            message={message =>
-              this.handleMessage(this.state.keyNewExpense, message)
-            }
-            expenseObj={this.state.expenseObject}
-            onClose={() => this.handleCloseModal()}
-          />
-        ) : (
-          <div />
-        )}
+        <ExpenseModal
+          tripId={this.state.tripId}
+          expenseObj={this.state.activeExpenseObject}
+          onClose={() => this.handleCloseModal()}
+          onSuccess={() =>
+            this.setState({
+              keyExpenseList: Math.random(),
+              activeExpenseObject: null,
+            })
+          }
+          showModal={this.state.activeExpenseObject !== null}
+        />
       </div>
     );
   }
