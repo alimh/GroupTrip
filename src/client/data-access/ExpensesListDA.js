@@ -53,8 +53,9 @@ export class ExpensesList extends React.Component {
         })
         .catch((err) => {
           this.setState({ loading: false });
-          if (this.props.message) this.props.message({ error: err.toString() });
-          else throw err;
+          if (this.props.message) {
+            this.props.message({ text: err.toString(), variant: 'error' });
+          } else throw err;
         });
     }
   }

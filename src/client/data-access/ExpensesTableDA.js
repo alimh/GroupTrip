@@ -1,7 +1,5 @@
 import React from 'react';
 import Axios from 'axios';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
 import Auth from '../utils/Auth';
 import { LoadingView } from '../components/LoadingView';
 import { ExpensesTableView } from '../components/ExpensesTableView';
@@ -12,15 +10,15 @@ export class ExpensesTable extends React.Component {
   constructor(props) {
     super(props);
 
+    const { expenses } = props;
     const tripId = props.tripId || null;
 
     this.state = {
-      // key: Math.random(),
-      // keyEditExpense: null,
-      loading: true,
-      expenses: null,
-      // expenseObjectToEdit: null,
+      loading: expenses === undefined,
+      expenses: expenses || null,
       tripId,
+      apiEndpoint: 'all',
+      active: false,
     };
   }
 
@@ -31,7 +29,7 @@ export class ExpensesTable extends React.Component {
   getExpenses() {
     if (this.state.tripId) {
       const authorizationHeader = 'bearer '.concat(Auth.getToken());
-      Axios.get('/api/expenses/all', {
+      Axios.get('/api/expenses/'.concat(this.state.apiEndpoint), {
         headers: {
           Authorization: authorizationHeader,
         },
@@ -43,42 +41,11 @@ export class ExpensesTable extends React.Component {
         })
         .catch((err) => {
           this.setState({ loading: false });
-          if (this.props.message) this.props.message({ error: err.toString() });
-          else throw err;
+          if (this.props.message) {
+            this.props.message({ text: err.toString(), variant: 'error' });
+          } else throw err;
         });
     }
-  }
-
-  showRemoveDialog(id) {
-    this.setState({
-      idRemove: id,
-      showRemoveDialog: true,
-    });
-  }
-
-  hideRemoveDialog() {
-    this.setState({
-      idRemove: null,
-      showRemoveDialog: false,
-    });
-  }
-
-  handleRemove() {
-    const payload = { id: this.state.idRemove };
-    const authorizationHeader = 'bearer '.concat(Auth.getToken());
-    Axios.post('/api/expenses/remove', payload, {
-      headers: { Authorization: authorizationHeader },
-    })
-      .then(() => {
-        this.props.message({
-          success: 'Removed Expense',
-        });
-      })
-      .catch((err) => {
-        if (this.props.message) this.props.message({ error: err.toString() });
-        else throw err;
-        this.setState({ showRemoveDialog: false });
-      });
   }
 
   handleEdit(n) {
@@ -91,9 +58,8 @@ export class ExpensesTable extends React.Component {
     expenses[n].active = true;
 
     this.setState({
-      //      keyEditExpense: Math.random(),
-      //      expenseObjectToEdit: this.state.expenses[n],
       expenses,
+      active: true,
     });
     this.props.onEdit(this.state.expenses[n]);
   }
@@ -107,23 +73,6 @@ export class ExpensesTable extends React.Component {
             onRemove={id => this.showRemoveDialog(id)}
             onEdit={n => this.handleEdit(n)}
           />
-
-          <Modal show={this.state.showRemoveDialog}>
-            <Modal.Body>
-              Are you sure you want to remove this expense?
-            </Modal.Body>
-            <Modal.Footer>
-              <Button
-                variant="secondary"
-                onClick={() => this.hideRemoveDialog()}
-              >
-                Cancel
-              </Button>
-              <Button variant="danger" onClick={e => this.handleRemove(e)}>
-                Remove
-              </Button>
-            </Modal.Footer>
-          </Modal>
         </div>
       ) : (
         <div />

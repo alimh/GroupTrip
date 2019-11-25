@@ -106,7 +106,10 @@ export const SelectBox = props =>
     </Form.Group>
   ) : (
     InputBox({
-      value: props.options.find(o => o.key === props.value.key).value,
+      value: !!props.value.key
+        ? props.options.find(o => o.key === props.value.key).value
+        : "",
+      onUpdate: () => true,
       disabled: true,
       label: props.label,
     })

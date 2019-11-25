@@ -16,7 +16,7 @@ const formatDate = d =>
   });
 
 export const ExpensesTableView = (props) => {
-  const { expenses, onRemove, onEdit } = props;
+  const { expenses, onEdit } = props;
   const expensesFiltered = expenses.map((e, n) => ({
     id: e.id,
     n,
@@ -128,39 +128,14 @@ export const ExpensesTableView = (props) => {
             Filter: () => <div />,
             Cell: row => (
               <div style={{ textAlign: 'center' }}>
-                {row.original.canEdit ? (
-                  <Button
-                    style={{ margin: '0 auto' }}
-                    variant="outline-secondary"
-                    name="Edit"
-                    onClick={() => onEdit(row.value)}
-                    disabled={!row.original.canEdit || false}
-                  >
-                    Edit
-                  </Button>
-                ) : (
-                  <div />
-                )}
-              </div>
-            ),
-          },
-          {
-            Header: '',
-            accessor: 'id',
-            Filter: () => <div />,
-            Cell: row => (
-              <div style={{ textAlign: 'center' }}>
-                {row.original.canEdit ? (
-                  <Button
-                    variant="outline-danger"
-                    onClick={() => onRemove(row.value)}
-                    disabled={!row.original.canEdit || false}
-                  >
-                    Remove
-                  </Button>
-                ) : (
-                  <div />
-                )}
+                <Button
+                  style={{ margin: '0 auto' }}
+                  variant="outline-secondary"
+                  name="Edit"
+                  onClick={() => onEdit(row.value)}
+                >
+                  View
+                </Button>
               </div>
             ),
           },

@@ -4,6 +4,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import ListGroup from 'react-bootstrap/ListGroup';
+import { DisappearingAlert } from '../components/DisappearingAlert';
 import { ExpensesList } from '../data-access/ExpensesListDA';
 import { ExpenseModal } from '../components/ExpenseModal';
 
@@ -16,6 +17,7 @@ export class TripIndexPage extends React.Component {
       keyExpenseList: Math.random(),
       tripId: props.tripId || null,
       activeExpenseObject: null,
+      messageObj: null,
     };
   }
 
@@ -39,10 +41,19 @@ export class TripIndexPage extends React.Component {
     });
   }
 
+  handleMessage(m) {
+    this.setState({ messageObj: m });
+  }
+
   render() {
     return (
       <div className="home">
         <Container>
+          <Row>
+            <Col>
+              <DisappearingAlert messageObj={this.state.messageObj} />
+            </Col>
+          </Row>
           <Row>
             <Col>
               <ListGroup>
@@ -70,6 +81,7 @@ export class TripIndexPage extends React.Component {
                 tripId={this.state.tripId}
                 onEdit={expObjToEdit => this.handleEdit(expObjToEdit)}
                 active={this.state.activeExpenseObject}
+                message={m => this.handleMessage(m)}
               />
             </Col>
           </Row>
@@ -90,9 +102,6 @@ export class TripIndexPage extends React.Component {
             this.state.keyNewExpense !== null
           }
         />
-        {/* ) : (
-        <div />
-        )} */}
       </div>
     );
   }
