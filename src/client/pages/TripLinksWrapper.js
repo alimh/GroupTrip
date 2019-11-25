@@ -20,21 +20,18 @@ export class TripLinksWrapper extends React.Component {
 
     this.state = {
       tripId: props.pathObj.match.params.n || null,
-      messages: {
-        success: null,
-        error: null,
-      },
+      messageObj: null,
     };
   }
 
   handleMessage(msg) {
-    const messages = {
-      ...this.state.messages,
-      ...msg,
-    };
     this.setState({
-      messages,
+      messageObj: msg,
     });
+  }
+
+  handleSuccess() {
+    this.setState({ loadChild: true });
   }
 
   render() {
@@ -63,24 +60,18 @@ export class TripLinksWrapper extends React.Component {
         <Route component={NotFoundPage} />
       </Switch>
     );
-    return this.state.messages.error ? (
+    return (
       <div>
         <Container>
-          <DisappearingAlert
-            msg={this.state.messages.error}
-            variant="danger"
-            disappear={false}
-          />
+          <DisappearingAlert messageObj={this.state.messageObj} />
         </Container>
-      </div>
-    ) : (
-      <div>
         <TripLinks
           tripId={this.state.tripId}
           message={msg => this.handleMessage(msg)}
+          onSuccess={() => this.handleSuccess()}
         />
         <br />
-        {this.state.messages.success ? child() : <div />}
+        {this.state.loadChild ? child() : <div />}
       </div>
     );
   }

@@ -32,12 +32,13 @@ export class TripLinks extends React.Component {
             tripName: data.name,
             isOwner: data.isOwner,
           });
-          this.props.message({ success: true });
+          this.props.onSuccess();
         })
         .catch((err) => {
           this.setState({ loading: false });
-          if (this.props.message) this.props.message({ error: err.toString() });
-          else throw err;
+          if (this.props.message) {
+            this.props.message({ text: err.toString(), variant: 'error' });
+          } else throw err;
         });
     }
   }

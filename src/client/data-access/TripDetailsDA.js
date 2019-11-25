@@ -50,15 +50,19 @@ export class TripDetailsDA extends React.Component {
     }
     */
     const payload = tripObject;
-    this.setState({ loading: true });
+    this.setState({ loading: true, tripObj: tripObject });
     Axios.post('/api/trips/save', payload, {
       headers: { Authorization: this.state.authorizationHeader },
     })
       .then((res) => {
-        this.props.redirect('/trips/'.concat(res.data));
-        // this.props.message({ success: 'Saved' });
-        //        this.setState({ loading: false, tripObj: tripObject });
-        // TODO: redirct to new link
+        this.props.redirectPath('/trips/'.concat(res.data));
+        if (this.props.message) {
+          this.props.message({
+            text: this.state.tripId ? 'Saved' : 'Created New Trip',
+            variant: 'success',
+          });
+        }
+        this.setState({ loading: false });
       })
       .catch((err) => {
         this.setState({ loading: false });
@@ -91,7 +95,8 @@ export class TripDetailsDA extends React.Component {
     // Go back to where we came from
     // if there is a tripObj, go back to the trip page
     // if there is no tripObj, go back to the root page
-    this.props.redirect(this.state.tripId ? '/trips/'.concat(this.state.tripId) : '/');
+    this.props.getRedirectPath(this.state.tripId ? '/trips/'.concat(this.state.tripId) : '/');
+    if (this.props.onCancel) this.props.onCancel();
   }
 
   render() {

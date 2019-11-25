@@ -19,28 +19,35 @@ export class TripSettingsPage extends React.Component {
 
   handleMessage(m) {
     this.setState({ messageObj: m });
+    if (m.variant === 'success') setTimeout(() => this.handleRedirect(), 1000);
   }
 
-  handleRedirect(path) {
-    this.setState({ redirect: path });
+  handleRedirect() {
+    this.setState({ redirect: true });
   }
-
+  handleGetRedirectPath(path) {
+    this.setState({ redirectPath: path });
+  }
   render() {
     return (
       <div>
         <Container>
           <Row>
             <Col>
-              <DisappearingAlert messageObj={this.state.messageObj} />
+              <DisappearingAlert
+                messageObj={this.state.messageObj}
+                disappear={false}
+              />
             </Col>
           </Row>
           {this.state.redirect ? (
-            <Redirect push to={this.state.redirect} />
+            <Redirect push to={this.state.redirectPath} />
           ) : (
             <TripDetailsDA
               tripId={this.state.tripId}
               message={m => this.handleMessage(m)}
-              redirect={path => this.handleRedirect(path)}
+              redirectPath={path => this.handleGetRedirectPath(path)}
+              onCancel={() => this.handleRedirect()}
             />
           )}
         </Container>

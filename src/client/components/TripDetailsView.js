@@ -61,6 +61,7 @@ export class TripDetailsView extends React.Component {
   }
 
   handleSave(e) {
+    console.log('saving');
     e.preventDefault();
 
     const { errors } = this.state;
@@ -103,6 +104,7 @@ export class TripDetailsView extends React.Component {
     if (this.state.confirmRemove) {
       this.setState({ confirmRemove: false });
     } else {
+      console.log('cancel');
       this.props.onCancel();
     }
   }
@@ -153,12 +155,29 @@ export class TripDetailsView extends React.Component {
         <div key="blank-save-button" />
       ));
 
+    const cancelButton = () => (
+      <Button
+        className="float-right"
+        key="cancel-button"
+        type="cancel"
+        variant="outline-secondary"
+        onClick={e => this.handleCancel(e)}
+      >
+        Cancel
+      </Button>
+    );
+
     return (
       <div>
         <Card border="light">
           <Card.Body>
             <Card.Title>Trip Settings</Card.Title>
-            <Form onSubmit={e => this.handleSave(e)}>
+            <Form
+              onSubmit={(e) => {
+                console.log('submitting');
+                this.handleSave(e);
+              }}
+            >
               <InputBox
                 id="TripName"
                 label="Give a name for your trip"
@@ -196,15 +215,7 @@ export class TripDetailsView extends React.Component {
               <Row>
                 <Col xs={4}>{removeButtonSelector()} </Col>
                 <Col>
-                  <Button
-                    className="float-right"
-                    key="cancel-button"
-                    type="cancel"
-                    variant="outline-secondary"
-                    onClick={e => this.handleCancel(e)}
-                  >
-                    Cancel
-                  </Button>
+                  {cancelButton()}
                   <span className="float-right">&nbsp;</span>
                   {saveButtonSelector()}
                 </Col>
