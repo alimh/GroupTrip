@@ -174,7 +174,11 @@ export class ExpenseSummaryDA extends React.Component {
       <div>
         <SummaryTable summary={this.state.summary} />
         <br />
-        <PaybackList paybackList={this.state.paybackLog} />
+        {this.state.expensesAttention.length === 0 ? (
+          <PaybackList paybackList={this.state.paybackLog} />
+        ) : (
+          <div />
+        )}
       </div>
     );
   }

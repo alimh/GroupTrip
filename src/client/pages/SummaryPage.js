@@ -12,6 +12,8 @@ export class SummaryPage extends React.Component {
     super(props);
 
     this.state = {
+      keyExpenseList: Math.random(),
+      keySummary: Math.random(),
       tripId: props.tripId || null,
       activeExpenseObject: null,
       messageObj: null,
@@ -33,7 +35,6 @@ export class SummaryPage extends React.Component {
     this.setState({ messageObj: m });
   }
   handleGetExpenses(exp) {
-    console.log('here');
     this.setState({ lengthIncomplete: exp.length });
   }
   render() {
@@ -75,6 +76,7 @@ export class SummaryPage extends React.Component {
             <Col>
               <h4>Summary Table</h4>
               <ExpenseSummaryDA
+                key={this.state.keySummary}
                 message={message => this.handleMessage(message)}
                 tripId={this.state.tripId}
               />
@@ -88,6 +90,7 @@ export class SummaryPage extends React.Component {
           onSuccess={() =>
             this.setState({
               keyExpenseList: Math.random(),
+              keySummary: Math.random(),
               activeExpenseObject: null,
             })
           }
