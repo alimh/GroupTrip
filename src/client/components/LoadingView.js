@@ -3,8 +3,7 @@ import DissappearingAlert from './DisappearingAlert';
 
 export const LoadingView = () => (
   <DissappearingAlert
-    msg="Loading data from the server"
-    variant="warning"
+    messageObj={{ text: 'Loading data from the server', variant: 'warning' }}
     disappear={false}
   />
 );

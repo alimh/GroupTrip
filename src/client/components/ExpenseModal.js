@@ -7,39 +7,40 @@ export class ExpenseModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      messages: {
-        success: null,
-        error: null,
-      },
+      messageObj: null,
     };
   }
-  hanldeMessage(m) {
-    this.setState({ messages: { ...m } });
+
+  handleMessage(m) {
+    const success = m.variant === 'success';
+    this.setState({ messageObj: m });
+    if (success) {
+      setTimeout(() => this.sendSuccess(), 1000);
+    }
+  }
+
+  sendSuccess() {
+    this.setState({ messageObj: null });
+    if (this.props.onSuccess) this.props.onSuccess();
   }
 
   render() {
-    console.log(this.state);
     return (
       <div>
-        <Modal show onHide={() => this.props.onClose()}>
+        <Modal show={this.props.showModal} onHide={() => this.props.onClose()}>
           <Modal.Header closeButton>
             <Modal.Title>Expense Details</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <DisappearingAlert
-              msg={this.state.messages.error}
-              variant="danger"
-              onDisappear={() => this.props.onClose()}
-            />
-            <DisappearingAlert
-              msg={this.state.messages.success}
-              variant="success"
-              onDisappear={() => this.props.onClose()}
+              messageObj={this.state.messageObj}
+              disappear={false}
+              onDisappear={() => this.handleDisappear()}
             />
             <ExpenseDetail
               tripId={this.props.tripId}
-              message={(message) => {
-                this.hanldeMessage(message);
+              message={(messageObj) => {
+                this.handleMessage(messageObj);
               }}
               expenseObj={this.props.expenseObj}
               onCancel={() => this.props.onClose()}

@@ -14,7 +14,7 @@ export const ExpensesListView = (props) => {
   const { expenses, onEdit } = props;
 
   const rows = expenses.map((exp, n) => (
-    <ListGroup.Item key={exp.id} /* active={exp.active || false} */>
+    <ListGroup.Item key={exp.id} active={exp.active || false}>
       <Container>
         <Row>
           <Col>

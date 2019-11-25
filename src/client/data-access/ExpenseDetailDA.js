@@ -5,13 +5,13 @@ import { ExpenseForm } from '../components/ExpenseForm';
 import { LoadingView } from '../components/LoadingView';
 
 export class ExpenseDetail extends React.Component {
-  static getDerivedStateFromProps(nextProps) {
-    return nextProps;
+  static getDerivedStateFromProps(nextProps, prevState) {
+    return prevState.preventScrub ? {} : nextProps;
   }
 
   constructor(props) {
     super(props);
-    console.log('NEW EXPENSE DETSIL');
+
     const tripId = props.tripId || null;
     const expenseObj = props.expenseObj || null;
     const tripObj = props.tripObj || null;
@@ -43,48 +43,72 @@ export class ExpenseDetail extends React.Component {
         })
         .catch((err) => {
           this.setState({ loading: false });
-          if (this.props.message) this.props.message({ error: err.toString() });
-          else throw err;
+          if (this.props.message) {
+            this.props.message({ text: err.toString(), variant: 'error' });
+          } else throw err;
         });
-    } else this.props.message({ error: 'Trip ID not valid' });
+    } else this.props.message({ text: 'Trip ID not valid', variant: 'error' });
   }
 
-  handleSave(expenseObject) {
+  handleSave(expenseObj) {
     const payload = {
-      ...expenseObject,
+      ...expenseObj,
       tripId: this.state.tripId,
       id: this.state.expenseObj ? this.state.expenseObj.id : null,
       owner: Auth.getToken(),
     };
 
-    this.setState({ loading: true });
+    // this.setState({ loading: true });
+    this.props.message({ text: 'Saving...' });
+
+    const newExpenseObj = {
+      ...this.state.expenseObj,
+      ...expenseObj,
+      category: {
+        name: expenseObj.category.value,
+        id: expenseObj.category.key,
+      },
+      paidBy: {
+        name: expenseObj.paidBy.value,
+        id: expenseObj.paidBy.key,
+      },
+    };
+    this.setState({
+      expenseObj: newExpenseObj,
+      preventScrub: true,
+    });
     Axios.post('/api/expenses/save', payload, {
       headers: { Authorization: this.state.authorizationHeader },
     })
       .then(() => {
-        this.props.message({ success: 'Saved' });
-        this.setState({ loading: false });
+        this.props.message({ text: 'Saved', variant: 'success' });
+        // this.setState({ loading: false });
+        // had to comment because component is being destroyed on .message
       })
       .catch((err) => {
-        if (this.props.message) this.props.message({ error: err.toString() });
-        else throw err;
-        this.handleCancel();
+        if (this.props.message) {
+          this.props.message({ text: err.toString(), varaint: 'error' });
+        } else throw err;
       });
   }
 
   handleRemove() {
     const payload = { id: this.state.expenseObj.id };
+    this.props.message({ text: 'Removing...' });
+    this.setState({ tripObj: null });
     Axios.post('/api/expenses/remove', payload, {
       headers: { Authorization: this.state.authorizationHeader },
     })
       .then(() => {
         this.props.message({
-          success: 'Removed Expense',
+          text: 'Removed Expense',
+          variant: 'success',
         });
       })
       .catch((err) => {
-        if (this.props.message) this.props.message({ error: err.toString() });
-        else throw err;
+        if (this.props.message) {
+          this.props.message({ text: err.toString(), varaint: 'error' });
+        } else throw err;
       });
   }
 
@@ -94,7 +118,6 @@ export class ExpenseDetail extends React.Component {
   }
 
   render() {
-    console.log(this.state);
     if (this.state.loading) return <LoadingView />;
     return this.state.tripObj ? (
       <ExpenseForm

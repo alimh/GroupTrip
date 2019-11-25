@@ -5,6 +5,20 @@ import { LoadingView } from '../components/LoadingView';
 import { ExpensesListView } from '../components/ExpensesListView';
 
 export class ExpensesList extends React.Component {
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (!nextProps.active && prevState.active) {
+      // remove active from the others and disable buttons
+      const expenses = prevState.expenses.map(e => ({
+        ...e,
+        buttonsDisabled: true,
+        active: false,
+      }));
+
+      return { ...nextProps, expenses };
+    }
+    return nextProps;
+  }
+
   constructor(props) {
     super(props);
 
@@ -16,6 +30,7 @@ export class ExpensesList extends React.Component {
       expenses: expenses || null,
       tripId,
       apiEndpoint: props.apiEndpoint || 'recent',
+      active: false,
     };
   }
 
@@ -55,6 +70,7 @@ export class ExpensesList extends React.Component {
 
     this.setState({
       expenses,
+      active: true,
     });
     this.props.onEdit(this.state.expenses[n]);
   }
