@@ -1,5 +1,6 @@
 import React from 'react';
 import Card from 'react-bootstrap/Card';
+import Badge from 'react-bootstrap/Badge';
 
 import { FormBuilder } from './FormComponents';
 import {
@@ -13,6 +14,17 @@ export const ExpenseForm = (props) => {
   const { onSave, onCancel, onRemove } = props;
   // if the expense is editable based on login or if it is a new expense
   const canEdit = props.expenseObj === null || props.expenseObj.canEdit;
+
+  const label = () => {
+    if (!props.expenseObj) return false;
+    if (props.expenseObj.removed_at) {
+      return <Badge variant="danger">Removed</Badge>;
+    }
+    if (props.expenseObj.needsAttention && canEdit) {
+      return <Badge variant="warning">Incomplete</Badge>;
+    }
+    return <div key="blank-label" />;
+  };
 
   const { date, paidBy = { id: '' }, note } = props.expenseObj || {};
   const { amount, category = { id: '' }, splitBy } = props.expenseObj || {};
@@ -102,10 +114,10 @@ export const ExpenseForm = (props) => {
   ];
 
   const showRemoveButton = props.expenseObj ? () => onRemove() : false;
-
   return (
     <Card border={borderVariant}>
       <Card.Body>
+        <span className="float-right">{label()}</span>
         <FormBuilder
           key={keyForm}
           fields={fields}

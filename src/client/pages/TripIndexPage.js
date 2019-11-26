@@ -7,6 +7,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import { DisappearingAlert } from '../components/DisappearingAlert';
 import { ExpensesList } from '../data-access/ExpensesListDA';
 import { ExpenseModal } from '../components/ExpenseModal';
+import { Log } from '../data-access/LogDA';
 
 export class TripIndexPage extends React.Component {
   constructor(props) {
@@ -15,6 +16,7 @@ export class TripIndexPage extends React.Component {
     this.state = {
       keyNewExpense: null,
       keyExpenseList: Math.random(),
+      keyLog: Math.random(),
       tripId: props.tripId || null,
       activeExpenseObject: null,
       messageObj: null,
@@ -84,6 +86,14 @@ export class TripIndexPage extends React.Component {
                 message={m => this.handleMessage(m)}
               />
             </Col>
+            <Col>
+              <Log
+                key={this.state.keyLog}
+                tripId={this.state.tripId}
+                message={m => this.handleMessage(m)}
+                onView={exp => this.handleEdit(exp)}
+              />
+            </Col>
           </Row>
         </Container>
         <ExpenseModal
@@ -93,6 +103,7 @@ export class TripIndexPage extends React.Component {
           onSuccess={() =>
             this.setState({
               keyExpenseList: Math.random(),
+              keyLog: Math.random(),
               activeExpenseObject: null,
               keyNewExpense: null,
             })

@@ -11,6 +11,7 @@ import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import ApiExpenses from './api/expenses';
 import ApiTrips from './api/trips';
+import ApiLog from './api/log';
 import auth from './auth';
 
 dotenv.config();
@@ -41,6 +42,7 @@ app.use(Passport.session());
 // app.use('/api', checkAuth);
 app.use('/api/expenses', ApiExpenses);
 app.use('/api/trips', ApiTrips);
+app.use('/api/log', ApiLog);
 app.use('/auth', auth);
 
 // routing and rendering

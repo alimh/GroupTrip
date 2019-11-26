@@ -7,6 +7,7 @@ import { NewTripPage } from './pages/NewTripPage';
 import { TripLinksWrapper } from './pages/TripLinksWrapper';
 import { AccountRedirector } from './components/AccountRedirector';
 import { TestPage } from './pages/TestPage';
+import { NewUserPage } from './pages/NewUserPage';
 
 const renderAllTrips = () => <AllTrips />;
 const renderNewTrip = () => <NewTripPage />;
@@ -15,6 +16,7 @@ const renderTripLinksWrapper = pathObj => (
 );
 const renderAccountRedirector = () => <AccountRedirector />;
 const renderTestPage = () => <TestPage />;
+const renderNewUser = () => <NewUserPage />;
 
 export const App = () => (
   <Router>
@@ -24,6 +26,7 @@ export const App = () => (
         <Route exact path="/login" render={renderAccountRedirector} />
         <Route exact path="/new" render={renderNewTrip} />
         <Route exact path="/account" render={renderAccountRedirector} />
+        <Route exact path="/newuser" render={renderNewUser} />
         <Route exact path="/test" render={renderTestPage} />
         <Route path="/trips/:n" render={renderTripLinksWrapper} />
         <Route component={NotFoundPage} />

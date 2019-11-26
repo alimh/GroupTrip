@@ -1,8 +1,16 @@
 import express from 'express';
 import Expense from '../models/expenses';
 import Trip from '../models/trips';
+import Log from '../models/log';
 
 const router = new express.Router();
+
+const writeToLog = (logObj) => {
+  const logEntry = Log(logObj);
+  logEntry.save((err) => {
+    if (err) throw err;
+  });
+};
 
 const getExpenses = (tripId, token, res, num = 0) => {
   // num: controls which expenses to get:
@@ -61,6 +69,38 @@ router.get('/recent', (req, res) => {
   return true;
 });
 
+router.get('/getone', (req, res) => {
+  const { id } = req.query;
+  const token = req.headers.authorization.split(' ')[1] || null;
+
+  Expense.findById(id, (err, exp) => {
+    if (err) return res.status(403).end();
+
+    const expObj = exp.toObject({ getters: true });
+
+    // find trip owner
+    Trip.findById(expObj.tripId, (errTrip, trip) => {
+      if (errTrip) return res.status(504).end();
+
+      const tripObj = trip.toObject({ getters: true });
+      const tripOwner = tripObj.owner;
+
+      const expObjWithOwner = {
+        ...expObj,
+        canEdit: !expObj.removed_at
+          ? expObj.owner === token || tripOwner === token
+          : false,
+      };
+
+      return res
+        .status(200)
+        .json(expObjWithOwner)
+        .end();
+    });
+    return true;
+  });
+  return true;
+});
 router.get('/incomplete', (req, res) => {
   const { id } = req.query;
   const token = req.headers.authorization.split(' ')[1] || null;
@@ -137,6 +177,16 @@ router.post('/save', (req, res) => {
   } else {
     newExpense.save((err) => {
       if (err) throw err;
+      // write to log
+      writeToLog({
+        tripId: expenseDetails.tripId,
+        expenseId: newExpense.id,
+        userId: token,
+        action: 'added',
+        note: newExpense.note,
+        timestamp: new Date(),
+      });
+
       return res
         .status(200)
         .json(newExpense.id)
@@ -153,6 +203,15 @@ router.post('/remove', (req, res) => {
       // we can update
       expense.update({ removed_at: new Date() }, (errExpUpdate) => {
         if (errExpUpdate) throw err;
+        // write to log
+        writeToLog({
+          tripId: expense.tripId,
+          expenseId: expense.id,
+          userId: token,
+          action: 'removed',
+          note: expense.note,
+          timestamp: new Date(),
+        });
         return res.status(200).end();
       });
     } else {
@@ -163,6 +222,16 @@ router.post('/remove', (req, res) => {
           // we can update
           expense.update({ removed_at: new Date() }, (errExpUpdate) => {
             if (errExpUpdate) throw err;
+            // write to log
+            writeToLog({
+              tripId: expense.tripId,
+              expenseId: expense.id,
+              userId: token,
+              action: 'removed',
+              note: expense.note,
+              timestamp: new Date(),
+            });
+
             return res.status(200).end();
           });
         } else {

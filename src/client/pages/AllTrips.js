@@ -36,7 +36,7 @@ export class AllTrips extends React.Component {
     const rednerNotLoggedIn = () => (
       <Container>
         <h4>
-          <Link to="/login">Create an account</Link> or{' '}
+          <Link to="/newuser">Create an account</Link> or{' '}
           <Link to="/account">Login</Link> to get started!
         </h4>
       </Container>

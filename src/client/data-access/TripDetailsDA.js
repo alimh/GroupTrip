@@ -95,7 +95,7 @@ export class TripDetailsDA extends React.Component {
     // Go back to where we came from
     // if there is a tripObj, go back to the trip page
     // if there is no tripObj, go back to the root page
-    this.props.getRedirectPath(this.state.tripId ? '/trips/'.concat(this.state.tripId) : '/');
+    this.props.redirectPath(this.state.tripId ? '/trips/'.concat(this.state.tripId) : '/');
     if (this.props.onCancel) this.props.onCancel();
   }
 
