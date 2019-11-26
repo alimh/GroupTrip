@@ -5,9 +5,8 @@ import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 
 const formatMoney = a =>
-  (a !== null
-    ? "$ ".concat(a.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,"))
-    : "");
+  '$ '.concat(a.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'));
+
 const formatDate = d =>
   new Date(d).toLocaleDateString('en-US', {
     month: '2-digit',

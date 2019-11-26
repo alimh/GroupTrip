@@ -7,10 +7,11 @@ const formatMoney = a =>
 export const PaybackList = (props) => {
   const { paybackList } = props;
   return (
-    <ListGroup>
+    <ListGroup variant="flush">
       {paybackList.map(i => (
         <ListGroup.Item key={i.id}>
-          <strong>{i.pay}</strong> to pay <strong>{i.receive}</strong>{' '}
+          <strong>{i.pay}</strong> to pay <strong>{i.receive}</strong>
+          {':  '}
           {formatMoney(i.amount)}
         </ListGroup.Item>
       ))}

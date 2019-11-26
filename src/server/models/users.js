@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import jwt from 'jwt';
+import jwt from 'jsonwebtoken';
 
 const { Schema } = mongoose;
 

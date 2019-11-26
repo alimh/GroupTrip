@@ -12,6 +12,19 @@ const writeToLog = (logObj) => {
   });
 };
 
+const formatMoney = a =>
+  '$ '.concat(a.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'));
+
+const formatDate = d =>
+  new Date(d).toLocaleDateString('en-US', {
+    month: '2-digit',
+    day: '2-digit',
+    year: 'numeric',
+  });
+
+const reduceSplitBy = s =>
+  s.reduce((acc, i) => acc.concat(i.name).concat(', '), '').slice(0, -2);
+
 const getExpenses = (tripId, token, res, num = 0) => {
   // num: controls which expenses to get:
   //    -1: only incopmlete expenses
@@ -143,11 +156,68 @@ router.post('/save', (req, res) => {
   if (req.body.id) {
     // if we are updating an expense
     Expense.findById(req.body.id, (err, expense) => {
+      const changes = [];
+      if (expenseDetails.note !== expense.note) {
+        changes.push({
+          item: 'Note',
+          oldValue: expense.note,
+          newValue: expenseDetails.note,
+        });
+      }
+      if (expenseDetails.amount !== expense.amount) {
+        changes.push({
+          item: 'Amount',
+          oldValue: formatMoney(parseFloat(expense.amount)),
+          newValue: formatMoney(parseFloat(expenseDetails.amount)),
+        });
+      }
+      if (expense.category.name !== expenseDetails.category.name) {
+        changes.push({
+          item: 'Category',
+          oldValue: expense.category.name,
+          newValue: expenseDetails.category.name,
+        });
+      }
+      if (expense.paidBy.name !== expenseDetails.paidBy.name) {
+        changes.push({
+          item: 'Paid By',
+          oldValue: expense.paidBy.name,
+          newValue: expenseDetails.paidBy.name,
+        });
+      }
+      if (formatDate(expense.date) !== formatDate(expenseDetails.date)) {
+        changes.push({
+          item: 'Date',
+          oldValue: formatDate(expense.date),
+          newValue: formatDate(expenseDetails.date),
+        });
+      }
+      if (
+        reduceSplitBy(expense.splitBy) !== reduceSplitBy(expenseDetails.splitBy)
+      ) {
+        changes.push({
+          item: 'Split By',
+          oldValue: reduceSplitBy(expense.splitBy),
+          newValue: reduceSplitBy(expenseDetails.splitBy),
+        });
+      }
+
+      const entry = {
+        tripId: expense.tripId,
+        expenseId: expense.id,
+        userId: token,
+        action: 'updated',
+        note: expense.note,
+        timestamp: new Date(),
+        changes,
+      };
+
       // check to see if owner exists for this expennse and if it doesn't match
       if (expense.owner === null || expense.owner === token) {
         // we can update
         expense.update(expenseDetails, (errExpUpdate) => {
           if (errExpUpdate) throw err;
+          if (changes.length > 0) writeToLog(entry);
           return res
             .status(200)
             .json(expense.id)
@@ -161,6 +231,7 @@ router.post('/save', (req, res) => {
             // we can update
             expense.update(expenseDetails, (errExpUpdate) => {
               if (errExpUpdate) throw err;
+              if (changes.length > 0) writeToLog(entry);
               return res
                 .status(200)
                 .json(expense.id)
