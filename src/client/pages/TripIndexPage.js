@@ -1,13 +1,13 @@
-import React from 'react';
+import React from "react";
 
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import ListGroup from 'react-bootstrap/ListGroup';
-import { DisappearingAlert } from '../components/DisappearingAlert';
-import { ExpensesList } from '../data-access/ExpensesListDA';
-import { ExpenseModal } from '../components/ExpenseModal';
-import { Log } from '../data-access/LogDA';
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import ListGroup from "react-bootstrap/ListGroup";
+import { DisappearingAlert } from "../components/DisappearingAlert";
+import { ExpensesList } from "../data-access/ExpensesListDA";
+import { ExpenseModal } from "../components/ExpenseModal";
+import { Log } from "../data-access/LogDA";
 
 export class TripIndexPage extends React.Component {
   constructor(props) {
@@ -87,6 +87,7 @@ export class TripIndexPage extends React.Component {
               />
             </Col>
             <Col>
+              <h3>Activity</h3>
               <Log
                 key={this.state.keyLog}
                 tripId={this.state.tripId}

@@ -4,13 +4,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 export class NotFoundPage extends React.Component {
-  componentWillMount() {
-    const { staticContext } = this.props;
-    if (staticContext) {
-      staticContext.is404 = true;
-    }
-  }
-
   render() {
     return (
       <div className="not-found">
