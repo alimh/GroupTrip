@@ -8,14 +8,19 @@ router.get('/recent', (req, res) => {
   const token = req.headers.authorization.split(' ')[1] || null;
   const { tripId } = req.query;
 
-  Log.find({ tripId }, (err, entries) => {
-    if (err) return res.status(403).end();
+  Log.find(
+    { tripId },
+    null,
+    { limit: 10, sort: { timestamp: 'desc' } },
+    (err, entries) => {
+      if (err) return res.status(403).end();
 
-    return res
-      .status(200)
-      .json(entries.reverse())
-      .end();
-  });
+      return res
+        .status(200)
+        .json(entries)
+        .end();
+    }
+  );
 });
 
 export default router;

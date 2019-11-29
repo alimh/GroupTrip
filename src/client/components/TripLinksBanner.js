@@ -7,19 +7,20 @@ export const TripLinksBanner = (props) => {
   const linkSettings = '/trips/'.concat(props.tripId).concat('/settings');
   const linkExpenses = '/trips/'.concat(props.tripId).concat('/expenses');
   const linkSummary = '/trips/'.concat(props.tripId).concat('/summary');
-  const linkTripIndex = '/trips/'.concat(props.tripId);
+  const linkTripIndex = '/trips/'.concat(props.tripId).concat('/home');
   const tripName = props.tripName || 'Trip Home';
   const tripNameTrunc =
     tripName.length > 13 ? tripName.substring(0, 10).concat('...') : tripName;
 
   return (
-    <Navbar collapseOnSelect expand="lg" bg="primary" variant="dark">
-      <LinkContainer to={linkTripIndex}>
-        <Navbar.Brand>{tripNameTrunc}</Navbar.Brand>
-      </LinkContainer>
+    <Navbar expand="lg" bg="primary" variant="dark">
+      <Navbar.Brand>{tripNameTrunc}</Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
+          <LinkContainer to={linkTripIndex}>
+            <Nav.Link>Home</Nav.Link>
+          </LinkContainer>
           {props.isOwner ? (
             <LinkContainer to={linkSettings}>
               <Nav.Link>Settings</Nav.Link>

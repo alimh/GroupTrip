@@ -49,7 +49,7 @@ export class TripLinksWrapper extends React.Component {
         />
         <Route
           exact
-          path={`${this.props.pathObj.match.path}`}
+          path={`${this.props.pathObj.match.path}/home`}
           render={() => renderTripPage(this.state.tripId)}
         />
         <Route

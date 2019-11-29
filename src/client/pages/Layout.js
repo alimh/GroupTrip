@@ -34,9 +34,7 @@ export const Layout = props => (
           <span className="text-primary font-weight-bold">GroupTrip!</span>
         </Navbar.Brand>
       </LinkContainer>
-      <span className="float-right">
-        <LoginInfo />
-      </span>
+      <LoginInfo />
     </Navbar>
     <div className="app-content">{props.children}</div>
     <footer className="page-footer font-small blue pt-4" />

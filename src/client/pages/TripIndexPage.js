@@ -1,13 +1,13 @@
-import React from "react";
+import React from 'react';
 
-import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import ListGroup from "react-bootstrap/ListGroup";
-import { DisappearingAlert } from "../components/DisappearingAlert";
-import { ExpensesList } from "../data-access/ExpensesListDA";
-import { ExpenseModal } from "../components/ExpenseModal";
-import { Log } from "../data-access/LogDA";
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import ListGroup from 'react-bootstrap/ListGroup';
+import { DisappearingAlert } from '../components/DisappearingAlert';
+import { ExpensesList } from '../data-access/ExpensesListDA';
+import { ExpenseModal } from '../components/ExpenseModal';
+import { Log } from '../data-access/LogDA';
 
 export class TripIndexPage extends React.Component {
   constructor(props) {
@@ -75,7 +75,7 @@ export class TripIndexPage extends React.Component {
           </Row>
           <br />
           <Row>
-            <Col>
+            <Col sm>
               <h3>Most Recent Expenses</h3>
               <br />
               <ExpensesList
@@ -86,7 +86,7 @@ export class TripIndexPage extends React.Component {
                 message={m => this.handleMessage(m)}
               />
             </Col>
-            <Col>
+            <Col sm>
               <h3>Activity</h3>
               <Log
                 key={this.state.keyLog}

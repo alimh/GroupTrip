@@ -4,6 +4,28 @@ import Badge from 'react-bootstrap/Badge';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 
+// needed for bug https://spectrum.chat/react-table/general/v6-10-3-proptypes-fail-for-component-props~9ca49c7e-df58-4488-97eb-ab168570d597
+delete ReactTable.propTypes.TableComponent;
+delete ReactTable.propTypes.TheadComponent;
+delete ReactTable.propTypes.TbodyComponent;
+delete ReactTable.propTypes.TrGroupComponent;
+delete ReactTable.propTypes.TrComponent;
+delete ReactTable.propTypes.ThComponent;
+delete ReactTable.propTypes.TdComponent;
+delete ReactTable.propTypes.TfootComponent;
+delete ReactTable.propTypes.FilterComponent;
+delete ReactTable.propTypes.ExpanderComponent;
+delete ReactTable.propTypes.PivotValueComponent;
+delete ReactTable.propTypes.AggregatedComponent;
+delete ReactTable.propTypes.PivotComponent;
+delete ReactTable.propTypes.PaginationComponent;
+delete ReactTable.propTypes.PreviousComponent;
+delete ReactTable.propTypes.NextComponent;
+delete ReactTable.propTypes.LoadingComponent;
+delete ReactTable.propTypes.NoDataComponent;
+delete ReactTable.propTypes.ResizerComponent;
+delete ReactTable.propTypes.PadRowComponent;
+
 const formatMoney = a =>
   '$ '.concat(a.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'));
 
