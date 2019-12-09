@@ -4,15 +4,19 @@ import path from 'path';
 import { Server } from 'http';
 import Express from 'express';
 import Mongoose from 'mongoose';
-import Passport from 'passport';
-import Strategy from 'passport-local';
-import Session from 'express-session';
+// import Passport from 'passport';
+// import Strategy from 'passport-local';
+// import Session from 'express-session';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 import ApiExpenses from './api/expenses';
 import ApiTrips from './api/trips';
 import ApiLog from './api/log';
 import auth from './auth';
+
+require('./passportSetup');
+const passport = require('passport');
 
 dotenv.config();
 
@@ -22,22 +26,31 @@ const server = new Server(app);
 Mongoose.Promise = Promise;
 Mongoose.connect(process.env.MONGO_DB);
 
-// passport setup
-Passport.use(new Strategy((user, pass, done) => done(null, user)));
-Passport.serializeUser((user, cb) => {
-  cb(null, 1);
-});
-Passport.deserializeUser((id, cb) => {
-  cb(null, 1);
-});
-
 // define the folder that will be used for static assets
 app.use(Express.static('dist'));
 
 app.use(bodyParser.json());
-app.use(Session({ secret: 'keyboard', resave: false, saveUninitialized: false }));
-app.use(Passport.initialize());
-app.use(Passport.session());
+app.use(cookieParser());
+
+app.use('/', (req, res, next) => {
+  passport.authenticate('jwt', { session: false }, (err, user, info) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).end();
+    }
+    const message = info ? info.message : null;
+    if (message === 'expired') {
+      return res
+        .clearCookie('jwt')
+        .status(401)
+        .send('Your session has expired.')
+        .end();
+    }
+    res.locals.user = user || null;
+    return next();
+  })(req, res, next);
+  return true;
+});
 
 // app.use('/api', checkAuth);
 app.use('/api/expenses', ApiExpenses);

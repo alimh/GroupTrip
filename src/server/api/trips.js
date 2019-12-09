@@ -4,7 +4,7 @@ import TripObjs from '../models/trips';
 const router = new express.Router();
 
 router.get('/all', (req, res) => {
-  const token = req.headers.authorization.split(' ')[1] || null;
+  const token = res.locals.user ? res.locals.user.id : null;
   TripObjs.find({ removed_at: null, owner: token }, (err, trips) => {
     if (err || token === null) {
       return res.status(403).end();
@@ -18,7 +18,7 @@ router.get('/all', (req, res) => {
 
 router.get('/get', (req, res) => {
   const { id } = req.query;
-  const token = req.headers.authorization.split(' ')[1] || null;
+  const token = res.locals.user ? res.locals.user.id : null;
 
   TripObjs.findById(id, (err, trip) => {
     if (!trip || err || trip.removed_at) {
@@ -37,7 +37,7 @@ router.get('/get', (req, res) => {
 
 router.get('/getName', (req, res) => {
   const { id } = req.query;
-  const token = req.headers.authorization.split(' ')[1] || null;
+  const token = res.locals.user ? res.locals.user.id : null;
   TripObjs.findById(id, (err, trip) => {
     if (!trip || err || trip.removed_at) {
       return res.status(400).end();
@@ -51,18 +51,18 @@ router.get('/getName', (req, res) => {
 });
 
 router.post('/save', (req, res) => {
-  const token = req.headers.authorization.split(' ')[1] || null;
+  const token = res.locals.user ? res.locals.user.id : null;
   if (token === null) return res.status(403).end();
 
   const categories = req.body.categories.map(c => ({
     label: c.label || '',
     id: c.id !== undefined ? c.id : null,
-    active: c.active || false,
+    active: c.active || false
   }));
   const travelers = req.body.travelers.map(t => ({
     label: t.label || '',
     id: t.id !== undefined ? t.id : null,
-    active: t.active || false,
+    active: t.active || false
   }));
 
   const tripDetails = {
@@ -70,7 +70,7 @@ router.post('/save', (req, res) => {
     categories,
     travelers,
     updated_at: new Date(),
-    removed_at: null,
+    removed_at: null
   };
 
   const newTrip = TripObjs({ ...tripDetails, owner: token });
@@ -98,7 +98,7 @@ router.post('/save', (req, res) => {
 });
 
 router.post('/remove', (req, res) => {
-  const token = req.headers.authorization.split(' ')[1] || null;
+  const token = res.locals.user ? res.locals.user.id : null;
   if (token === null) return res.status(403).end();
 
   TripObjs.findById(req.body.id, (err, trip) => {

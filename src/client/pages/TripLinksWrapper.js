@@ -20,13 +20,13 @@ export class TripLinksWrapper extends React.Component {
 
     this.state = {
       tripId: props.pathObj.match.params.n || null,
-      messageObj: null,
+      messageObj: null
     };
   }
 
   handleMessage(msg) {
     this.setState({
-      messageObj: msg,
+      messageObj: msg
     });
   }
 
@@ -56,6 +56,10 @@ export class TripLinksWrapper extends React.Component {
           exact
           path={`${this.props.pathObj.match.path}/expenses`}
           render={() => renderExpensesPage(this.state.tripId)}
+        />
+        <Route
+          path={`${this.props.pathObj.match.path}`}
+          render={() => renderTripPage(this.state.tripId)}
         />
         <Route component={NotFoundPage} />
       </Switch>

@@ -3,6 +3,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
+import Axios from 'axios';
 import { Redirect } from 'react-router-dom';
 // import { AccountPageDA } from '../data-access/AccountPageDA';
 import Auth from '../utils/Auth';
@@ -15,9 +16,9 @@ export class AccountPage extends React.Component {
     this.state = {
       messages: {
         success: null,
-        error: null,
+        error: null
       },
-      redirect: null,
+      redirect: null
     };
   }
 
@@ -29,6 +30,9 @@ export class AccountPage extends React.Component {
   handleLogout() {
     Auth.deauthenticateUser();
     this.setState({ redirect: true });
+    Axios.post('/auth/logout')
+      .then(() => this.setState({ redirect: true }))
+      .catch(err => console.log(err));
   }
 
   render() {

@@ -9,7 +9,17 @@ import { AccountRedirector } from './components/AccountRedirector';
 import { TestPage } from './pages/TestPage';
 import { NewUserPage } from './pages/NewUserPage';
 
-const renderAllTrips = () => <AllTrips />;
+const renderAllTrips = (props) => {
+  const refreshFlag = props.location.state
+    ? props.location.state.refresh
+    : false;
+  if (refreshFlag === true) {
+    const { history } = props;
+    history.replace({ pathname: '/', state: { refresh: null } });
+    window.location.reload();
+  }
+  return <AllTrips />;
+};
 const renderNewTrip = () => <NewTripPage />;
 const renderTripLinksWrapper = pathObj => (
   <TripLinksWrapper tripId={pathObj.match.params.n} pathObj={pathObj} />
