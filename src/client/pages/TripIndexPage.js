@@ -4,10 +4,10 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import ListGroup from 'react-bootstrap/ListGroup';
-import { DisappearingAlert } from '../components/DisappearingAlert';
 import { ExpensesList } from '../data-access/ExpensesListDA';
 import { ExpenseModal } from '../components/ExpenseModal';
 import { Log } from '../data-access/LogDA';
+import { DisappearingAlert } from '../components/DisappearingAlert';
 
 export class TripIndexPage extends React.Component {
   constructor(props) {
@@ -19,32 +19,32 @@ export class TripIndexPage extends React.Component {
       keyLog: Math.random(),
       tripId: props.tripId || null,
       activeExpenseObject: null,
-      messageObj: null,
+      messageObj: null
     };
   }
 
   handleEdit(expObjToEdit) {
     this.setState({
-      activeExpenseObject: expObjToEdit,
+      activeExpenseObject: expObjToEdit
     });
   }
 
   handleCloseModal() {
     this.setState({
       keyNewExpense: null,
-      activeExpenseObject: null,
+      activeExpenseObject: null
       // keyExpenseList: Math.random(), // force re-render
     });
   }
 
   handleAddExpense() {
     this.setState({
-      keyNewExpense: Math.random(),
+      keyNewExpense: Math.random()
     });
   }
 
   handleMessage(m) {
-    this.setState({ messageObj: m });
+    this.setState({ ...m });
   }
 
   render() {
@@ -106,7 +106,7 @@ export class TripIndexPage extends React.Component {
               keyExpenseList: Math.random(),
               keyLog: Math.random(),
               activeExpenseObject: null,
-              keyNewExpense: null,
+              keyNewExpense: null
             })
           }
           showModal={

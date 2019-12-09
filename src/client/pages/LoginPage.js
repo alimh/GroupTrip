@@ -13,8 +13,8 @@ export class LoginPage extends React.Component {
       loginSuccess: false,
       messages: {
         success: null,
-        error: null,
-      },
+        error: null
+      }
     };
   }
 
@@ -29,7 +29,7 @@ export class LoginPage extends React.Component {
 
   render() {
     return this.state.loginSuccess ? (
-      <Redirect push to="/" />
+      <Redirect push to={{ pathname: '/', state: { refresh: true } }} />
     ) : (
       <div>
         <br />

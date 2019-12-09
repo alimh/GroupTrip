@@ -2,6 +2,7 @@ import React from 'react';
 import Axios from 'axios';
 import Auth from '../utils/Auth';
 import { LoadingView } from '../components/LoadingView';
+import { LoggedOutMessage } from '../components/LoggedOutMessage';
 import { TripIndexPage } from '../pages/TripIndexPage';
 
 export class TripPageDA extends React.Component {
@@ -10,7 +11,7 @@ export class TripPageDA extends React.Component {
 
     this.state = {
       tripObj: null,
-      loading: true,
+      loading: true
     };
 
     this.getTripFromServer();
@@ -31,9 +32,9 @@ export class TripPageDA extends React.Component {
     const authorizationHeader = 'bearer '.concat(Auth.getToken());
     Axios.get('/api/trips/get', {
       headers: {
-        Authorization: authorizationHeader,
+        Authorization: authorizationHeader
       },
-      params: { id: this.props.tripId },
+      params: { id: this.props.tripId }
     })
       .then((response) => {
         const { data } = response;
@@ -41,8 +42,15 @@ export class TripPageDA extends React.Component {
       })
       .catch((err) => {
         this.setState({ loading: false });
-        if (this.props.message) this.props.message({ error: err.toString() });
-        else throw err;
+        if (this.props.message) {
+          this.props.message({
+            text:
+              err.response.status === 401
+                ? LoggedOutMessage()
+                : err.response.data,
+            variant: 'error'
+          });
+        } else throw err;
       });
   }
 

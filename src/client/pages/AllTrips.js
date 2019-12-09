@@ -18,18 +18,15 @@ export class AllTrips extends React.Component {
     this.state = {
       loggedIn: Auth.isUserAuthenticated(),
       keys: {
-        trips: Math.random(),
+        trips: Math.random()
       },
-      messages: {
-        success: null,
-        error: null,
-      },
+      messageObj: null
     };
   }
 
-  handleMessage(k, m) {
+  handleMessage(m) {
     // display message
-    this.setState({ messages: { ...m } });
+    this.setState({ messageObj: m });
   }
 
   render() {
@@ -47,16 +44,7 @@ export class AllTrips extends React.Component {
         <h3>
           <small className="text-muted">Select a Trip</small>
         </h3>
-        <DisappearingAlert
-          msg={this.state.messages.error}
-          variant="danger"
-          disapper={false}
-        />
-        <DisappearingAlert
-          msg={this.state.messages.success}
-          variant="success"
-        />
-
+        <DisappearingAlert messageObj={this.state.messageObj} />
         <Row className="justify-content-md-center">
           <Col>
             <ListGroup>

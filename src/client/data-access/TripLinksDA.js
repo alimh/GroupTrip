@@ -3,6 +3,7 @@ import Axios from 'axios';
 import Auth from '../utils/Auth';
 import { TripLinksBanner } from '../components/TripLinksBanner';
 import { LoadingView } from '../components/LoadingView';
+import { LoggedOutMessage } from '../components/LoggedOutMessage';
 
 export class TripLinks extends React.Component {
   constructor(props) {
@@ -13,7 +14,7 @@ export class TripLinks extends React.Component {
     this.state = {
       loading: true,
       tripId,
-      tripName: null,
+      tripName: null
     };
   }
   componentDidMount() {
@@ -21,23 +22,29 @@ export class TripLinks extends React.Component {
       const authorizationHeader = 'bearer '.concat(Auth.getToken());
       Axios.get('/api/trips/getName', {
         headers: {
-          Authorization: authorizationHeader,
+          Authorization: authorizationHeader
         },
-        params: { id: this.state.tripId },
+        params: { id: this.state.tripId }
       })
         .then((response) => {
           const { data } = response;
           this.setState({
             loading: false,
             tripName: data.name,
-            isOwner: data.isOwner,
+            isOwner: data.isOwner
           });
           this.props.onSuccess();
         })
         .catch((err) => {
           this.setState({ loading: false });
           if (this.props.message) {
-            this.props.message({ text: err.toString(), variant: 'error' });
+            this.props.message({
+              text:
+                err.response.status === 401
+                  ? LoggedOutMessage()
+                  : err.response.data,
+              variant: 'error'
+            });
           } else throw err;
         });
     }

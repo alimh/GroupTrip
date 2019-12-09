@@ -12,17 +12,14 @@ export class NewTripPage extends React.Component {
 
     this.state = {
       keyNewTrip: Math.random(),
-      messages: {
-        success: null,
-        error: null,
-      },
-      redirect: null,
+      messageObj: null,
+      redirect: null
     };
   }
 
-  handleMessage(k, m) {
+  handleMessage(m) {
     // display message
-    this.setState({ messages: { ...m } });
+    this.setState({ messageObj: m });
   }
 
   handleRedirect(path) {
@@ -35,11 +32,7 @@ export class NewTripPage extends React.Component {
         <br />
         <Container>
           <h3>New Trip Details</h3>
-          <DisappearingAlert
-            msg={this.state.messages.error}
-            variant="danger"
-            disappear={false}
-          />
+          <DisappearingAlert messageObj={this.state.messageObj} />
           {this.state.redirect ? (
             <Redirect push to={this.state.redirect} />
           ) : (

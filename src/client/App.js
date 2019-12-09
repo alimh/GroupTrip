@@ -13,6 +13,7 @@ const renderAllTrips = (props) => {
   const refreshFlag = props.location.state
     ? props.location.state.refresh
     : false;
+
   if (refreshFlag === true) {
     const { history } = props;
     history.replace({ pathname: '/', state: { refresh: null } });

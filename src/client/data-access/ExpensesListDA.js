@@ -11,7 +11,7 @@ export class ExpensesList extends React.Component {
       const expenses = prevState.expenses.map(e => ({
         ...e,
         buttonsDisabled: true,
-        active: false,
+        active: false
       }));
 
       return { ...nextProps, expenses };
@@ -33,7 +33,7 @@ export class ExpensesList extends React.Component {
       tripId,
       apiEndpoint: props.apiEndpoint || 'recent',
       active: false,
-      sendExpenses: props.getExpenses || blankFunc,
+      sendExpenses: props.getExpenses || blankFunc
     };
   }
 
@@ -46,9 +46,9 @@ export class ExpensesList extends React.Component {
       const authorizationHeader = 'bearer '.concat(Auth.getToken());
       Axios.get('/api/expenses/'.concat(this.state.apiEndpoint), {
         headers: {
-          Authorization: authorizationHeader,
+          Authorization: authorizationHeader
         },
-        params: { id: this.state.tripId },
+        params: { id: this.state.tripId }
       })
         .then((response) => {
           const { data } = response;
@@ -58,7 +58,7 @@ export class ExpensesList extends React.Component {
         .catch((err) => {
           this.setState({ loading: false });
           if (this.props.message) {
-            this.props.message({ text: err.toString(), variant: 'error' });
+            this.props.message(...err.response);
           } else throw err;
         });
     }
@@ -69,13 +69,13 @@ export class ExpensesList extends React.Component {
     const expenses = this.state.expenses.map(e => ({
       ...e,
       buttonsDisabled: true,
-      active: false,
+      active: false
     }));
     expenses[n].active = true;
 
     this.setState({
       expenses,
-      active: true,
+      active: true
     });
     this.props.onEdit(this.state.expenses[n]);
   }

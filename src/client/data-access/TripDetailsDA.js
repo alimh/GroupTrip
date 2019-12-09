@@ -3,6 +3,7 @@ import Axios from 'axios';
 import Auth from '../utils/Auth';
 import { TripDetailsView } from '../components/TripDetailsView';
 import { LoadingView } from '../components/LoadingView';
+import { LoggedOutMessage } from '../components/LoggedOutMessage';
 
 export class TripDetailsDA extends React.Component {
   constructor(props) {
@@ -16,7 +17,7 @@ export class TripDetailsDA extends React.Component {
         ? 'bearer '.concat(Auth.getToken())
         : null,
       tripObj: null,
-      tripId,
+      tripId
     };
   }
 
@@ -24,9 +25,9 @@ export class TripDetailsDA extends React.Component {
     if (this.state.tripId) {
       Axios.get('/api/trips/get', {
         headers: {
-          Authorization: this.state.authorizationHeader,
+          Authorization: this.state.authorizationHeader
         },
-        params: { id: this.state.tripId },
+        params: { id: this.state.tripId }
       })
         .then((response) => {
           const { data } = response;
@@ -35,7 +36,13 @@ export class TripDetailsDA extends React.Component {
         .catch((err) => {
           this.setState({ loading: false });
           if (this.props.message) {
-            this.props.message({ text: err.toString(), variant: 'error' });
+            this.props.message({
+              text:
+                err.response.status === 401
+                  ? LoggedOutMessage()
+                  : err.response.data,
+              variant: 'error'
+            });
           } else throw err;
         });
     }
@@ -52,14 +59,14 @@ export class TripDetailsDA extends React.Component {
     const payload = tripObject;
     this.setState({ loading: true, tripObj: tripObject });
     Axios.post('/api/trips/save', payload, {
-      headers: { Authorization: this.state.authorizationHeader },
+      headers: { Authorization: this.state.authorizationHeader }
     })
       .then((res) => {
         this.props.redirectPath('/trips/'.concat(res.data));
         if (this.props.message) {
           this.props.message({
             text: this.state.tripId ? 'Saved' : 'Created New Trip',
-            variant: 'success',
+            variant: 'success'
           });
         }
         this.setState({ loading: false });
@@ -75,7 +82,7 @@ export class TripDetailsDA extends React.Component {
     const payload = { id: this.state.tripId };
     this.setState({ loading: true });
     Axios.post('/api/trips/remove', payload, {
-      headers: { Authorization: this.state.authorizationHeader },
+      headers: { Authorization: this.state.authorizationHeader }
     })
       .then(() => {
         // this.props.message({ success: 'Removed' });

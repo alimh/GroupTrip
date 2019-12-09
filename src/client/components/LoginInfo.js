@@ -3,6 +3,7 @@ import Nav from 'react-bootstrap/Nav';
 import { LinkContainer } from 'react-router-bootstrap';
 import Axios from 'axios';
 import Auth from '../utils/Auth';
+import { LoggedOutMessage } from './LoggedOutMessage';
 
 export class LoginInfo extends React.Component {
   constructor() {
@@ -14,6 +15,7 @@ export class LoginInfo extends React.Component {
   }
 
   componentDidMount() {
+    Auth.deauthenticateUser();
     Axios.get('/auth/check-auth')
       .then((res) => {
         if (res.data.username) {
@@ -23,13 +25,11 @@ export class LoginInfo extends React.Component {
       })
       .catch((err) => {
         console.log(err.response);
-        // if (err.response.status === 401) {
-        //   this.setState({
-        //     relogin: true,
-        //     message: 'Your session has expired.'
-        //   });
-        // }
-        Auth.deauthenticateUser();
+        if (err.response.status === 401) {
+          this.setState({
+            relogin: true
+          });
+        }
         this.setState({
           error: err.response.data !== '' ? err.response.data : err.toString()
         });
@@ -37,7 +37,7 @@ export class LoginInfo extends React.Component {
   }
 
   render() {
-    // if (this.state.error) throw this.state.error;
+    if (this.state.relogin) return <LoggedOutMessage />;
     return this.state.username ? (
       <Nav>
         <LinkContainer to="/account">

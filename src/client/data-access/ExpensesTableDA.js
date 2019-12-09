@@ -1,6 +1,7 @@
 import React from 'react';
 import Axios from 'axios';
 import Auth from '../utils/Auth';
+import { LoggedOutMessage } from '../components/LoggedOutMessage';
 import { LoadingView } from '../components/LoadingView';
 import { ExpensesTableView } from '../components/ExpensesTableView';
 
@@ -17,8 +18,7 @@ export class ExpensesTable extends React.Component {
       loading: expenses === undefined,
       expenses: expenses || null,
       tripId,
-      apiEndpoint: 'all',
-      active: false,
+      apiEndpoint: 'all'
     };
   }
 
@@ -31,9 +31,9 @@ export class ExpensesTable extends React.Component {
       const authorizationHeader = 'bearer '.concat(Auth.getToken());
       Axios.get('/api/expenses/'.concat(this.state.apiEndpoint), {
         headers: {
-          Authorization: authorizationHeader,
+          Authorization: authorizationHeader
         },
-        params: { id: this.state.tripId },
+        params: { id: this.state.tripId }
       })
         .then((response) => {
           const { data } = response;
@@ -42,7 +42,13 @@ export class ExpensesTable extends React.Component {
         .catch((err) => {
           this.setState({ loading: false });
           if (this.props.message) {
-            this.props.message({ text: err.toString(), variant: 'error' });
+            this.props.message({
+              text:
+                err.response.status === 401
+                  ? LoggedOutMessage()
+                  : err.response.data,
+              variant: 'error'
+            });
           } else throw err;
         });
     }
@@ -53,13 +59,12 @@ export class ExpensesTable extends React.Component {
     const expenses = this.state.expenses.map(e => ({
       ...e,
       buttonsDisabled: true,
-      active: false,
+      active: false
     }));
     expenses[n].active = true;
 
     this.setState({
-      expenses,
-      active: true,
+      expenses
     });
     this.props.onEdit(this.state.expenses[n]);
   }

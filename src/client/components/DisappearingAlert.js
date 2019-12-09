@@ -7,7 +7,7 @@ export class DisappearingAlert extends React.Component {
     // if this is called because the timer finished, then delete the message
     if (prevState.show && prevState.expired) {
       return {
-        show: false,
+        show: false
       };
     }
 
@@ -27,7 +27,7 @@ export class DisappearingAlert extends React.Component {
         heading: messageObj.heading || '',
         variant,
         timeout: 5000,
-        disappear: variant !== 'danger',
+        disappear: variant !== 'danger'
       };
 
       return {
@@ -36,7 +36,7 @@ export class DisappearingAlert extends React.Component {
         messageObj: null,
         expired: false,
         timerStarted: false,
-        show: true,
+        show: true
       };
     }
 
@@ -47,14 +47,10 @@ export class DisappearingAlert extends React.Component {
     super();
 
     this.state = {
-      show: false,
+      show: false
     };
   }
 
-  // componentDidUpdate() {
-  //   console.log('updating');
-  //   console.log(this.state);
-  // }
   expire() {
     this.setState({ expired: true });
     if (this.props.onDisappear) this.props.onDisappear();

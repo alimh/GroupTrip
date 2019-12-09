@@ -1,6 +1,7 @@
 import React from 'react';
 import Axios from 'axios';
 import Auth from '../utils/Auth';
+import { LoggedOutMessage } from '../components/LoggedOutMessage';
 import { ExpenseForm } from '../components/ExpenseForm';
 import { LoadingView } from '../components/LoadingView';
 
@@ -25,7 +26,7 @@ export class ExpenseDetail extends React.Component {
       tripObj,
       tripId,
       expenseObj,
-      borderVariant,
+      borderVariant
     };
   }
 
@@ -33,9 +34,9 @@ export class ExpenseDetail extends React.Component {
     if (this.state.tripId) {
       Axios.get('/api/trips/get', {
         headers: {
-          Authorization: this.state.authorizationHeader,
+          Authorization: this.state.authorizationHeader
         },
-        params: { id: this.state.tripId },
+        params: { id: this.state.tripId }
       })
         .then((response) => {
           const { data } = response;
@@ -44,7 +45,13 @@ export class ExpenseDetail extends React.Component {
         .catch((err) => {
           this.setState({ loading: false });
           if (this.props.message) {
-            this.props.message({ text: err.toString(), variant: 'error' });
+            this.props.message({
+              text:
+                err.response.status === 401
+                  ? LoggedOutMessage()
+                  : err.response.data,
+              variant: 'error'
+            });
           } else throw err;
         });
     } else this.props.message({ text: 'Trip ID not valid', variant: 'error' });
@@ -55,7 +62,7 @@ export class ExpenseDetail extends React.Component {
       ...expenseObj,
       tripId: this.state.tripId,
       id: this.state.expenseObj ? this.state.expenseObj.id : null,
-      owner: Auth.getToken(),
+      owner: Auth.getToken()
     };
 
     // this.setState({ loading: true });
@@ -66,19 +73,19 @@ export class ExpenseDetail extends React.Component {
       ...expenseObj,
       category: {
         name: expenseObj.category.value,
-        id: expenseObj.category.key,
+        id: expenseObj.category.key
       },
       paidBy: {
         name: expenseObj.paidBy.value,
-        id: expenseObj.paidBy.key,
-      },
+        id: expenseObj.paidBy.key
+      }
     };
     this.setState({
       expenseObj: newExpenseObj,
-      preventScrub: true,
+      preventScrub: true
     });
     Axios.post('/api/expenses/save', payload, {
-      headers: { Authorization: this.state.authorizationHeader },
+      headers: { Authorization: this.state.authorizationHeader }
     })
       .then(() => {
         this.props.message({ text: 'Saved', variant: 'success' });
@@ -97,12 +104,12 @@ export class ExpenseDetail extends React.Component {
     this.props.message({ text: 'Removing...' });
     this.setState({ tripObj: null });
     Axios.post('/api/expenses/remove', payload, {
-      headers: { Authorization: this.state.authorizationHeader },
+      headers: { Authorization: this.state.authorizationHeader }
     })
       .then(() => {
         this.props.message({
           text: 'Removed Expense',
-          variant: 'success',
+          variant: 'success'
         });
       })
       .catch((err) => {

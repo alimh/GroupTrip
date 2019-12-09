@@ -1,6 +1,7 @@
 import React from 'react';
 import Axios from 'axios';
 import Auth from '../utils/Auth';
+import { LoggedOutMessage } from '../components/LoggedOutMessage';
 import { LoadingView } from '../components/LoadingView';
 import { SummaryTable } from '../components/SummaryTable';
 import { PaybackList } from '../components/PaybackList';
@@ -17,7 +18,7 @@ export class ExpenseSummaryDA extends React.Component {
       expenses: [],
       summary: [],
       paybackLog: [],
-      expensesAttention: [],
+      expensesAttention: []
     };
   }
 
@@ -25,7 +26,7 @@ export class ExpenseSummaryDA extends React.Component {
     const authorizationHeader = 'bearer '.concat(Auth.getToken());
     Axios.get('/api/expenses/all', {
       headers: { Authorization: authorizationHeader },
-      params: { id: this.state.tripId },
+      params: { id: this.state.tripId }
     })
       .then((response) => {
         const { data } = response;
@@ -35,8 +36,15 @@ export class ExpenseSummaryDA extends React.Component {
       })
       .catch((err) => {
         this.setState({ loading: false });
-        if (this.props.message) this.props.message({ error: err.toString() });
-        else throw err;
+        if (this.props.message) {
+          this.props.message({
+            text:
+              err.response.status === 401
+                ? LoggedOutMessage()
+                : err.response.data,
+            variant: 'error'
+          });
+        } else throw err;
       });
   }
 
@@ -50,7 +58,7 @@ export class ExpenseSummaryDA extends React.Component {
       if (!namePresent) newAcc[name] = { name, paid: 0, owe: 0 };
       newAcc[name] = {
         ...newAcc[name],
-        paid: exp.amount + acc[name].paid,
+        paid: exp.amount + acc[name].paid
       };
       // split by
       const count = exp.splitBy.length;
@@ -62,7 +70,7 @@ export class ExpenseSummaryDA extends React.Component {
         }
         newAcc[split.name] = {
           ...newAcc[split.name],
-          owe: each + acc[split.name].owe,
+          owe: each + acc[split.name].owe
         };
       });
 
@@ -124,14 +132,17 @@ export class ExpenseSummaryDA extends React.Component {
       N.sort((a, b) => b.owe - a.owe);
       let I = [];
       if (N[0].owe > P[0].owe) {
-        I = compareVals(N[0].owe, P.map(a => a.owe));
+        I = compareVals(
+          N[0].owe,
+          P.map(a => a.owe)
+        );
         if (I.length > 0) {
           I.forEach((a) => {
             const pSplice = P.splice(a, 1)[0];
             L.push({
               pay: N[0].name,
               receive: pSplice.name,
-              amount: pSplice.owe,
+              amount: pSplice.owe
             });
           });
           N.splice(0, 1);
@@ -141,14 +152,17 @@ export class ExpenseSummaryDA extends React.Component {
           P.shift();
         }
       } else {
-        I = compareVals(P[0].owe, N.map(a => a.owe));
+        I = compareVals(
+          P[0].owe,
+          N.map(a => a.owe)
+        );
         if (I.length > 0) {
           I.forEach((a) => {
             const nSplice = N.splice(a, 1)[0];
             L.push({
               pay: nSplice.name,
               receive: P[0].name,
-              amount: nSplice.owe,
+              amount: nSplice.owe
             });
           });
           P.splice(0, 1);
@@ -156,7 +170,7 @@ export class ExpenseSummaryDA extends React.Component {
           L.push({
             pay: N[0].name,
             receive: P[0].name,
-            amount: N[0].owe,
+            amount: N[0].owe
           });
           P[0].owe -= N[0].owe;
           N.shift();
@@ -164,7 +178,7 @@ export class ExpenseSummaryDA extends React.Component {
       }
     }
     this.setState({
-      paybackLog: L.map((i, n) => ({ ...i, id: n })),
+      paybackLog: L.map((i, n) => ({ ...i, id: n }))
     });
   }
 
