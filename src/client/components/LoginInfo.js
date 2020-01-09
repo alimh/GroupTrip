@@ -18,21 +18,19 @@ export class LoginInfo extends React.Component {
     Auth.deauthenticateUser();
     Axios.get('/auth/check-auth')
       .then((res) => {
-        if (res.data.username) {
-          Auth.authenticateUser(res.data.username);
-          this.setState({ username: res.data.username });
+        if (res.data.name) {
+          Auth.authenticateUser(res.data.name);
+          this.setState({ username: res.data.name });
         } else Auth.deauthenticateUser();
       })
       .catch((err) => {
         console.log(err.response);
+        // TODO: display this error
         if (err.response.status === 401) {
           this.setState({
             relogin: true
           });
         }
-        this.setState({
-          error: err.response.data !== '' ? err.response.data : err.toString()
-        });
       });
   }
 

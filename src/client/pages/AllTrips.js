@@ -20,7 +20,7 @@ export class AllTrips extends React.Component {
       keys: {
         trips: Math.random()
       },
-      messageObj: null
+      messageObj: props.messageObj || null
     };
   }
 
@@ -44,7 +44,6 @@ export class AllTrips extends React.Component {
         <h3>
           <small className="text-muted">Select a Trip</small>
         </h3>
-        <DisappearingAlert messageObj={this.state.messageObj} />
         <Row className="justify-content-md-center">
           <Col>
             <ListGroup>
@@ -76,6 +75,9 @@ export class AllTrips extends React.Component {
             </Row>
           </Container>
         </Jumbotron>
+        <Container>
+          <DisappearingAlert messageObj={this.state.messageObj} />
+        </Container>
         {this.state.loggedIn ? renderLoggedIn() : rednerNotLoggedIn()}
       </div>
     );

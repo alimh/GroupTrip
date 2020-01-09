@@ -1,11 +1,9 @@
 import express from 'express';
 import Log from '../models/log';
-import Expense from '../models/expenses';
 
 const router = new express.Router();
 
 router.get('/recent', (req, res) => {
-  const token = res.locals.user ? res.locals.user.id : null;
   const { tripId } = req.query;
 
   Log.find(

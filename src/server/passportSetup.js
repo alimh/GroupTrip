@@ -1,36 +1,43 @@
-const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
-const passportJWT = require('passport-jwt');
+import Passport from 'passport';
+import PassportLocal from 'passport-local';
+import PassportJwt from 'passport-jwt';
+import bcrypt from 'bcrypt';
+import UserObjs from './models/users';
 
-const JWTStrategy = passportJWT.Strategy;
-// const bcrypt = require('bcrypt');
+// const LocalStrategy = require('passport-local').Strategy;
+// const passportJWT = require('passport-jwt');
+const LocalStrategy = PassportLocal.Strategy;
+const JWTStrategy = PassportJwt.Strategy;
 
 // const { secret } = require('./keys');
 
-// const UserModel = require('./models/user');
-
 const secret = 'secret';
 
-passport.use(new LocalStrategy((username, password, done) => {
-    // const userDocument = await UserModel.findOne({
-    //   username
-    // }).exec();
-    // const passwordsMatch = await bcrypt.compare(
-    //   password,
-    //   userDocument.passwordHash
-    // );
-    console.log(username);
-    console.log(password);
-    const passwordsMatch = username === 'test';
+Passport.use(new LocalStrategy(
+    {
+      usernameField: 'email',
+      passwordField: 'password'
+    },
+    async (email, password, done) => {
+      try {
+        const userDocument = await UserObjs.findOne({ email }).exec();
+        const passwordsMatch = await bcrypt.compare(
+          password,
+          userDocument.passwordHash
+        );
 
-    if (passwordsMatch) {
-      //          return done(null, userDocument);
-      return done(null, { username: 'Alim' });
+        if (passwordsMatch) {
+          const payload = { name: userDocument.name, id: userDocument.id };
+          return done(null, payload);
+        }
+        return done('Incorrect Username / Password');
+      } catch (error) {
+        done(error);
+      }
     }
-    return done('Incorrect Username / Password');
-  }));
+  ));
 
-passport.use(new JWTStrategy(
+Passport.use(new JWTStrategy(
     {
       jwtFromRequest: req => req.cookies.jwt || null,
       secretOrKey: secret

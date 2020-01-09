@@ -11,16 +11,14 @@ export class LoginPage extends React.Component {
     super(props);
     this.state = {
       loginSuccess: false,
-      messages: {
-        success: null,
-        error: null
-      }
+      messageObj: null
     };
   }
 
-  handleMessage(m) {
-    // display message
-    this.setState({ messages: { ...m } });
+  handleMessage(msg) {
+    this.setState({
+      messageObj: msg
+    });
   }
 
   handleLogin() {
@@ -35,11 +33,9 @@ export class LoginPage extends React.Component {
         <br />
         <Container>
           <h3>Login</h3>
-          <DisappearingAlert
-            msg={this.state.messages.error}
-            variant="danger"
-            disappear={false}
-          />
+          <Container>
+            <DisappearingAlert messageObj={this.state.messageObj} />
+          </Container>
           <Row className="justify-content-md-center">
             <Col>
               <LoginPageDA

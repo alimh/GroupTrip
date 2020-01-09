@@ -1,25 +1,84 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
+import Passport from 'passport';
+import bcrypt from 'bcrypt';
+import UserObjs from './models/users';
 
 const router = new express.Router();
 const secret = 'secret';
+
+require('./passportSetup');
+
+router.post('/signup', async (req, res) => {
+  const { name, password, email } = req.body;
+  const hashCost = 10;
+
+  try {
+    const passwordHash = await bcrypt.hash(password, hashCost);
+    const userDocument = new UserObjs({ name, email, passwordHash });
+    await userDocument.save();
+
+    Passport.authenticate(
+      'local',
+      { session: false },
+      (errorAuthenticate, user, info) => {
+        if (errorAuthenticate || !user) {
+          return res.status(400).json(errorAuthenticate || info.message);
+        }
+
+        const expires = Date.now() + 15552000000; // 180 days
+
+        const payload = {
+          id: user.id,
+          name: user.name,
+          expires
+        };
+
+        req.login(payload, { session: false }, (errorLogin) => {
+          if (errorLogin) return res.status(400).send(errorLogin);
+          const token = jwt.sign(JSON.stringify(payload), secret);
+          return res
+            .cookie('jwt', token)
+            .status(200)
+            .end();
+        });
+        return true;
+      }
+    )(req, res);
+  } catch (error) {
+    res.status(400).send(error.toString());
+  }
+});
+
 router.post('/login', (req, res) => {
-  const { username, password } = req.body;
+  Passport.authenticate(
+    'local',
+    { session: false },
+    (errorAuthenticate, user, info) => {
+      if (errorAuthenticate || !user) {
+        return res.status(400).json(errorAuthenticate || info.message);
+      }
 
-  const payload = {
-    username,
-    id: username,
-    expires: Date.now() + 120000
-  };
+      const expires = Date.now() + 15552000000; // 180 days
 
-  const token = jwt.sign(JSON.stringify(payload), secret);
+      const payload = {
+        id: user.id,
+        name: user.name,
+        expires
+      };
 
-  return password === 'test'
-    ? res
-      .cookie('jwt', token)
-      .status(200)
-      .end()
-    : res.status(401).end();
+      req.login(payload, { session: false }, (errorLogin) => {
+        if (errorLogin) return res.status(400).send(errorLogin);
+        const token = jwt.sign(JSON.stringify(payload), secret);
+        return res
+          .cookie('jwt', token)
+          .status(200)
+          .end();
+      });
+      return true;
+    }
+  )(req, res);
+  return true;
 });
 
 router.post('/logout', (req, res) =>
@@ -28,7 +87,7 @@ router.post('/logout', (req, res) =>
     .send()
     .end());
 
-router.get('/check-auth', (req, res) =>
+router.get('/check-auth', (req, res) => {
   // TODO re up the cookie
   // {
   //   const payload = res.locals.user ? {
@@ -41,8 +100,9 @@ router.get('/check-auth', (req, res) =>
   res
     .status(200)
     .send({
-      username: res.locals.user ? res.locals.user.username : null
+      name: res.locals.user ? res.locals.user.name : null
     })
-    .end());
+    .end();
+});
 
 export default router;

@@ -13,6 +13,7 @@ import cookieParser from 'cookie-parser';
 import ApiExpenses from './api/expenses';
 import ApiTrips from './api/trips';
 import ApiLog from './api/log';
+import ApiUsers from './api/users';
 import auth from './auth';
 
 require('./passportSetup');
@@ -39,6 +40,10 @@ app.use('/', (req, res, next) => {
       return res.status(500).end();
     }
     const message = info ? info.message : null;
+    console.log('using jwt strategy');
+    console.log(message);
+    console.log(user);
+    console.log(info);
     if (message === 'expired') {
       return res
         .clearCookie('jwt')
@@ -54,6 +59,7 @@ app.use('/', (req, res, next) => {
 
 // app.use('/api', checkAuth);
 app.use('/api/expenses', ApiExpenses);
+app.use('/api/users', ApiUsers);
 app.use('/api/trips', ApiTrips);
 app.use('/api/log', ApiLog);
 app.use('/auth', auth);

@@ -10,7 +10,7 @@ export class NewUserPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      messageObj: null,
+      messageObj: null
     };
   }
 
@@ -25,7 +25,16 @@ export class NewUserPage extends React.Component {
 
   render() {
     return this.state.loginSuccess ? (
-      <Redirect push to="/" />
+      <Redirect
+        push
+        to={{
+          pathname: '/',
+          state: {
+            refresh: true,
+            messageObj: { text: 'Account created', variant: 'success' }
+          }
+        }}
+      />
     ) : (
       <div>
         <br />
@@ -37,7 +46,7 @@ export class NewUserPage extends React.Component {
           </Row>
           <Row className="justify-content-md-center">
             <Col>
-              <h3>Create a new user</h3>
+              <h3>Signup</h3>
               <NewUser
                 onLogin={() => this.handleLogin()}
                 message={message => this.handleMessage(message)}

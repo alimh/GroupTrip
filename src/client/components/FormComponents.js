@@ -83,12 +83,12 @@ export const SelectBox = props =>
               e.target.value !== ""
                 ? e.target.namedItem(e.target.value).innerText
                 : "",
-            key: e.target.value,
+            key: e.target.value
           });
         }}
         inputprops={{
           name: props.id,
-          id: props.id,
+          id: props.id
         }}
       >
         <option key="0" value="" name="">
@@ -106,12 +106,12 @@ export const SelectBox = props =>
     </Form.Group>
   ) : (
     InputBox({
-      value: !!props.value.key
+      value: props.value.key
         ? props.options.find(o => o.key === props.value.key).value
         : "",
       onUpdate: () => true,
       disabled: true,
-      label: props.label,
+      label: props.label
     })
   ));
 
@@ -192,7 +192,7 @@ export class FormBuilder extends React.Component {
         const errors = { ...set.errors, [field.id]: false };
         const errorChecks = {
           ...set.errorChecks,
-          [field.id]: field.errorChecks || noValidation,
+          [field.id]: field.errorChecks || noValidation
         };
 
         return { values, errors, errorChecks };
@@ -207,25 +207,26 @@ export class FormBuilder extends React.Component {
       ...initialState,
       initial: initialState,
       handleCancel: onCancel,
-      viewOnly,
+      viewOnly
     };
   }
 
   resetForm() {
     this.setState({
       values: this.state.initial.values,
-      errors: this.state.initial.errors,
+      errors: this.state.initial.errors
     });
   }
 
   handleUpdate(field, value) {
     const errors = {
       ...this.state.errors,
-      [field]: this.state.errorChecks[field](value),
+      [field]: this.state.errorChecks[field](value)
     };
+
     const values = {
       ...this.state.values,
-      [field]: value,
+      [field]: value
     };
     this.setState({ values, errors });
   }
@@ -240,7 +241,14 @@ export class FormBuilder extends React.Component {
       return acc || errors[field] !== false;
     }, false);
 
-    if (error) {
+    const confirmPasswordCheck =
+      this.state.values.confirm_password !== undefined &&
+      this.state.values.confirm_password !== this.state.values.password
+        ? 'Passwords do not match'
+        : false;
+    if (confirmPasswordCheck) errors.confirm_password = confirmPasswordCheck;
+
+    if (error || confirmPasswordCheck) {
       e.preventDefault();
       this.setState({ errors });
     } else {
@@ -332,7 +340,7 @@ export class FormBuilder extends React.Component {
             value: this.state.values[field.id],
             onUpdate: value => this.handleUpdate(field.id, value),
             errMsg: this.state.errors[field.id],
-            disabled: field.disabled || this.state.viewOnly,
+            disabled: field.disabled || this.state.viewOnly
           }),
           field.id
         );
@@ -345,7 +353,7 @@ export class FormBuilder extends React.Component {
             options: this.state.values[field.id],
             onUpdate: options => this.handleUpdate(field.id, options),
             disabled: field.disabled || this.state.viewOnly,
-            errMsg: this.state.errors[field.id],
+            errMsg: this.state.errors[field.id]
           }),
           field.id
         );
@@ -360,7 +368,7 @@ export class FormBuilder extends React.Component {
             disabled: field.disabled || this.state.viewOnly,
             errMsg: this.state.errors[field.id],
             options: field.options || [],
-            placeholder: field.placeholder,
+            placeholder: field.placeholder
           }),
           field.id
         );
@@ -371,7 +379,7 @@ export class FormBuilder extends React.Component {
           value: this.state.values[field.id],
           onUpdate: value => this.handleUpdate(field.id, value),
           errMsg: this.state.errors[field.id],
-          disabled: field.disabled || this.state.viewOnly,
+          disabled: field.disabled || this.state.viewOnly
         }),
         field.id
       );
@@ -384,7 +392,11 @@ export class FormBuilder extends React.Component {
         <div key="blank-save-button" />
       ),
       space,
-      cancelButton(cancelButtonText),
+      this.props.hideCancel ? (
+        cancelButton(cancelButtonText)
+      ) : (
+        <div key="blank-cancel-button" />
+      )
     ];
 
     const removeButtonSelector = () => {

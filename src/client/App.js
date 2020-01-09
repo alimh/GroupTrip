@@ -10,16 +10,18 @@ import { TestPage } from './pages/TestPage';
 import { NewUserPage } from './pages/NewUserPage';
 
 const renderAllTrips = (props) => {
-  const refreshFlag = props.location.state
-    ? props.location.state.refresh
-    : false;
+  const { refresh, ...otherProps } = props.location.state || {};
 
-  if (refreshFlag === true) {
+  if (refresh === true) {
     const { history } = props;
-    history.replace({ pathname: '/', state: { refresh: null } });
+    history.replace({
+      pathname: '/',
+      state: { refresh: false, ...otherProps }
+    });
     window.location.reload();
   }
-  return <AllTrips />;
+
+  return <AllTrips {...otherProps} />;
 };
 const renderNewTrip = () => <NewTripPage />;
 const renderTripLinksWrapper = pathObj => (

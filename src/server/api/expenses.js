@@ -19,13 +19,13 @@ const formatDate = d =>
   new Date(d).toLocaleDateString('en-US', {
     month: '2-digit',
     day: '2-digit',
-    year: 'numeric',
+    year: 'numeric'
   });
 
 const reduceSplitBy = s =>
   s.reduce((acc, i) => acc.concat(i.name).concat(', '), '').slice(0, -2);
 
-const getExpenses = (tripId, token, res, num = 0) => {
+const getExpenses = (tripId, userId, res, num = 0) => {
   // num: controls which expenses to get:
   //    -1: only incopmlete expenses
   //    0: all expenses
@@ -44,7 +44,7 @@ const getExpenses = (tripId, token, res, num = 0) => {
 
       const expObjWithOwner = expObj.map(e => ({
         ...e,
-        canEdit: e.owner === token || tripOwner === token,
+        canEdit: e.owner === userId || tripOwner === userId
       }));
       const expNeedAttention = expObjWithOwner.filter(e => e.needsAttention && e.canEdit);
       const expNormal = expObjWithOwner.filter(e => !(e.needsAttention && e.canEdit));
@@ -66,9 +66,9 @@ const getExpenses = (tripId, token, res, num = 0) => {
 
 router.get('/all', (req, res) => {
   const { id } = req.query;
-  const token = req.headers.authorization.split(' ')[1] || null;
+  const userId = res.locals.user ? res.locals.user.id : null;
 
-  getExpenses(id, token, res);
+  getExpenses(id, userId, res);
   return true;
 });
 
@@ -76,15 +76,15 @@ router.get('/all', (req, res) => {
 router.get('/recent', (req, res) => {
   const { id } = req.query;
   const { n = 3 } = req.query;
-  const token = req.headers.authorization.split(' ')[1] || null;
+  const userId = res.locals.user ? res.locals.user.id : null;
 
-  getExpenses(id, token, res, n);
+  getExpenses(id, userId, res, n);
   return true;
 });
 
 router.get('/getone', (req, res) => {
   const { id } = req.query;
-  const token = req.headers.authorization.split(' ')[1] || null;
+  const userId = res.locals.user ? res.locals.user.id : null;
 
   Expense.findById(id, (err, exp) => {
     if (err) return res.status(403).end();
@@ -101,8 +101,8 @@ router.get('/getone', (req, res) => {
       const expObjWithOwner = {
         ...expObj,
         canEdit: !expObj.removed_at
-          ? expObj.owner === token || tripOwner === token
-          : false,
+          ? expObj.owner === userId || tripOwner === userId
+          : false
       };
 
       return res
@@ -114,17 +114,20 @@ router.get('/getone', (req, res) => {
   });
   return true;
 });
+
 router.get('/incomplete', (req, res) => {
   const { id } = req.query;
-  const token = req.headers.authorization.split(' ')[1] || null;
+  const userId = res.locals.user ? res.locals.user.id : null;
 
-  getExpenses(id, token, res, -1);
+  getExpenses(id, userId, res, -1);
 
   return true;
 });
 
 router.post('/save', (req, res) => {
-  const token = req.headers.authorization.split(' ')[1] || null;
+  const userId = res.locals.user ? res.locals.user.id : null;
+  const userName = res.locals.user ? res.locals.user.name : null;
+
   const expenseDetails = {
     tripId: req.body.tripId,
     date: req.body.date,
@@ -132,26 +135,26 @@ router.post('/save', (req, res) => {
     amount: req.body.amount,
     category: {
       name: req.body.category.value,
-      id: req.body.category.key,
+      id: req.body.category.key
     },
     splitBy: req.body.splitBy.reduce((acc, user) => {
       if (user.checked) {
         acc.push({
           name: user.value,
-          id: user.key,
+          id: user.key
         });
       }
       return acc;
     }, []),
     paidBy: {
       name: req.body.paidBy.value,
-      id: req.body.paidBy.key,
+      id: req.body.paidBy.key
     },
     updated_at: new Date(),
-    removed_at: null,
+    removed_at: null
   };
 
-  const newExpense = Expense({ ...expenseDetails, owner: token });
+  const newExpense = Expense({ ...expenseDetails, owner: userId });
 
   if (req.body.id) {
     // if we are updating an expense
@@ -161,35 +164,39 @@ router.post('/save', (req, res) => {
         changes.push({
           item: 'Note',
           oldValue: expense.note,
-          newValue: expenseDetails.note,
+          newValue: expenseDetails.note
         });
       }
       if (expenseDetails.amount !== expense.amount) {
         changes.push({
           item: 'Amount',
-          oldValue: formatMoney(parseFloat(expense.amount)),
-          newValue: formatMoney(parseFloat(expenseDetails.amount)),
+          oldValue: expense.amount
+            ? formatMoney(parseFloat(expense.amount))
+            : '',
+          newValue: expenseDetails.amount
+            ? formatMoney(parseFloat(expenseDetails.amount))
+            : ''
         });
       }
       if (expense.category.name !== expenseDetails.category.name) {
         changes.push({
           item: 'Category',
           oldValue: expense.category.name,
-          newValue: expenseDetails.category.name,
+          newValue: expenseDetails.category.name
         });
       }
       if (expense.paidBy.name !== expenseDetails.paidBy.name) {
         changes.push({
           item: 'Paid By',
           oldValue: expense.paidBy.name,
-          newValue: expenseDetails.paidBy.name,
+          newValue: expenseDetails.paidBy.name
         });
       }
       if (formatDate(expense.date) !== formatDate(expenseDetails.date)) {
         changes.push({
           item: 'Date',
           oldValue: formatDate(expense.date),
-          newValue: formatDate(expenseDetails.date),
+          newValue: formatDate(expenseDetails.date)
         });
       }
       if (
@@ -198,22 +205,23 @@ router.post('/save', (req, res) => {
         changes.push({
           item: 'Split By',
           oldValue: reduceSplitBy(expense.splitBy),
-          newValue: reduceSplitBy(expenseDetails.splitBy),
+          newValue: reduceSplitBy(expenseDetails.splitBy)
         });
       }
 
       const entry = {
         tripId: expense.tripId,
         expenseId: expense.id,
-        userId: token,
+        userId,
+        userName,
         action: 'updated',
         note: expense.note,
         timestamp: new Date(),
-        changes,
+        changes
       };
 
       // check to see if owner exists for this expennse and if it doesn't match
-      if (expense.owner === null || expense.owner === token) {
+      if (expense.owner === null || expense.owner === userId) {
         // we can update
         expense.update(expenseDetails, (errExpUpdate) => {
           if (errExpUpdate) throw err;
@@ -227,7 +235,7 @@ router.post('/save', (req, res) => {
         // check the trip owner
         Trip.findById(expense.tripId, (errTrip, trip) => {
           // check to see if the token matches the trip owner
-          if (trip.owner === token) {
+          if (trip.owner === userId) {
             // we can update
             expense.update(expenseDetails, (errExpUpdate) => {
               if (errExpUpdate) throw err;
@@ -252,10 +260,11 @@ router.post('/save', (req, res) => {
       writeToLog({
         tripId: expenseDetails.tripId,
         expenseId: newExpense.id,
-        userId: token,
+        userId,
+        userName,
         action: 'added',
         note: newExpense.note,
-        timestamp: new Date(),
+        timestamp: new Date()
       });
 
       return res
@@ -267,10 +276,12 @@ router.post('/save', (req, res) => {
 });
 
 router.post('/remove', (req, res) => {
-  const token = req.headers.authorization.split(' ')[1] || null;
+  const userId = res.locals.user ? res.locals.user.id : null;
+  const userName = res.locals.user ? res.locals.user.name : null;
+
   Expense.findById(req.body.id, (err, expense) => {
     // check to see if owner exists for this expennse and if it doesn't match
-    if (expense.owner === null || expense.owner === token) {
+    if (expense.owner === null || expense.owner === userId) {
       // we can update
       expense.update({ removed_at: new Date() }, (errExpUpdate) => {
         if (errExpUpdate) throw err;
@@ -278,10 +289,11 @@ router.post('/remove', (req, res) => {
         writeToLog({
           tripId: expense.tripId,
           expenseId: expense.id,
-          userId: token,
+          userId,
+          userName,
           action: 'removed',
           note: expense.note,
-          timestamp: new Date(),
+          timestamp: new Date()
         });
         return res.status(200).end();
       });
@@ -289,7 +301,7 @@ router.post('/remove', (req, res) => {
       // check the trip owner
       Trip.findById(expense.tripId, (errTrip, trip) => {
         // check to see if the token matches the trip owner
-        if (trip.owner === token) {
+        if (trip.owner === userId) {
           // we can update
           expense.update({ removed_at: new Date() }, (errExpUpdate) => {
             if (errExpUpdate) throw err;
@@ -297,10 +309,11 @@ router.post('/remove', (req, res) => {
             writeToLog({
               tripId: expense.tripId,
               expenseId: expense.id,
-              userId: token,
+              userId,
+              userName,
               action: 'removed',
               note: expense.note,
-              timestamp: new Date(),
+              timestamp: new Date()
             });
 
             return res.status(200).end();

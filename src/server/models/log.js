@@ -6,16 +6,17 @@ const logObjSchema = new Schema({
   tripId: String,
   expenseId: String,
   userId: String,
+  userName: String,
   action: String,
   note: String,
   changes: [
     {
       item: String,
       oldValue: String,
-      newValue: String,
-    },
+      newValue: String
+    }
   ],
-  timestamp: Date,
+  timestamp: Date
 });
 
 logObjSchema.set('toJSON', { virtuals: true });

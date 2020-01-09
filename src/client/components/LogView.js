@@ -1,3 +1,5 @@
+/* eslint react/no-array-index-key: "off" */
+
 import React from 'react';
 import ListGroup from 'react-bootstrap/ListGroup';
 
@@ -5,7 +7,7 @@ const formatDate = d =>
   new Date(d).toLocaleDateString('en-US', {
     month: '2-digit',
     day: '2-digit',
-    year: 'numeric',
+    year: 'numeric'
   });
 
 export const LogView = (props) => {
@@ -14,9 +16,8 @@ export const LogView = (props) => {
     <ul>
       {changes.map((c, n) => (
         <li key={n}>
-          <strong>{c.item}</strong>:{' '}
-          {c.oldValue === '' ? '(blank)' : c.oldValue}
-          {' => '}
+          <strong>{c.item}</strong>: {c.oldValue === '' ? '' : c.oldValue}
+          {c.oldValue === '' || c.oldValue === null ? '' : ' => '}
           {c.newValue === '' ? '(blank)' : c.newValue}{' '}
         </li>
       ))}
@@ -30,7 +31,7 @@ export const LogView = (props) => {
           onClick={() => props.onClick(e.expenseId)}
           key={e.id}
         >
-          {formatDate(e.timestamp)}: <strong>{e.userId}</strong> {e.action}{' '}
+          {formatDate(e.timestamp)}: <strong>{e.userName}</strong> {e.action}{' '}
           {e.note}
           {e.changes ? changesList(e.changes) : <div key="blank-changes" />}
         </ListGroup.Item>
