@@ -1,6 +1,6 @@
 /* eslint react/forbid-prop-types: "off" */
 
-import React from 'react';
+import React, { useContext } from 'react';
 import Axios from 'axios';
 import { FormBuilder } from '../components/FormComponents';
 import {
@@ -10,25 +10,19 @@ import {
 
 import Auth from '../utils/Auth';
 
+import MessageContext, { ErrToMessageObj } from '../components/MessageContext';
+
 export const LoginPageDA = (props) => {
+  const context = useContext(MessageContext);
+
   const post = (fieldValues) => {
     const payload = { ...fieldValues };
-    const authorizationHeader = 'bearer '.concat(Auth.getToken());
-    Axios.post('/auth/login', payload, {
-      headers: { Authorization: authorizationHeader }
-    })
+    Axios.post('/auth/login', payload)
       .then((res) => {
         Auth.authenticateUser(res.data.token);
         props.onLogin();
       })
-      .catch((err) => {
-        if (props.message) {
-          props.message({
-            text: err.response.data,
-            variant: 'error'
-          });
-        } else throw err;
-      });
+      .catch(err => context.sendMessage(ErrToMessageObj(err)));
   };
   const fields = [
     {

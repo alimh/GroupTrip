@@ -4,21 +4,13 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { Redirect } from 'react-router-dom';
 import { LoginPageDA } from '../data-access/LoginPageDA';
-import { DisappearingAlert } from '../components/DisappearingAlert';
 
 export class LoginPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      loginSuccess: false,
-      messageObj: null
+      loginSuccess: false
     };
-  }
-
-  handleMessage(msg) {
-    this.setState({
-      messageObj: msg
-    });
   }
 
   handleLogin() {
@@ -27,21 +19,24 @@ export class LoginPage extends React.Component {
 
   render() {
     return this.state.loginSuccess ? (
-      <Redirect push to={{ pathname: '/', state: { refresh: true } }} />
+      <Redirect
+        push
+        to={{
+          pathname: '/',
+          state: {
+            refresh: true,
+            messageObj: { text: 'You have been logged in', variant: 'success' }
+          }
+        }}
+      />
     ) : (
       <div>
         <br />
         <Container>
           <h3>Login</h3>
-          <Container>
-            <DisappearingAlert messageObj={this.state.messageObj} />
-          </Container>
           <Row className="justify-content-md-center">
             <Col>
-              <LoginPageDA
-                onLogin={() => this.handleLogin()}
-                message={message => this.handleMessage(message)}
-              />
+              <LoginPageDA onLogin={() => this.handleLogin()} />
             </Col>
           </Row>
         </Container>

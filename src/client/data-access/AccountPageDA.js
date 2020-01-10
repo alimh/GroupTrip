@@ -11,12 +11,16 @@ import {
   checkNotBlankError,
   checkValidEmailError
 } from '../utils/FormValidation';
+import MessageContext, { ErrToMessageObj } from '../components/MessageContext';
 
 import Auth from '../utils/Auth';
 
 export class AccountPageDA extends React.Component {
+  static contextType = MessageContext;
+
   constructor(props) {
     super(props);
+
     this.state = {
       loading: true,
       fieldValues: {}
@@ -35,7 +39,7 @@ export class AccountPageDA extends React.Component {
       })
       .catch((err) => {
         this.setState({ loading: false });
-        this.props.message({ text: err.toString(), variant: 'error' });
+        this.context.sendMessage(ErrToMessageObj(err));
       });
   }
 
@@ -43,31 +47,22 @@ export class AccountPageDA extends React.Component {
     const payload = { ...fieldValues };
     Axios.post('/api/users/commonsettings', payload)
       .then(() => {
+        this.context.sendMessage({ text: 'Changes saved', variant: 'success' });
         this.getUserSettings();
-        this.props.message({ text: 'Changes saved', variant: 'success' });
       })
-      .catch((err) => {
-        this.props.message({
-          heading: err.toString(),
-          text: err.response.data,
-          variant: 'error'
-        });
-      });
+      .catch(err => this.context.sendMessage(ErrToMessageObj(err)));
   }
 
   postUserPassword(fieldValues) {
     const payload = { ...fieldValues };
     Axios.post('/api/users/password', payload)
       .then(() => {
-        this.props.message({ text: 'Password changed', variant: 'success' });
-      })
-      .catch((err) => {
-        this.props.message({
-          heading: err.toString(),
-          text: err.response.data,
-          variant: 'error'
+        this.context.sendMessage({
+          text: 'Password changed',
+          variant: 'success'
         });
-      });
+      })
+      .catch(err => this.context.sendMessage(ErrToMessageObj(err)));
   }
 
   handleLogout() {
@@ -76,8 +71,7 @@ export class AccountPageDA extends React.Component {
       .then(() => {
         this.props.onLogout();
       })
-      .catch(err =>
-        this.props.message({ text: err.toString(), variant: 'error' }));
+      .catch(err => this.context.sendMessage(ErrToMessageObj(err)));
   }
 
   render() {

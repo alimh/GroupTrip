@@ -1,6 +1,6 @@
 /* eslint react/forbid-prop-types: "off" */
 
-import React from 'react';
+import React, { useContext } from 'react';
 import Axios from 'axios';
 import { FormBuilder } from '../components/FormComponents';
 import {
@@ -9,32 +9,20 @@ import {
 } from '../utils/FormValidation';
 
 import Auth from '../utils/Auth';
+import MessageContext, { ErrToMessageObj } from '../components/MessageContext';
 
 export const NewUser = (props) => {
+  const context = useContext(MessageContext);
+
   const post = (fieldValues) => {
     if (fieldValues.password === fieldValues.confirm_password) {
       const payload = { ...fieldValues };
-      const authorizationHeader = 'bearer '.concat(Auth.getToken());
-      Axios.post('/auth/signup', payload, {
-        headers: { Authorization: authorizationHeader }
-      })
+      Axios.post('/auth/signup', payload)
         .then((res) => {
           Auth.authenticateUser(res.data.token);
           props.onLogin();
         })
-        .catch((err) => {
-          if (props.message) {
-            props.message({
-              text: err.response.data,
-              variant: 'error'
-            });
-          } else throw err;
-        });
-    } else if (props.message) {
-      props.message({
-        text: 'Password do not match',
-        variant: 'warning'
-      });
+        .catch(err => context.sendMessage(ErrToMessageObj(err)));
     }
   };
 

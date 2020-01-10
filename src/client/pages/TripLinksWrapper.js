@@ -1,13 +1,11 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
-import Container from 'react-bootstrap/Container';
 import { TripIndexPage } from './TripIndexPage';
 import { TripSettingsPage } from './TripSettingsPage';
 import { NotFoundPage } from './NotFoundPage';
 import { ExpensesPage } from './ExpensesPage';
 import { SummaryPage } from './SummaryPage';
 import { TripLinks } from '../data-access/TripLinksDA';
-import { DisappearingAlert } from '../components/DisappearingAlert';
 
 const renderSettings = tripId => <TripSettingsPage tripId={tripId} />;
 const renderSummary = tripId => <SummaryPage tripId={tripId} />;
@@ -19,15 +17,8 @@ export class TripLinksWrapper extends React.Component {
     super(props);
 
     this.state = {
-      tripId: props.pathObj.match.params.n || null,
-      messageObj: null
+      tripId: props.pathObj.match.params.n || null
     };
-  }
-
-  handleMessage(msg) {
-    this.setState({
-      messageObj: msg
-    });
   }
 
   handleSuccess() {
@@ -35,43 +26,40 @@ export class TripLinksWrapper extends React.Component {
   }
 
   render() {
+    const { tripId } = this.state;
     const child = () => (
       <Switch>
         <Route
           exact
           path={`${this.props.pathObj.match.path}/settings`}
-          render={() => renderSettings(this.state.tripId)}
+          render={() => renderSettings(tripId)}
         />
         <Route
           exact
           path={`${this.props.pathObj.match.path}/summary`}
-          render={() => renderSummary(this.state.tripId)}
+          render={() => renderSummary(tripId)}
         />
         <Route
           exact
           path={`${this.props.pathObj.match.path}/home`}
-          render={() => renderTripPage(this.state.tripId)}
+          render={() => renderTripPage(tripId)}
         />
         <Route
           exact
           path={`${this.props.pathObj.match.path}/expenses`}
-          render={() => renderExpensesPage(this.state.tripId)}
+          render={() => renderExpensesPage(tripId)}
         />
         <Route
           path={`${this.props.pathObj.match.path}`}
-          render={() => renderTripPage(this.state.tripId)}
+          render={() => renderTripPage(tripId)}
         />
         <Route component={NotFoundPage} />
       </Switch>
     );
     return (
       <div>
-        <Container>
-          <DisappearingAlert messageObj={this.state.messageObj} />
-        </Container>
         <TripLinks
           tripId={this.state.tripId}
-          message={msg => this.handleMessage(msg)}
           onSuccess={() => this.handleSuccess()}
         />
         <br />

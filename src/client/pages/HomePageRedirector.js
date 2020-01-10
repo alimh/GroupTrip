@@ -7,28 +7,24 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import ListGroup from 'react-bootstrap/ListGroup';
-import { DisappearingAlert } from '../components/DisappearingAlert';
 import { AllTripsDA } from '../data-access/AllTripsDA';
 import Auth from '../utils/Auth';
 
-export class AllTrips extends React.Component {
+import MessageContext from '../components/MessageContext';
+
+export class HomePageRedirector extends React.Component {
+  static contextType = MessageContext;
+
   constructor(props) {
     super(props);
 
-    this.state = {
-      loggedIn: Auth.isUserAuthenticated(),
-      keys: {
-        trips: Math.random()
-      },
-      messageObj: props.messageObj || null
-    };
+    this.state = { messageObj: props.messageObj || null };
   }
-
-  handleMessage(m) {
-    // display message
-    this.setState({ messageObj: m });
+  componentDidMount() {
+    console.log('sending message');
+    if (this.state.messageObj) this.context.sendMessage(this.state.messageObj);
+    console.log('sent message');
   }
-
   render() {
     const rednerNotLoggedIn = () => (
       <Container>
@@ -38,6 +34,7 @@ export class AllTrips extends React.Component {
         </h4>
       </Container>
     );
+
     const renderLoggedIn = () => (
       <Container>
         <h3>Get Started</h3>
@@ -49,20 +46,17 @@ export class AllTrips extends React.Component {
             <ListGroup>
               <LinkContainer to="/new">
                 <ListGroup.Item action variant="primary">
-                  Add a new trip
+                  Start a new trip
                 </ListGroup.Item>
               </LinkContainer>
             </ListGroup>
             <br />
-            <AllTripsDA
-              key={this.state.keys.trips}
-              token={this.state.token}
-              message={m => this.handleMessage(this.state.keys.trips, m)}
-            />
+            <AllTripsDA />
           </Col>
         </Row>
       </Container>
     );
+
     return (
       <div className="home">
         <Jumbotron>
@@ -75,13 +69,10 @@ export class AllTrips extends React.Component {
             </Row>
           </Container>
         </Jumbotron>
-        <Container>
-          <DisappearingAlert messageObj={this.state.messageObj} />
-        </Container>
-        {this.state.loggedIn ? renderLoggedIn() : rednerNotLoggedIn()}
+        {Auth.isUserAuthenticated() ? renderLoggedIn() : rednerNotLoggedIn()}
       </div>
     );
   }
 }
 
-export default AllTrips;
+export default HomePageRedirector;

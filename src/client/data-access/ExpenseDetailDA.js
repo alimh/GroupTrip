@@ -1,11 +1,14 @@
 import React from 'react';
 import Axios from 'axios';
-import Auth from '../utils/Auth';
 import { LoggedOutMessage } from '../components/LoggedOutMessage';
 import { ExpenseForm } from '../components/ExpenseForm';
 import { LoadingView } from '../components/LoadingView';
 
+import MessageContext, { ErrToMessageObj } from '../components/MessageContext';
+
 export class ExpenseDetail extends React.Component {
+  static contextType = MessageContext;
+
   static getDerivedStateFromProps(nextProps, prevState) {
     return prevState.preventScrub ? {} : nextProps;
   }
@@ -20,9 +23,6 @@ export class ExpenseDetail extends React.Component {
 
     this.state = {
       loading: true,
-      authorizationHeader: Auth.getToken()
-        ? 'bearer '.concat(Auth.getToken())
-        : null,
       tripObj,
       tripId,
       expenseObj,
@@ -33,9 +33,6 @@ export class ExpenseDetail extends React.Component {
   componentDidMount() {
     if (this.state.tripId) {
       Axios.get('/api/trips/get', {
-        headers: {
-          Authorization: this.state.authorizationHeader
-        },
         params: { id: this.state.tripId }
       })
         .then((response) => {
@@ -44,25 +41,24 @@ export class ExpenseDetail extends React.Component {
         })
         .catch((err) => {
           this.setState({ loading: false });
-          if (this.props.message) {
-            this.props.message({
-              text:
-                err.response.status === 401
-                  ? LoggedOutMessage()
-                  : err.response.data,
-              variant: 'error'
-            });
-          } else throw err;
+          this.context.sendMessage({
+            text:
+              err.response.status === 401
+                ? LoggedOutMessage()
+                : err.response.data,
+            variant: 'error'
+          });
         });
-    } else this.props.message({ text: 'Trip ID not valid', variant: 'error' });
+    } else {
+      this.context.sendMessage({ text: 'Trip ID not valid', variant: 'error' });
+    }
   }
 
   handleSave(expenseObj) {
     const payload = {
       ...expenseObj,
       tripId: this.state.tripId,
-      id: this.state.expenseObj ? this.state.expenseObj.id : null,
-      owner: Auth.getToken()
+      id: this.state.expenseObj ? this.state.expenseObj.id : null
     };
 
     // this.setState({ loading: true });
@@ -81,42 +77,29 @@ export class ExpenseDetail extends React.Component {
       }
     };
     this.setState({
-      expenseObj: newExpenseObj,
-      preventScrub: true
+      expenseObj: newExpenseObj
     });
-    Axios.post('/api/expenses/save', payload, {
-      headers: { Authorization: this.state.authorizationHeader }
-    })
+    Axios.post('/api/expenses/save', payload)
       .then(() => {
         this.props.message({ text: 'Saved', variant: 'success' });
         // this.setState({ loading: false });
         // had to comment because component is being destroyed on .message
       })
-      .catch((err) => {
-        if (this.props.message) {
-          this.props.message({ text: err.toString(), varaint: 'error' });
-        } else throw err;
-      });
+      .catch(err => this.props.message(ErrToMessageObj(err)));
   }
 
   handleRemove() {
     const payload = { id: this.state.expenseObj.id };
     this.props.message({ text: 'Removing...' });
     this.setState({ tripObj: null });
-    Axios.post('/api/expenses/remove', payload, {
-      headers: { Authorization: this.state.authorizationHeader }
-    })
+    Axios.post('/api/expenses/remove', payload)
       .then(() => {
         this.props.message({
           text: 'Removed Expense',
           variant: 'success'
         });
       })
-      .catch((err) => {
-        if (this.props.message) {
-          this.props.message({ text: err.toString(), varaint: 'error' });
-        } else throw err;
-      });
+      .catch(err => this.props.message(ErrToMessageObj(err)));
   }
 
   handleCancel() {

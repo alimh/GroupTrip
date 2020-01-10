@@ -2,21 +2,14 @@ import React from 'react';
 import Container from 'react-bootstrap/Container';
 import { Redirect } from 'react-router-dom';
 import { AccountPageDA } from '../data-access/AccountPageDA';
-import { DisappearingAlert } from '../components/DisappearingAlert';
 
 export class AccountPage extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      messageObj: null,
       redirect: false
     };
-  }
-
-  handleMessage(m) {
-    // display message
-    this.setState({ messageObj: m });
   }
 
   handleLogout() {
@@ -39,14 +32,8 @@ export class AccountPage extends React.Component {
       <div>
         <br />
         <Container>
-          <DisappearingAlert messageObj={this.state.messageObj} />
-        </Container>
-        <Container>
           <h3>Account Info</h3>
-          <AccountPageDA
-            onLogout={() => this.handleLogout()}
-            message={m => this.handleMessage(m)}
-          />
+          <AccountPageDA onLogout={() => this.handleLogout()} />
         </Container>
       </div>
     );

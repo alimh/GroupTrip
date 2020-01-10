@@ -207,14 +207,16 @@ export class FormBuilder extends React.Component {
       ...initialState,
       initial: initialState,
       handleCancel: onCancel,
-      viewOnly
+      viewOnly,
+      dirty: false
     };
   }
 
   resetForm() {
     this.setState({
       values: this.state.initial.values,
-      errors: this.state.initial.errors
+      errors: this.state.initial.errors,
+      dirty: false
     });
   }
 
@@ -228,7 +230,7 @@ export class FormBuilder extends React.Component {
       ...this.state.values,
       [field]: value
     };
-    this.setState({ values, errors });
+    this.setState({ values, errors, dirty: true });
   }
 
   handleSave(e) {
@@ -282,7 +284,12 @@ export class FormBuilder extends React.Component {
     const noFormatItem = (field, key) => <div key={key}>{field}</div>;
     const noFormatWrapper = fields => <div>{fields}</div>;
     const saveButton = text => (
-      <Button key="save-button" type="submit" variant="primary">
+      <Button
+        key="save-button"
+        type="submit"
+        variant="primary"
+        disabled={!this.state.dirty}
+      >
         {text}
       </Button>
     );
@@ -392,7 +399,7 @@ export class FormBuilder extends React.Component {
         <div key="blank-save-button" />
       ),
       space,
-      this.props.hideCancel ? (
+      !this.props.hideCancel || this.state.confirmRemove ? (
         cancelButton(cancelButtonText)
       ) : (
         <div key="blank-cancel-button" />

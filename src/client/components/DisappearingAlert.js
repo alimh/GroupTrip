@@ -26,7 +26,7 @@ export class DisappearingAlert extends React.Component {
         msg: messageObj.text || '',
         heading: messageObj.heading || '',
         variant,
-        timeout: 5000,
+        timeout: 1000,
         disappear: variant !== 'danger'
       };
 

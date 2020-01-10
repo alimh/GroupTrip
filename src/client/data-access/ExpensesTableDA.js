@@ -1,13 +1,13 @@
 import React from 'react';
 import Axios from 'axios';
-import Auth from '../utils/Auth';
-import { LoggedOutMessage } from '../components/LoggedOutMessage';
 import { LoadingView } from '../components/LoadingView';
 import { ExpensesTableView } from '../components/ExpensesTableView';
 
-// import { ExpenseDetail } from '../data-access/ExpenseDetailDA';
+import MessageContext, { ErrToMessageObj } from '../components/MessageContext';
 
 export class ExpensesTable extends React.Component {
+  static contextType = MessageContext;
+
   constructor(props) {
     super(props);
 
@@ -28,11 +28,7 @@ export class ExpensesTable extends React.Component {
 
   getExpenses() {
     if (this.state.tripId) {
-      const authorizationHeader = 'bearer '.concat(Auth.getToken());
       Axios.get('/api/expenses/'.concat(this.state.apiEndpoint), {
-        headers: {
-          Authorization: authorizationHeader
-        },
         params: { id: this.state.tripId }
       })
         .then((response) => {
@@ -41,15 +37,7 @@ export class ExpensesTable extends React.Component {
         })
         .catch((err) => {
           this.setState({ loading: false });
-          if (this.props.message) {
-            this.props.message({
-              text:
-                err.response.status === 401
-                  ? LoggedOutMessage()
-                  : err.response.data,
-              variant: 'error'
-            });
-          } else throw err;
+          this.context.sendMessage(ErrToMessageObj(err));
         });
     }
   }

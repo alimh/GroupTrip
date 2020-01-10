@@ -1,18 +1,17 @@
 import React from 'react';
 import Axios from 'axios';
-import Auth from '../utils/Auth';
 import { LoadingView } from '../components/LoadingView';
-import { LoggedOutMessage } from '../components/LoggedOutMessage';
 import { LogView } from '../components/LogView';
 
+import MessageContext, { ErrToMessageObj } from '../components/MessageContext';
+
 export class Log extends React.Component {
+  static contextType = MessageContext;
+
   constructor(props) {
     super(props);
 
     this.state = {
-      authorizationHeader: Auth.getToken()
-        ? 'bearer '.concat(Auth.getToken())
-        : null,
       log: [],
       tripId: props.tripId || null
     };
@@ -24,9 +23,6 @@ export class Log extends React.Component {
 
   getLogs() {
     Axios.get('/api/log/recent', {
-      headers: {
-        Authorization: this.state.authorizationHeader
-      },
       params: { tripId: this.state.tripId }
     })
       .then((response) => {
@@ -35,34 +31,19 @@ export class Log extends React.Component {
       })
       .catch((err) => {
         this.setState({ loading: false });
-        if (this.props.message) {
-          this.props.message({
-            text:
-              err.response.status === 401
-                ? LoggedOutMessage()
-                : err.response.data,
-            variant: 'error'
-          });
-        } else throw err;
+        this.context.sendMessage(ErrToMessageObj(err));
       });
   }
 
   handleClick(id) {
     Axios.get('/api/expenses/getone', {
-      headers: {
-        Authorization: this.state.authorizationHeader
-      },
       params: { id }
     })
       .then((response) => {
         const { data } = response;
         this.props.onView(data);
       })
-      .catch((err) => {
-        if (this.props.message) {
-          this.props.message({ text: err.toString(), variant: 'error' });
-        } else throw err;
-      });
+      .catch(err => this.context.sendMessage(ErrToMessageObj(err)));
   }
 
   render() {

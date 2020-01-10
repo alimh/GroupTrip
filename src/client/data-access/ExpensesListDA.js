@@ -1,10 +1,13 @@
 import React from 'react';
 import Axios from 'axios';
-import Auth from '../utils/Auth';
 import { LoadingView } from '../components/LoadingView';
 import { ExpensesListView } from '../components/ExpensesListView';
 
+import MessageContext, { ErrToMessageObj } from '../components/MessageContext';
+
 export class ExpensesList extends React.Component {
+  static contextType = MessageContext;
+
   static getDerivedStateFromProps(nextProps, prevState) {
     if (!nextProps.active && prevState.active) {
       // remove active from the others and disable buttons
@@ -43,11 +46,7 @@ export class ExpensesList extends React.Component {
 
   getExpenses() {
     if (this.state.tripId) {
-      const authorizationHeader = 'bearer '.concat(Auth.getToken());
       Axios.get('/api/expenses/'.concat(this.state.apiEndpoint), {
-        headers: {
-          Authorization: authorizationHeader
-        },
         params: { id: this.state.tripId }
       })
         .then((response) => {
@@ -57,9 +56,7 @@ export class ExpensesList extends React.Component {
         })
         .catch((err) => {
           this.setState({ loading: false });
-          if (this.props.message) {
-            this.props.message(...err.response);
-          } else throw err;
+          this.context.sendMessage(ErrToMessageObj(err));
         });
     }
   }

@@ -1,6 +1,6 @@
 import React from 'react';
 import Axios from 'axios';
-import Auth from '../utils/Auth';
+import { withRouter } from 'react-router-dom';
 import { TripDetailsView } from '../components/TripDetailsView';
 import { LoadingView } from '../components/LoadingView';
 import { LoggedOutMessage } from '../components/LoggedOutMessage';
@@ -13,9 +13,6 @@ export class TripDetailsDA extends React.Component {
 
     this.state = {
       loading: tripId !== null,
-      authorizationHeader: Auth.getToken()
-        ? 'bearer '.concat(Auth.getToken())
-        : null,
       tripObj: null,
       tripId
     };
@@ -24,9 +21,6 @@ export class TripDetailsDA extends React.Component {
   componentDidMount() {
     if (this.state.tripId) {
       Axios.get('/api/trips/get', {
-        headers: {
-          Authorization: this.state.authorizationHeader
-        },
         params: { id: this.state.tripId }
       })
         .then((response) => {
@@ -58,17 +52,15 @@ export class TripDetailsDA extends React.Component {
     */
     const payload = tripObject;
     this.setState({ loading: true, tripObj: tripObject });
-    Axios.post('/api/trips/save', payload, {
-      headers: { Authorization: this.state.authorizationHeader }
-    })
+    Axios.post('/api/trips/save', payload)
       .then((res) => {
-        this.props.redirectPath('/trips/'.concat(res.data));
-        if (this.props.message) {
-          this.props.message({
-            text: this.state.tripId ? 'Saved' : 'Created New Trip',
-            variant: 'success'
-          });
-        }
+        this.props.redirect('/trips/'.concat(res.data));
+        // if (this.props.message) {
+        //   this.props.message({
+        //     text: this.state.tripId ? 'Saved' : 'Created New Trip',
+        //     variant: 'success'
+        //   });
+        // }
         this.setState({ loading: false });
       })
       .catch((err) => {
@@ -81,13 +73,8 @@ export class TripDetailsDA extends React.Component {
   handleRemove() {
     const payload = { id: this.state.tripId };
     this.setState({ loading: true });
-    Axios.post('/api/trips/remove', payload, {
-      headers: { Authorization: this.state.authorizationHeader }
-    })
+    Axios.post('/api/trips/remove', payload)
       .then(() => {
-        // this.props.message({ success: 'Removed' });
-        // this.setState({ loading: false, tripObj: null });
-        // // TODO: redirct to new link
         this.props.redirect('/');
       })
       .catch((err) => {
@@ -99,11 +86,14 @@ export class TripDetailsDA extends React.Component {
   }
 
   handleCancel() {
-    // Go back to where we came from
+    // TODO: Go back to where we came from
     // if there is a tripObj, go back to the trip page
     // if there is no tripObj, go back to the root page
-    this.props.redirectPath(this.state.tripId ? '/trips/'.concat(this.state.tripId) : '/');
-    if (this.props.onCancel) this.props.onCancel();
+    //    this.props.redirect(this.state.tripId ? '/trips/'.concat(this.state.tripId) : '/');
+    //    if (this.props.onCancel) this.props.onCancel();
+
+    // this.props.cancel();
+    this.props.history.goBack();
   }
 
   render() {
@@ -119,4 +109,4 @@ export class TripDetailsDA extends React.Component {
   }
 }
 
-export default TripDetailsDA;
+export default withRouter(TripDetailsDA);

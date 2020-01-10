@@ -2,7 +2,6 @@ import React from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { DisappearingAlert } from '../components/DisappearingAlert';
 import { ExpensesList } from '../data-access/ExpensesListDA';
 import { ExpenseModal } from '../components/ExpenseModal';
 import { ExpenseSummaryDA } from '../data-access/ExpenseSummaryDA';
@@ -16,37 +15,29 @@ export class SummaryPage extends React.Component {
       keySummary: Math.random(),
       tripId: props.tripId || null,
       activeExpenseObject: null,
-      messageObj: null,
-      lengthIncomplete: 0,
+      lengthIncomplete: 0
     };
   }
   handleEdit(expObjToEdit) {
     this.setState({
-      activeExpenseObject: expObjToEdit,
+      activeExpenseObject: expObjToEdit
     });
   }
 
   handleCloseModal() {
     this.setState({
-      activeExpenseObject: null,
+      activeExpenseObject: null
     });
   }
-  handleMessage(m) {
-    this.setState({ messageObj: m });
-  }
+
   handleGetExpenses(exp) {
     this.setState({ lengthIncomplete: exp.length });
   }
+
   render() {
     return (
       <div className="home">
         <Container>
-          <Row>
-            <Col>
-              <DisappearingAlert messageObj={this.state.messageObj} />
-            </Col>
-          </Row>
-
           <Row>
             <Col>
               <h3>Summary</h3>
@@ -65,7 +56,6 @@ export class SummaryPage extends React.Component {
                 tripId={this.state.tripId}
                 onEdit={expObjToEdit => this.handleEdit(expObjToEdit)}
                 active={this.state.activeExpenseObject}
-                message={m => this.handleMessage(m)}
                 apiEndpoint="incomplete"
                 getExpenses={exp => this.handleGetExpenses(exp)}
               />
@@ -77,7 +67,6 @@ export class SummaryPage extends React.Component {
               <h4>Summary Table</h4>
               <ExpenseSummaryDA
                 key={this.state.keySummary}
-                message={message => this.handleMessage(message)}
                 tripId={this.state.tripId}
               />
             </Col>
@@ -91,7 +80,7 @@ export class SummaryPage extends React.Component {
             this.setState({
               keyExpenseList: Math.random(),
               keySummary: Math.random(),
-              activeExpenseObject: null,
+              activeExpenseObject: null
             })
           }
           showModal={this.state.activeExpenseObject !== null}

@@ -6,7 +6,7 @@ import { FormBuilder } from './FormComponents';
 import {
   checkValidDateError,
   checkPositiveNumberError,
-  checkNotBlankError,
+  checkNotBlankError
 } from '../utils/FormValidation';
 
 export const ExpenseForm = (props) => {
@@ -50,14 +50,14 @@ export const ExpenseForm = (props) => {
       label: 'Date',
       type: 'date-picker',
       initialValue: date ? new Date(date) : today,
-      errorChecks: value => checkValidDateError(value),
+      errorChecks: value => checkValidDateError(value)
     },
     {
       id: 'note',
       label: 'Note',
       initialValue: note,
       placeholder: 'What is the expense for?',
-      errorChecks: value => checkNotBlankError(value),
+      errorChecks: value => checkNotBlankError(value)
     },
     {
       id: 'amount',
@@ -65,7 +65,7 @@ export const ExpenseForm = (props) => {
       initialValue: amount,
       placeholder: 'Amount',
       prepend: '$',
-      errorChecks: value => checkPositiveNumberError(value),
+      errorChecks: value => checkPositiveNumberError(value)
     },
     {
       type: 'select-box',
@@ -77,8 +77,8 @@ export const ExpenseForm = (props) => {
           : null,
       options: categoryActive.map(c => ({
         key: c.id,
-        value: c.label,
-      })),
+        value: c.label
+      }))
     },
     {
       type: 'multi-select',
@@ -88,15 +88,15 @@ export const ExpenseForm = (props) => {
         splitByActive.map(user => ({
           value: user.label,
           key: user.id,
-          checked: false,
+          checked: false
         })) || [],
       initialValue: splitBy
         ? splitBy.map(s => ({
           value: travelers[s.id || 0].label,
           key: s.id,
-          checked: true,
+          checked: true
         }))
-        : [],
+        : []
     },
     {
       type: 'select-box',
@@ -108,9 +108,9 @@ export const ExpenseForm = (props) => {
           : null,
       options: paidByActive.map(u => ({
         key: u.id,
-        value: travelers[u.id || 0].label,
-      })),
-    },
+        value: travelers[u.id || 0].label
+      }))
+    }
   ];
 
   const showRemoveButton = props.expenseObj ? () => onRemove() : false;
@@ -127,6 +127,7 @@ export const ExpenseForm = (props) => {
           formatItem={(field, key) => <div key={key}>{field}</div>}
           formatWrapper={e => <div>{e}</div>}
           viewOnly={!canEdit}
+          hideCancel
         />
       </Card.Body>
     </Card>

@@ -5,7 +5,11 @@ import Axios from 'axios';
 import Auth from '../utils/Auth';
 import { LoggedOutMessage } from './LoggedOutMessage';
 
+import MessageContext, { ErrToMessageObj } from '../components/MessageContext';
+
 export class LoginInfo extends React.Component {
+  static contextType = MessageContext;
+
   constructor() {
     super();
 
@@ -24,13 +28,11 @@ export class LoginInfo extends React.Component {
         } else Auth.deauthenticateUser();
       })
       .catch((err) => {
-        console.log(err.response);
-        // TODO: display this error
-        if (err.response.status === 401) {
+        if (err.response && err.response.status === 401) {
           this.setState({
             relogin: true
           });
-        }
+        } else this.context.sendMessage(ErrToMessageObj(err));
       });
   }
 

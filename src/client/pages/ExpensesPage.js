@@ -3,7 +3,6 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import ListGroup from 'react-bootstrap/ListGroup';
-import { DisappearingAlert } from '../components/DisappearingAlert';
 import { ExpensesTable } from '../data-access/ExpensesTableDA';
 import { ExpenseModal } from '../components/ExpenseModal';
 
@@ -15,32 +14,27 @@ export class ExpensesPage extends React.Component {
       keyNewExpense: null,
       keyExpenseList: Math.random(),
       tripId: props.tripId || null,
-      activeExpenseObject: null,
-      messageObj: null,
+      activeExpenseObject: null
     };
-  }
-
-  handleMessage(m) {
-    this.setState({ messageObj: m });
   }
 
   handleEdit(expObjToEdit) {
     this.setState({
-      activeExpenseObject: expObjToEdit,
+      activeExpenseObject: expObjToEdit
     });
   }
 
   handleCloseModal() {
     this.setState({
       keyNewExpense: null,
-      activeExpenseObject: null,
+      activeExpenseObject: null
       // keyExpenseList: Math.random(), // force re-render
     });
   }
 
   handleAddExpense() {
     this.setState({
-      keyNewExpense: Math.random(),
+      keyNewExpense: Math.random()
     });
   }
 
@@ -48,11 +42,6 @@ export class ExpensesPage extends React.Component {
     return (
       <div className="home">
         <Container>
-          <Row>
-            <Col>
-              <DisappearingAlert messageObj={this.state.messageObj} />
-            </Col>
-          </Row>
           <Row>
             <Col>
               <ListGroup>
@@ -80,7 +69,6 @@ export class ExpensesPage extends React.Component {
                 tripId={this.state.tripId}
                 onEdit={expObjToEdit => this.handleEdit(expObjToEdit)}
                 active={this.state.activeExpenseObject}
-                message={m => this.handleMessage(m)}
               />
             </Col>
           </Row>
@@ -93,7 +81,7 @@ export class ExpensesPage extends React.Component {
             this.setState({
               keyExpenseList: Math.random(),
               activeExpenseObject: null,
-              keyNewExpense: null,
+              keyNewExpense: null
             })
           }
           showModal={

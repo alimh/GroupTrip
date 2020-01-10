@@ -4,7 +4,6 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { TripDetailsDA } from '../data-access/TripDetailsDA';
-import { DisappearingAlert } from '../components/DisappearingAlert';
 
 export class TripSettingsPage extends React.Component {
   constructor(props) {
@@ -12,43 +11,35 @@ export class TripSettingsPage extends React.Component {
 
     this.state = {
       tripId: props.tripId || null,
-      messageObj: null,
-      redirect: null,
+      redirect: false
     };
   }
 
-  handleMessage(m) {
-    this.setState({ messageObj: m });
-    if (m.variant === 'success') setTimeout(() => this.handleRedirect(), 1000);
-  }
-
-  handleRedirect() {
-    this.setState({ redirect: true });
-  }
-  handleGetRedirectPath(path) {
-    this.setState({ redirectPath: path });
+  handleRedirect(path) {
+    this.setState({ redirect: path });
   }
   render() {
     return (
       <div>
         <Container>
-          <Row>
-            <Col>
-              <DisappearingAlert
-                messageObj={this.state.messageObj}
-                disappear={false}
-              />
-            </Col>
-          </Row>
           {this.state.redirect ? (
-            <Redirect push to={this.state.redirectPath} />
-          ) : (
-            <TripDetailsDA
-              tripId={this.state.tripId}
-              message={m => this.handleMessage(m)}
-              redirectPath={path => this.handleGetRedirectPath(path)}
-              onCancel={() => this.handleRedirect()}
+            <Redirect
+              push
+              to={{
+                pathname: this.state.redirect,
+                state: { messageObj: { text: 'Saved', variant: 'success' } }
+              }}
             />
+          ) : (
+            <Row>
+              <Col>
+                <TripDetailsDA
+                  tripId={this.state.tripId}
+                  redirect={path => this.handleRedirect(path)}
+                  onCancel={() => this.handleRedirect()}
+                />
+              </Col>
+            </Row>
           )}
         </Container>
       </div>

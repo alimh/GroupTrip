@@ -1,7 +1,12 @@
+/* eslint react/no-array-index-key: "off" */
+
 import React from 'react';
 import Navbar from 'react-bootstrap/Navbar';
+import Toast from 'react-bootstrap/Toast';
+import Badge from 'react-bootstrap/Badge';
 import { LinkContainer } from 'react-router-bootstrap';
 import { LoginInfo } from '../components/LoginInfo';
+import { MessageProvider } from '../components/MessageContext';
 
 const Logo = (
   className = 'd-inline-block align-center',
@@ -24,21 +29,86 @@ const Logo = (
   </svg>
 );
 
-export const Layout = props => (
-  <div className="app-container">
-    <Navbar bg="light">
-      <LinkContainer to="/">
-        <Navbar.Brand>
-          {Logo()}
-          &nbsp;&nbsp;
-          <span className="text-primary font-weight-bold">GroupTrip!</span>
-        </Navbar.Brand>
-      </LinkContainer>
-      <LoginInfo />
-    </Navbar>
-    <div className="app-content">{props.children}</div>
-    <footer className="page-footer font-small blue pt-4" />
-  </div>
-);
+export class Layout extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      messages: []
+    };
+  }
+
+  handleMessage(m) {
+    const { messages } = this.state;
+    messages.push(m);
+    this.setState({ messages });
+  }
+
+  handleClose(i) {
+    const { messages } = this.state;
+    messages.splice(i, 1);
+    this.setState({ messages });
+  }
+
+  render() {
+    const toasts = () => {
+      const { messages } = this.state;
+
+      return (
+        <div>
+          {messages.map((m, n) => (
+            <Toast
+              key={n}
+              show
+              onClose={() => this.handleClose(n)}
+              autohide={m.variant !== 'error'}
+              delay={3000}
+            >
+              <Toast.Header>
+                <Badge variant={m.variant === 'error' ? 'danger' : m.variant}>
+                  {m.header || (m.variant || 'Message').toUpperCase()}
+                </Badge>
+              </Toast.Header>
+              <Toast.Body>{m.text}</Toast.Body>
+            </Toast>
+          ))}
+        </div>
+      );
+    };
+
+    return (
+      <div
+        className="app-container"
+        style={{ position: 'relative', minHeight: '100px' }}
+      >
+        <Navbar bg="light">
+          <LinkContainer to="/">
+            <Navbar.Brand>
+              {Logo()}
+              &nbsp;&nbsp;
+              <span className="text-primary font-weight-bold">GroupTrip!</span>
+            </Navbar.Brand>
+          </LinkContainer>
+          <LoginInfo />
+        </Navbar>
+        <div
+          style={{
+            position: 'fixed',
+            top: 10,
+            right: 10,
+            zIndex: 10
+          }}
+        >
+          {toasts()}
+        </div>
+
+        <MessageProvider value={{ sendMessage: m => this.handleMessage(m) }}>
+          <div className="app-content">{this.props.children}</div>
+        </MessageProvider>
+        <footer className="page-footer font-small blue pt-4" />
+      </div>
+    );
+  }
+}
 
 export default Layout;

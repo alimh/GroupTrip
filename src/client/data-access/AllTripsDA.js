@@ -1,18 +1,16 @@
 import React from 'react';
 import Axios from 'axios';
-import Auth from '../utils/Auth';
-import { LoggedOutMessage } from '../components/LoggedOutMessage';
 import { LoadingView } from '../components/LoadingView';
 import { TripsList } from '../components/TripsList';
+import MessageContext, { ErrToMessageObj } from '../components/MessageContext';
 
 export class AllTripsDA extends React.Component {
+  static contextType = MessageContext;
+
   constructor(props) {
     super(props);
 
     this.state = {
-      authorizationHeader: Auth.getToken()
-        ? 'bearer '.concat(Auth.getToken())
-        : null,
       trips: []
     };
   }
@@ -32,26 +30,14 @@ export class AllTripsDA extends React.Component {
       }
     ]
     */
-    Axios.get('/api/trips/all', {
-      headers: {
-        Authorization: this.state.authorizationHeader
-      }
-    })
+    Axios.get('/api/trips/all')
       .then((response) => {
         const { data } = response;
         this.setState({ loading: false, trips: data });
       })
       .catch((err) => {
         this.setState({ loading: false });
-        if (this.props.message) {
-          this.props.message({
-            text:
-              err.response.status === 401
-                ? LoggedOutMessage()
-                : err.response.data,
-            variant: 'error'
-          });
-        } else throw err;
+        this.context.sendMessage(ErrToMessageObj(err));
       });
   }
 
