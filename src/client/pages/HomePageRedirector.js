@@ -55,18 +55,42 @@ export class HomePageRedirector extends React.Component {
       </Container>
     );
 
+    // const jumbotronStyle = {
+    //   background: '/jumbotron.jpg' // backgroundSize: 'cover'
+    // };
+    const jumbotronStyle = {
+      position: 'relative',
+      background: 'url("/jumbotron.jpg") center center',
+      opacity: 0.8,
+      width: '100%',
+      height: '100%',
+      backgroundSize: 'cover',
+      color: '#fff'
+    };
     return (
       <div className="home">
-        <Jumbotron>
-          <Container>
-            <Row className="justify-content-md-center">
-              <h2 className="display-3">Share Costs Between Friends</h2>
-            </Row>
-            <Row className="justify-content-md-center">
-              <h2 className="display-4">Stay Friends!</h2>
-            </Row>
-          </Container>
-        </Jumbotron>
+        <div style={{ background: 'rgba(76, 175, 80, .5)' }}>
+          <Jumbotron style={jumbotronStyle}>
+            <Container>
+              <Row className="justify-content-md-center">
+                <h2
+                  className="display-3"
+                  style={{
+                    color: 'white',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  Share Costs Between Friends
+                </h2>
+              </Row>
+              <Row className="justify-content-md-center">
+                <h2 className="display-4" style={{ color: 'white' }}>
+                  Stay Friends!
+                </h2>
+              </Row>
+            </Container>
+          </Jumbotron>
+        </div>
         {Auth.isUserAuthenticated() ? renderLoggedIn() : rednerNotLoggedIn()}
       </div>
     );
