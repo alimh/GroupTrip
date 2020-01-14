@@ -25,6 +25,7 @@ delete ReactTable.propTypes.LoadingComponent;
 delete ReactTable.propTypes.NoDataComponent;
 delete ReactTable.propTypes.ResizerComponent;
 delete ReactTable.propTypes.PadRowComponent;
+delete ReactTable.propTypes.columns.Cell;
 
 const formatMoney = a =>
   '$ '.concat(a.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'));
@@ -33,7 +34,7 @@ const formatDate = d =>
   new Date(d).toLocaleDateString('en-US', {
     month: '2-digit',
     day: '2-digit',
-    year: 'numeric',
+    year: 'numeric'
   });
 
 export const ExpensesTableView = (props) => {
@@ -50,18 +51,18 @@ export const ExpensesTableView = (props) => {
     needsAttention: e.needsAttention,
     splitBy: e.splitBy
       .reduce((acc, i) => acc.concat(i.name).concat(', '), '')
-      .slice(0, -2),
+      .slice(0, -2)
   }));
 
   const distinctCategories = [
-    ...new Set(expenses.map(e => e.category.name)),
+    ...new Set(expenses.map(e => e.category.name))
   ].filter(f => f !== '');
   const distinctPaidBy = [...new Set(expenses.map(e => e.paidBy.name))].filter(f => f !== '');
   const distinctSplitBy = [
     ...new Set(expenses
         .map(e => e.splitBy)
         .flat()
-        .map(f => f.name)),
+        .map(f => f.name))
   ];
   return (
     <div>
@@ -73,19 +74,18 @@ export const ExpensesTableView = (props) => {
           {
             Header: 'Date',
             accessor: 'date',
-            Filter: () => <div />,
+            Filter: () => <div />
           },
           {
             Header: 'Note',
             accessor: 'note',
             filterMethod: (filter, row) =>
-              row[filter.id].toLowerCase().includes(filter.value.toLowerCase()),
+              row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
           },
           {
             Header: 'Amount',
             accessor: 'amount',
-            filterMethod: (filter, row) =>
-              row[filter.id].includes(filter.value),
+            filterMethod: (filter, row) => row[filter.id].includes(filter.value)
           },
           {
             Header: 'Category',
@@ -103,7 +103,7 @@ export const ExpensesTableView = (props) => {
                   </option>
                 ))}
               </select>
-            ),
+            )
           },
           {
             Header: 'Paid By',
@@ -121,7 +121,7 @@ export const ExpensesTableView = (props) => {
                   </option>
                 ))}
               </select>
-            ),
+            )
           },
           {
             Header: 'Split By',
@@ -140,8 +140,7 @@ export const ExpensesTableView = (props) => {
                 ))}
               </select>
             ),
-            filterMethod: (filter, row) =>
-              row[filter.id].includes(filter.value),
+            filterMethod: (filter, row) => row[filter.id].includes(filter.value)
           },
           {
             Header: '',
@@ -158,7 +157,7 @@ export const ExpensesTableView = (props) => {
                   View
                 </Button>
               </div>
-            ),
+            )
           },
           {
             Header: '',
@@ -172,8 +171,8 @@ export const ExpensesTableView = (props) => {
                   <div />
                 )}
               </div>
-            ),
-          },
+            )
+          }
         ]}
       />
     </div>

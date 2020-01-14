@@ -36,14 +36,9 @@ app.use(cookieParser());
 app.use('/', (req, res, next) => {
   passport.authenticate('jwt', { session: false }, (err, user, info) => {
     if (err) {
-      console.log(err);
       return res.status(500).end();
     }
     const message = info ? info.message : null;
-    console.log('using jwt strategy');
-    console.log(message);
-    console.log(user);
-    console.log(info);
     if (message === 'expired') {
       return res
         .clearCookie('jwt')

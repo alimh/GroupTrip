@@ -19,7 +19,11 @@ export class LoginInfo extends React.Component {
   }
 
   componentDidMount() {
-    Auth.deauthenticateUser();
+    this.checkAuth();
+  }
+
+  checkAuth() {
+    // Auth.deauthenticateUser();
     Axios.get('/auth/check-auth')
       .then((res) => {
         if (res.data.name) {
@@ -28,6 +32,7 @@ export class LoginInfo extends React.Component {
         } else Auth.deauthenticateUser();
       })
       .catch((err) => {
+        Auth.deauthenticateUser();
         if (err.response && err.response.status === 401) {
           this.setState({
             relogin: true
@@ -38,6 +43,7 @@ export class LoginInfo extends React.Component {
 
   render() {
     if (this.state.relogin) return <LoggedOutMessage />;
+
     return this.state.username ? (
       <Nav>
         <LinkContainer to="/account">

@@ -56,7 +56,7 @@ router.post('/login', (req, res) => {
     { session: false },
     (errorAuthenticate, user, info) => {
       if (errorAuthenticate || !user) {
-        return res.status(400).json(errorAuthenticate || info.message);
+        return res.status(403).json(errorAuthenticate || info.message);
       }
 
       const expires = Date.now() + 15552000000; // 180 days

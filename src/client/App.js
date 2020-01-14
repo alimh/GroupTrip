@@ -13,16 +13,15 @@ export const App = () => {
   const renderAllTrips = (props) => {
     const { refresh, ...otherProps } = props.location.state || {};
 
-    // if (refresh === true) {
-    //   const { history } = props;
-    //   history.replace({
-    //     pathname: '/',
-    //     state: { refresh: false, ...otherProps }
-    //   });
-    //   window.location.reload();
-    //   return false;
-    // }
-
+    if (refresh) {
+      const { history } = props;
+      history.replace({
+        pathname: '/',
+        state: { refresh: false, ...otherProps }
+      });
+      window.location.reload();
+      return false;
+    }
     return <HomePageRedirector {...otherProps} />;
   };
   const renderNewTrip = () => <NewTripPage />;

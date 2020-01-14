@@ -22,7 +22,10 @@ export const LoginPageDA = (props) => {
         Auth.authenticateUser(res.data.token);
         props.onLogin();
       })
-      .catch(err => context.sendMessage(ErrToMessageObj(err)));
+      .catch((err) => {
+        if (err.response.status === 403) props.wrongPassword();
+        else context.sendMessage(ErrToMessageObj(err));
+      });
   };
   const fields = [
     {

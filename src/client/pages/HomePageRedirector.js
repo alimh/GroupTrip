@@ -21,9 +21,7 @@ export class HomePageRedirector extends React.Component {
     this.state = { messageObj: props.messageObj || null };
   }
   componentDidMount() {
-    console.log('sending message');
     if (this.state.messageObj) this.context.sendMessage(this.state.messageObj);
-    console.log('sent message');
   }
   render() {
     const rednerNotLoggedIn = () => (
@@ -38,9 +36,6 @@ export class HomePageRedirector extends React.Component {
     const renderLoggedIn = () => (
       <Container>
         <h3>Get Started</h3>
-        <h3>
-          <small className="text-muted">Select a Trip</small>
-        </h3>
         <Row className="justify-content-md-center">
           <Col>
             <ListGroup>
@@ -51,6 +46,9 @@ export class HomePageRedirector extends React.Component {
               </LinkContainer>
             </ListGroup>
             <br />
+            <h3>
+              <small className="text-muted">Your Trips</small>
+            </h3>
             <AllTripsDA />
           </Col>
         </Row>
