@@ -16,16 +16,26 @@ export class TripDetailsView extends React.Component {
       name: '',
       categories: [],
       travelers: [],
-      tripId: null,
+      tripId: null
     };
 
+    const resetTripObj = props.tripObj
+      ? {
+        ...props.tripObj,
+        categories: [...props.tripObj.categories],
+        travelers: [...props.tripObj.travelers]
+      }
+      : { ...blankTripObj, categories: [], travelers: [] };
+
     this.state = {
+      resetTripObj,
       tripObj: props.tripObj || blankTripObj,
+      keys: { travelers: Math.random(), categories: Math.random() },
       errors: { name: false },
       errorChecks: {
-        name: f => checkNotBlankError(f),
+        name: f => checkNotBlankError(f)
       },
-      unsavedName: false,
+      unsavedName: false
     };
   }
 
@@ -40,7 +50,7 @@ export class TripDetailsView extends React.Component {
       label: newValue,
       id: newSetting.length,
       active: true,
-      unsaved: true,
+      unsaved: true
     };
 
     const tripObj = { ...this.state.tripObj, [settingGroup]: newSetting };
@@ -52,7 +62,7 @@ export class TripDetailsView extends React.Component {
     const newSettingItem = {
       ...currentSetting[i],
       active: !currentSetting[i].active,
-      unsaved: true,
+      unsaved: true
     };
     const newSetting = currentSetting;
     newSetting[i] = newSettingItem;
@@ -97,13 +107,22 @@ export class TripDetailsView extends React.Component {
 
     this.setState({ confirmRemove: true });
   }
+
   handleCancel(e) {
     e.preventDefault();
 
     if (this.state.confirmRemove) {
       this.setState({ confirmRemove: false });
     } else {
-      this.props.onCancel();
+      const newTripObj = {
+        ...this.state.resetTripObj,
+        categories: [...this.state.resetTripObj.categories],
+        travelers: [...this.state.resetTripObj.travelers]
+      };
+      this.setState({
+        tripObj: newTripObj,
+        keys: { travelers: Math.random(), categories: Math.random() }
+      });
     }
   }
 
@@ -181,7 +200,7 @@ export class TripDetailsView extends React.Component {
               <Form.Group controlId="travelers">
                 <Form.Label>Who is going on the trip?</Form.Label>
                 <SettingsViewWithNew
-                  key="travelers"
+                  key={this.state.keys.travelers}
                   settings={this.state.tripObj.travelers}
                   onNew={newValue =>
                     this.handleNewSetting('travelers', newValue)
@@ -194,7 +213,7 @@ export class TripDetailsView extends React.Component {
               <Form.Group controlId="categories">
                 <Form.Label>Add some categories:</Form.Label>
                 <SettingsViewWithNew
-                  key="categories"
+                  key={this.state.keys.categories}
                   settings={this.state.tripObj.categories}
                   onNew={newValue =>
                     this.handleNewSetting('categories', newValue)
