@@ -11,7 +11,8 @@ export class AllTripsDA extends React.Component {
     super(props);
 
     this.state = {
-      trips: []
+      tripsOwn: [],
+      tripsContribute: []
     };
   }
 
@@ -33,7 +34,12 @@ export class AllTripsDA extends React.Component {
     Axios.get('/api/trips/all')
       .then((response) => {
         const { data } = response;
-        this.setState({ loading: false, trips: data });
+
+        this.setState({
+          loading: false,
+          tripsOwn: data.own,
+          tripsContribute: data.contribute
+        });
       })
       .catch((err) => {
         this.setState({ loading: false });
@@ -43,10 +49,36 @@ export class AllTripsDA extends React.Component {
 
   render() {
     if (this.state.loading) return <LoadingView />;
-    return this.state.trips.length > 0 ? (
-      <TripsList trips={this.state.trips} />
-    ) : (
-      <div>No Trips</div>
+    const tripsOwn =
+      this.state.tripsOwn.length > 0 ? (
+        <div>
+          <h3>
+            <small className="text-muted">Your Trips</small>
+          </h3>
+          <TripsList trips={this.state.tripsOwn} />
+        </div>
+      ) : (
+        <div />
+      );
+
+    const tripsContribute =
+      this.state.tripsContribute.length > 0 ? (
+        <div>
+          <h3>
+            <small className="text-muted">Trips You Have Contributed To</small>
+          </h3>
+          <TripsList trips={this.state.tripsContribute} />
+        </div>
+      ) : (
+        <div />
+      );
+
+    return (
+      <div>
+        {tripsOwn}
+        <br />
+        {tripsContribute}
+      </div>
     );
   }
 }

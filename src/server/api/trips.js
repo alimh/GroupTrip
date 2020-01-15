@@ -1,19 +1,58 @@
 import express from 'express';
 import TripObjs from '../models/trips';
+import Expenses from '../models/expenses';
 
 const router = new express.Router();
 
-router.get('/all', (req, res) => {
+router.get('/all', async (req, res) => {
   const token = res.locals.user ? res.locals.user.id : null;
-  TripObjs.find({ removed_at: null, owner: token }, (err, trips) => {
-    if (err || token === null) {
-      return res.status(403).end();
-    }
+
+  try {
+    const tripsOwn = await TripObjs.find({ removed_at: null, owner: token });
+    const tripsOwnSlim = tripsOwn.map(t => ({ id: t.id, name: t.name }));
+
+    const expensesContribute = await Expenses.find({
+      removed_at: null,
+      owner: token
+    });
+
+    const expensesUnique = expensesContribute.reduce((acc, t) => {
+      const matchInTripsOwn = tripsOwn.reduce(
+        (matchT, mt) => (mt.id === t.tripId ? true : matchT),
+        false
+      );
+      if (matchInTripsOwn) return acc;
+      const temp = acc;
+      const matchInAcc = temp.reduce(
+        (matchA, ma) => (ma === t.tripId ? true : matchA),
+        false
+      );
+      if (matchInAcc) return acc;
+
+      temp.push(t.tripId);
+      return temp;
+    }, []);
+
+    const tripsContributePromises = expensesUnique.map(e =>
+      TripObjs.findById(e));
+
+    const tripsContributeSlim = [];
+    await Promise.all(tripsContributePromises).then((trips) => {
+      trips.forEach((t) => {
+        if (!t.removed_at) tripsContributeSlim.push({ id: t.id, name: t.name });
+      });
+    });
+
     return res
       .status(200)
-      .json(trips)
+      .json({ own: tripsOwnSlim, contribute: tripsContributeSlim })
       .end();
-  });
+  } catch (err) {
+    return res
+      .status(500)
+      .send(err)
+      .end();
+  }
 });
 
 router.get('/get', (req, res) => {

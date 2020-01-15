@@ -46,9 +46,6 @@ export class HomePageRedirector extends React.Component {
               </LinkContainer>
             </ListGroup>
             <br />
-            <h3>
-              <small className="text-muted">Your Trips</small>
-            </h3>
             <AllTripsDA />
           </Col>
         </Row>
