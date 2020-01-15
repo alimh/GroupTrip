@@ -7,11 +7,12 @@ const outputDirectory = 'dist';
 
 module.exports = [
   {
-    entry: ['babel-polyfill', './src/client/app-client.js'],
+    //    entry: ['babel-polyfill', './src/client/app-client.js'],
+    entry: './src/client/app-client.js',
     output: {
       path: path.join(__dirname, outputDirectory),
       filename: 'bundle.js',
-      publicPath: '/',
+      publicPath: '/'
     },
     module: {
       rules: [
@@ -19,55 +20,55 @@ module.exports = [
           test: /\.js$/,
           exclude: /node_modules/,
           use: {
-            loader: 'babel-loader',
-          },
+            loader: 'babel-loader'
+          }
         },
         {
           test: /\.css$/,
-          use: ['style-loader', 'css-loader'],
+          use: ['style-loader', 'css-loader']
         },
         {
           test: /\.scss$/,
-          use: ['style-loader', 'css-loader', 'sass-loader'],
-        },
-      ],
+          use: ['style-loader', 'css-loader', 'sass-loader']
+        }
+      ]
     },
     devServer: {
       port: 3000,
       open: true,
       proxy: {
         '/api': 'http://localhost:8080',
-        '/auth': 'http://localhost:8080',
+        '/auth': 'http://localhost:8080'
       },
-      historyApiFallback: true,
+      historyApiFallback: true
     },
     plugins: [
       new CleanWebpackPlugin([outputDirectory]),
       new HtmlWebpackPlugin({
         template: './templates/index.ejs',
-        historyApiFallback: true,
+        historyApiFallback: true
       }),
       new CopyWebpackPlugin([
         {
           from: 'public',
-          to: './',
-        },
-      ]),
-    ],
+          to: './'
+        }
+      ])
+    ]
   },
   {
     target: 'node',
     node: {
-      __dirname: false,
+      __dirname: false
     },
     externals: [/^(?!\.|\/).+/i],
     entry: {
-      js: './src/server/server.js',
+      js: './src/server/server.js'
     },
     output: {
       path: path.join(__dirname, outputDirectory),
       filename: 'server-es5.js',
-      libraryTarget: 'commonjs2',
+      libraryTarget: 'commonjs2'
     },
     module: {
       rules: [
@@ -75,10 +76,10 @@ module.exports = [
           test: path.join(__dirname, 'src'),
           use: {
             loader: 'babel-loader',
-            options: 'cacheDirectory=.babel_cache',
-          },
-        },
-      ],
-    },
-  },
+            options: 'cacheDirectory=.babel_cache'
+          }
+        }
+      ]
+    }
+  }
 ];
