@@ -45,3 +45,5 @@ dist/index.html
 dist/server-es5.js
 
 .env
+.env.temp
+
