@@ -2,8 +2,10 @@ import Passport from 'passport';
 import PassportLocal from 'passport-local';
 import PassportJwt from 'passport-jwt';
 import bcrypt from 'bcrypt';
+import dotenv from 'dotenv';
 import UserObjs from './models/users';
 
+dotenv.config();
 // const LocalStrategy = require('passport-local').Strategy;
 // const passportJWT = require('passport-jwt');
 const LocalStrategy = PassportLocal.Strategy;
@@ -11,7 +13,7 @@ const JWTStrategy = PassportJwt.Strategy;
 
 // const { secret } = require('./keys');
 
-const secret = 'secret';
+const secret = process.env.SECRET;
 
 Passport.use(new LocalStrategy(
     {

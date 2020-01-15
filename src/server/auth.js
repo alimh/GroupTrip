@@ -2,10 +2,12 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import Passport from 'passport';
 import bcrypt from 'bcrypt';
+import dotenv from 'dotenv';
 import UserObjs from './models/users';
 
+dotenv.config();
 const router = new express.Router();
-const secret = 'secret';
+const secret = process.env.SECRET;
 
 require('./passportSetup');
 
