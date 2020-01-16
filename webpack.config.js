@@ -7,7 +7,8 @@ const outputDirectory = "dist";
 
 module.exports = [
   {
-    entry: ["babel-polyfill", "./src/client/app-client.js"],
+    //entry: ["babel-polyfill", "./src/client/app-client.js"],
+    entry: ["@babel/polyfill", "./src/client/app-client.js"],
     //entry: './src/client/app-client.js',
     output: {
       path: path.join(__dirname, outputDirectory),
