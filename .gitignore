@@ -40,9 +40,7 @@ jspm_packages
 .vscode
 .babelrc
 
-dist/bundle.js
-dist/index.html
-dist/server-es5.js
+dist
 
 .env
 .env.temp
