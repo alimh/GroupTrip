@@ -1,10 +1,10 @@
-import React from 'react';
-import Form from 'react-bootstrap/Form';
-import InputGroup from 'react-bootstrap/InputGroup';
-import Button from 'react-bootstrap/Button';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import './FormComponents.css';
+import React from "react";
+import Form from "react-bootstrap/Form";
+import InputGroup from "react-bootstrap/InputGroup";
+import Button from "react-bootstrap/Button";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "./FormComponents.css";
 
 export const InputBox = props => (
   <Form.Group controlId={props.id}>
@@ -70,7 +70,7 @@ export const DatePickerBox = props => (
 );
 
 export const SelectBox = props =>
-  (!props.disabled ? (
+  !props.disabled ? (
     <Form.Group>
       <Form.Label>{props.label}</Form.Label>
       <Form.Control
@@ -113,12 +113,30 @@ export const SelectBox = props =>
       disabled: true,
       label: props.label
     })
-  ));
+  );
 
 export const MultiSelect = props => (
   <div>
     <div>{props.label}</div>
     <div>
+      {props.selectAll && !props.disabled ? (
+        <CheckboxElement
+          key="select-all"
+          label="Select All"
+          checked={props.options.reduce((acc, o) => o.checked && acc, true)}
+          onUpdate={() => {
+            const newOptions = props.options;
+            const currentStatus = props.options.reduce(
+              (acc, o) => o.checked && acc,
+              true
+            );
+            newOptions.forEach(n => (n.checked = !currentStatus));
+            return props.onUpdate(newOptions);
+          }}
+        />
+      ) : (
+        <div />
+      )}
       {props.options.map((option, n) => (
         <CheckboxElement
           key={option.key}
@@ -145,7 +163,7 @@ export const CheckboxElement = props => (
     <Form.Check
       className="check-box"
       name={props.id}
-      onChange={() => props.onUpdate()}
+      onChange={v => props.onUpdate(v.value)}
       checked={props.checked}
       type="checkbox"
       label={props.label}
@@ -172,20 +190,20 @@ export class FormBuilder extends React.Component {
         //     // 2b. if it is not in the list (old option that was removed), add to end?
 
         let initialValue = null;
-        if (field.type === 'select-box') {
-          initialValue = field.initialValue || { key: '', value: '' };
-        } else if (field.type === 'multi-select') {
+        if (field.type === "select-box") {
+          initialValue = field.initialValue || { key: "", value: "" };
+        } else if (field.type === "multi-select") {
           const checked = field.initialValue || [];
           const kvp = checked.reduce((acc, element, n) => {
             acc[element.key] = n + 1; // to avoid 0 being counted as false
             return acc;
           }, {});
-          initialValue = field.options.map((option) => {
+          initialValue = field.options.map(option => {
             const check = kvp[option.key] > 0; // if the option exists int he checked kvp
             return { key: option.key, value: option.value, checked: check };
           });
         } else {
-          initialValue = field.initialValue || '';
+          initialValue = field.initialValue || "";
         }
         const values = { ...set.values, [field.id]: initialValue };
 
@@ -246,7 +264,7 @@ export class FormBuilder extends React.Component {
     const confirmPasswordCheck =
       this.state.values.confirm_password !== undefined &&
       this.state.values.confirm_password !== this.state.values.password
-        ? 'Passwords do not match'
+        ? "Passwords do not match"
         : false;
     if (confirmPasswordCheck) errors.confirm_password = confirmPasswordCheck;
 
@@ -329,18 +347,18 @@ export class FormBuilder extends React.Component {
       </div>
     );
 
-    const saveButtonText = this.props.saveButtonText || 'Save';
-    const cancelButtonText = this.props.cancelButtonText || 'Cancel';
-    const removeButtonText = this.props.removeButtonText || 'Remove';
+    const saveButtonText = this.props.saveButtonText || "Save";
+    const cancelButtonText = this.props.cancelButtonText || "Cancel";
+    const removeButtonText = this.props.removeButtonText || "Remove";
     const confirmRemoveButtonText =
-      this.props.confirmRemoveButtonText || 'Confirm';
+      this.props.confirmRemoveButtonText || "Confirm";
 
     const formatItem = this.props.formatItem || noFormatItem;
     const formatWrapper = this.props.formatWrapper || noFormatWrapper;
     //    const formatButtons = this.props.formatButtons || formatItem;
 
-    const elements = this.props.fields.map((field) => {
-      if (field.type === 'date-picker') {
+    const elements = this.props.fields.map(field => {
+      if (field.type === "date-picker") {
         return formatItem(
           DatePickerBox({
             ...field,
@@ -352,12 +370,13 @@ export class FormBuilder extends React.Component {
           field.id
         );
       }
-      if (field.type === 'multi-select') {
+      if (field.type === "multi-select") {
         return formatItem(
           MultiSelect({
             id: field.id,
             label: field.label,
             options: this.state.values[field.id],
+            selectAll: field.selectAll || false,
             onUpdate: options => this.handleUpdate(field.id, options),
             disabled: field.disabled || this.state.viewOnly,
             errMsg: this.state.errors[field.id]
@@ -365,7 +384,7 @@ export class FormBuilder extends React.Component {
           field.id
         );
       }
-      if (field.type === 'select-box') {
+      if (field.type === "select-box") {
         return formatItem(
           SelectBox({
             id: field.id,
