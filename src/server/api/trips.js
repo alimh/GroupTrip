@@ -118,7 +118,7 @@ router.post('/save', (req, res) => {
     TripObjs.findById(req.body.id, (err, trip) => {
       if (err) throw err;
       if (trip.owner !== token) return res.status(403).end();
-      trip.update(tripDetails, (errTripUpdate) => {
+      trip.updateOne(tripDetails, (errTripUpdate) => {
         if (errTripUpdate) throw err;
         return true;
       });
@@ -143,7 +143,7 @@ router.post('/remove', (req, res) => {
   TripObjs.findById(req.body.id, (err, trip) => {
     if (err) throw err;
     if (token === null || trip.owner !== token) return res.status(403).end();
-    trip.update({ removed_at: new Date() }, (errTripUpdate) => {
+    trip.updateOne({ removed_at: new Date() }, (errTripUpdate) => {
       if (errTripUpdate) throw err;
       return res.status(200).end();
     });

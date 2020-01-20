@@ -420,7 +420,7 @@ router.post('/remove', (req, res) => {
     // check to see if owner exists for this expennse and if it doesn't match
     if (expense.owner === null || expense.owner === userId) {
       // we can update
-      expense.update({ removed_at: new Date() }, (errExpUpdate) => {
+      expense.updateOne({ removed_at: new Date() }, (errExpUpdate) => {
         if (errExpUpdate) throw err;
         // write to log
         writeToLog({
@@ -440,7 +440,7 @@ router.post('/remove', (req, res) => {
         // check to see if the token matches the trip owner
         if (trip.owner === userId) {
           // we can update
-          expense.update({ removed_at: new Date() }, (errExpUpdate) => {
+          expense.updateOne({ removed_at: new Date() }, (errExpUpdate) => {
             if (errExpUpdate) throw err;
             // write to log
             writeToLog({

@@ -30,7 +30,7 @@ router.post('/commonsettings', (req, res) => {
   };
 
   Users.findById(id)
-    .then(userDocument => userDocument.update(userDetails))
+    .then(userDocument => userDocument.updateOne(userDetails))
     .then(() => res.status(200).end())
     .catch(err =>
       res
