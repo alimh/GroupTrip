@@ -30,7 +30,7 @@ app.use(Express.static('dist'));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-app.use('/', (req, res, next) => {
+app.use('/api', (req, res, next) => {
   passport.authenticate('jwt', { session: false }, (err, user, info) => {
     if (err) {
       return res.status(500).end();

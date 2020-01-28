@@ -5,7 +5,7 @@ import Axios from 'axios';
 import { FormBuilder } from '../components/FormComponents';
 import {
   checkNotBlankError,
-  checkValidEmailError
+  checkValidEmailError,
 } from '../utils/FormValidation';
 
 import Auth from '../utils/Auth';
@@ -31,20 +31,20 @@ export const LoginPageDA = (props) => {
     {
       id: 'email',
       label: 'Email',
-      errorChecks: value => checkValidEmailError(value)
+      errorChecks: (value) => checkValidEmailError(value),
     },
     {
       id: 'password',
       label: 'Password',
       inputType: 'password',
-      errorChecks: value => checkNotBlankError(value)
-    }
+      errorChecks: (value) => checkNotBlankError(value),
+    },
   ];
   return (
     <FormBuilder
       fields={fields}
       saveButtonText="Login"
-      onSave={fieldValues => post(fieldValues)}
+      onSave={(fieldValues) => post(fieldValues)}
     />
   );
 };

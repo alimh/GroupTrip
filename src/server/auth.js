@@ -8,16 +8,21 @@ import UserObjs from './models/users';
 dotenv.config();
 const router = new express.Router();
 const secret = process.env.SECRET;
+const hashCost = 10;
 
 require('./passportSetup');
 
 router.post('/signup', async (req, res) => {
-  const { name, password, email } = req.body;
-  const hashCost = 10;
+  const {
+    name, password, email, reminderQuestion, reminderAnswer,
+  } = req.body;
 
   try {
     const passwordHash = await bcrypt.hash(password, hashCost);
-    const userDocument = new UserObjs({ name, email, passwordHash });
+    const reminderHash = await bcrypt.hash(reminderAnswer, hashCost);
+    const userDocument = new UserObjs({
+      name, email, passwordHash, reminderQuestion, reminderHash,
+    });
     await userDocument.save();
 
     Passport.authenticate(
@@ -33,7 +38,7 @@ router.post('/signup', async (req, res) => {
         const payload = {
           id: user.id,
           name: user.name,
-          expires
+          expires,
         };
 
         req.login(payload, { session: false }, (errorLogin) => {
@@ -45,7 +50,7 @@ router.post('/signup', async (req, res) => {
             .end();
         });
         return true;
-      }
+      },
     )(req, res);
   } catch (error) {
     res.status(400).send(error.toString());
@@ -66,7 +71,7 @@ router.post('/login', (req, res) => {
       const payload = {
         id: user.id,
         name: user.name,
-        expires
+        expires,
       };
 
       req.login(payload, { session: false }, (errorLogin) => {
@@ -78,33 +83,58 @@ router.post('/login', (req, res) => {
           .end();
       });
       return true;
-    }
+    },
   )(req, res);
   return true;
 });
 
-router.post('/logout', (req, res) =>
-  res
-    .clearCookie('jwt')
-    .send()
-    .end());
+router.post('/logout', (req, res) => res
+  .clearCookie('jwt')
+  .send()
+  .end());
 
-router.get('/check-auth', (req, res) => {
-  // TODO re up the cookie
-  // {
-  //   const payload = res.locals.user ? {
-  //     username: res.locals.user.username,
-  //     id: res.locals.user.id,
-  //     expires:
-  //   }
-  //   if (res.locals.user)
-  // }
-  res
-    .status(200)
-    .send({
-      name: res.locals.user ? res.locals.user.name : null
-    })
-    .end();
+router.get('/question', (req, res) => {
+  const { email } = req.query;
+  UserObjs.findOne({ email })
+    .then((userDocument) => res
+      .status(200)
+      .send({ question: userDocument.reminderQuestion })
+      .end())
+    .catch((err) => res
+      .status(403)
+      .send(err)
+      .end());
+  return true;
 });
+
+router.post(
+  '/answer',
+  (req, res) => {
+    const { email, reminderAnswer, password } = req.body;
+
+    // check answer
+    // if incorrect, send error
+    // encrypt new password and save to db
+    // send success
+
+    UserObjs.findOne({ email })
+      .then(async (userDocument) => {
+        const passwordsMatch = await bcrypt.compare(
+          reminderAnswer,
+          userDocument.reminderHash,
+        );
+        if (!passwordsMatch) return res.status(403).send('Incorrect answer').end();
+        const passwordHash = await bcrypt.hash(password, hashCost);
+
+        return userDocument.updateOne({ passwordHash });
+      })
+      .then(() => res.status(200).end())
+      .catch((err) => res
+        .status(403)
+        .send(err)
+        .end());
+    return false;
+  },
+);
 
 export default router;

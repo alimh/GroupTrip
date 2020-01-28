@@ -4,12 +4,12 @@ const MessageContext = React.createContext({});
 
 export const MessageProvider = MessageContext.Provider;
 export const MessageConsumer = MessageContext.Consumer;
-export const ErrToMessageObj = err => ({
+export const ErrToMessageObj = (err) => ({
   text: err
     .toString()
     .concat('. ')
-    .concat(err.response ? err.response.data : ''),
-  variant: 'error'
+    .concat(err.response ? err.response.data.toString() : ''),
+  variant: 'error',
 });
 
 export default MessageContext;

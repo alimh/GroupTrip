@@ -9,21 +9,19 @@ import { LoadingView } from '../components/LoadingView';
 import { FormBuilder } from '../components/FormComponents';
 import {
   checkNotBlankError,
-  checkValidEmailError
+  checkValidEmailError,
 } from '../utils/FormValidation';
 import MessageContext, { ErrToMessageObj } from '../components/MessageContext';
 
 import Auth from '../utils/Auth';
 
 export class AccountPageDA extends React.Component {
-  static contextType = MessageContext;
-
   constructor(props) {
     super(props);
 
     this.state = {
       loading: true,
-      fieldValues: {}
+      fieldValues: {},
     };
   }
 
@@ -33,114 +31,183 @@ export class AccountPageDA extends React.Component {
 
   getUserSettings() {
     this.setState({ loading: true });
+    const { sendMessage } = this.context;
+
     Axios.get('/api/users/settings')
       .then((res) => {
         this.setState({ loading: false, fieldValues: res.data });
       })
       .catch((err) => {
         this.setState({ loading: false });
-        this.context.sendMessage(ErrToMessageObj(err));
+        sendMessage(ErrToMessageObj(err));
       });
   }
 
   postUserCommonSettings(fieldValues) {
     const payload = { ...fieldValues };
+    const { sendMessage } = this.context;
     Axios.post('/api/users/commonsettings', payload)
       .then(() => {
-        this.context.sendMessage({ text: 'Changes saved', variant: 'success' });
+        sendMessage({ text: 'Changes saved', variant: 'success' });
         this.getUserSettings();
       })
-      .catch(err => this.context.sendMessage(ErrToMessageObj(err)));
+      .catch((err) => sendMessage(ErrToMessageObj(err)));
   }
 
   postUserPassword(fieldValues) {
     const payload = { ...fieldValues };
+    const { sendMessage } = this.context;
     Axios.post('/api/users/password', payload)
       .then(() => {
-        this.context.sendMessage({
+        sendMessage({
           text: 'Password changed',
-          variant: 'success'
+          variant: 'success',
         });
       })
-      .catch(err => this.context.sendMessage(ErrToMessageObj(err)));
+      .catch((err) => sendMessage(ErrToMessageObj(err)));
+  }
+
+  postReminderSettings(fieldValues) {
+    const payload = { ...fieldValues };
+    const { sendMessage } = this.context;
+    Axios.post('/api/users/reminder', payload)
+      .then(() => {
+        sendMessage({
+          text: 'Settings changed',
+          variant: 'success',
+        });
+      })
+      .catch((err) => sendMessage(ErrToMessageObj(err)));
   }
 
   handleLogout() {
+    const { onLogout } = this.props;
+    const { sendMessage } = this.context;
+
     Auth.deauthenticateUser();
     Axios.post('/auth/logout')
       .then(() => {
-        this.props.onLogout();
+        onLogout();
       })
-      .catch(err => this.context.sendMessage(ErrToMessageObj(err)));
+      .catch((err) => sendMessage(ErrToMessageObj(err)));
   }
 
   render() {
+    const { loading, fieldValues } = this.state;
     const fieldsCommon = [
       {
         id: 'name',
         label: 'Display Name',
-        initialValue: this.state.fieldValues.name || '',
-        errorChecks: value => checkNotBlankError(value)
+        initialValue: fieldValues.name || '',
+        errorChecks: (value) => checkNotBlankError(value),
       },
       {
         id: 'email',
         label: 'Email',
-        initialValue: this.state.fieldValues.email || '',
-        errorChecks: value => checkValidEmailError(value)
-      }
+        initialValue: fieldValues.email || '',
+        errorChecks: (value) => checkValidEmailError(value),
+      },
+    ];
+    const fieldsReminder = [
+      {
+        id: 'currentPasswordReminder',
+        label: 'Current Password',
+        inputType: 'password',
+        errorChecks: (value) => checkNotBlankError(value),
+      },
+      {
+        id: 'reminderQuestion',
+        label: 'Password Reminder Question',
+        initialValue: fieldValues.reminderQuestion || '',
+        errorChecks: (value) => checkNotBlankError(value),
+      },
+      {
+        id: 'reminderAnswer',
+        label: 'Password Reminder Answer',
+        inputType: 'password',
+        errorChecks: (value) => checkNotBlankError(value),
+      },
     ];
     const fieldsPassword = [
       {
-        id: 'current_password',
+        id: 'currentPassword',
         label: 'Current Password',
         inputType: 'password',
-        errorChecks: value => checkNotBlankError(value)
+        errorChecks: (value) => checkNotBlankError(value),
       },
       {
         id: 'password',
         label: 'New Password',
         inputType: 'password',
-        errorChecks: value => checkNotBlankError(value)
+        errorChecks: (value) => checkNotBlankError(value),
       },
       {
         id: 'confirm_password',
         label: 'Confirm New Password',
-        inputType: 'password'
-      }
+        inputType: 'password',
+      },
     ];
-    return this.state.loading ? (
-      <LoadingView />
-    ) : (
-      <div className="AccountPageDa">
-        <Row>
-          <Col>
-            <FormBuilder
-              fields={fieldsCommon}
-              onSave={fieldValues => this.postUserCommonSettings(fieldValues)}
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <FormBuilder
-              fields={fieldsPassword}
-              onSave={fieldValues => this.postUserPassword(fieldValues)}
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <Button
-              variant="outline-danger"
-              onClick={() => this.handleLogout()}
-            >
-              Logout
-            </Button>
-          </Col>
-        </Row>
-      </div>
-    );
+    return loading
+      ? (
+        <LoadingView />
+      ) : (
+        <div className="AccountPageDa">
+          <hr />
+          <Row>
+            <Col>
+              <h4>General Settings</h4>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <FormBuilder
+                fields={fieldsCommon}
+                onSave={(newValues) => this.postUserCommonSettings(newValues)}
+              />
+            </Col>
+          </Row>
+          <hr />
+          <Row>
+            <Col>
+              <h4>Password Reminder Settings</h4>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <FormBuilder
+                fields={fieldsReminder}
+                onSave={(newValues) => this.postReminderSettings(newValues)}
+              />
+            </Col>
+          </Row>
+          <hr />
+          <Row>
+            <Col>
+              <h4>Change Password</h4>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <FormBuilder
+                fields={fieldsPassword}
+                onSave={(newValues) => this.postUserPassword(newValues)}
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <Button
+                variant="outline-danger"
+                onClick={() => this.handleLogout()}
+              >
+                Logout
+              </Button>
+            </Col>
+          </Row>
+        </div>
+      );
   }
 }
+AccountPageDA.contextType = MessageContext;
 
 export default AccountPageDA;

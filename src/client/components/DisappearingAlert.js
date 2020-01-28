@@ -7,7 +7,7 @@ export class DisappearingAlert extends React.Component {
     // if this is called because the timer finished, then delete the message
     if (prevState.show && prevState.expired) {
       return {
-        show: false
+        show: false,
       };
     }
 
@@ -15,8 +15,8 @@ export class DisappearingAlert extends React.Component {
     if (nextProps.messageObj) {
       const getVariant = () => {
         if (nextProps.messageObj.variant === 'success') return 'success';
-        else if (nextProps.messageObj.variant === 'error') return 'danger';
-        else if (nextProps.messageObj.variant === 'warning') return 'warning';
+        if (nextProps.messageObj.variant === 'error') return 'danger';
+        if (nextProps.messageObj.variant === 'warning') return 'warning';
         return 'secondary';
       };
       const variant = getVariant();
@@ -26,8 +26,8 @@ export class DisappearingAlert extends React.Component {
         msg: messageObj.text || '',
         heading: messageObj.heading || '',
         variant,
-        timeout: 1000,
-        disappear: variant !== 'danger'
+        timeout: 3000,
+        disappear: variant !== 'danger',
       };
 
       return {
@@ -36,7 +36,7 @@ export class DisappearingAlert extends React.Component {
         messageObj: null,
         expired: false,
         timerStarted: false,
-        show: true
+        show: true,
       };
     }
 
@@ -47,25 +47,31 @@ export class DisappearingAlert extends React.Component {
     super();
 
     this.state = {
-      show: false
+      show: false,
     };
   }
 
   expire() {
+    const { onDisappear = () => false } = this.props;
     this.setState({ expired: true });
-    if (this.props.onDisappear) this.props.onDisappear();
+    onDisappear();
   }
 
   render() {
-    if (this.state.disappear && !this.state.expired && this.state.show) {
-      setTimeout(() => this.expire(), this.state.timeout);
+    const {
+      disappear, expired, show, timeout, variant, heading, msg,
+    } = this.state;
+    const { onDisappear = () => false } = this.props;
+
+    if (disappear && !expired && show) {
+      setTimeout(() => this.expire(), timeout);
     }
     return (
-      <Collapse in={this.state.show}>
+      <Collapse in={show}>
         <div>
-          <Alert variant={this.state.variant}>
-            <Alert.Heading>{this.state.heading}</Alert.Heading>
-            <p>{this.state.msg}</p>
+          <Alert variant={variant} dismissible onClose={() => onDisappear()}>
+            <Alert.Heading>{heading}</Alert.Heading>
+            <p>{msg}</p>
           </Alert>
         </div>
       </Collapse>

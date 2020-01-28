@@ -5,7 +5,7 @@ import Axios from 'axios';
 import { FormBuilder } from '../components/FormComponents';
 import {
   checkNotBlankError,
-  checkValidEmailError
+  checkValidEmailError,
 } from '../utils/FormValidation';
 
 import Auth from '../utils/Auth';
@@ -22,7 +22,7 @@ export const NewUser = (props) => {
           Auth.authenticateUser(res.data.token);
           props.onLogin();
         })
-        .catch(err => context.sendMessage(ErrToMessageObj(err)));
+        .catch((err) => context.sendMessage(ErrToMessageObj(err)));
     }
   };
 
@@ -30,27 +30,38 @@ export const NewUser = (props) => {
     {
       id: 'name',
       label: 'Display Name',
-      errorChecks: value => checkNotBlankError(value)
+      errorChecks: (value) => checkNotBlankError(value),
     },
     {
       id: 'email',
       label: 'Email',
-      errorChecks: value => checkValidEmailError(value)
+      errorChecks: (value) => checkValidEmailError(value),
     },
     {
       id: 'password',
       label: 'Password',
       inputType: 'password',
-      errorChecks: value => checkNotBlankError(value)
+      errorChecks: (value) => checkNotBlankError(value),
     },
     {
       id: 'confirm_password',
       label: 'Confirm Password',
-      inputType: 'password'
-    }
+      inputType: 'password',
+    },
+    {
+      id: 'reminderQuestion',
+      label: 'Password Reminder Question',
+      errorChecks: (value) => checkNotBlankError(value),
+    },
+    {
+      id: 'reminderAnswer',
+      label: 'Password Reminder Answer',
+      inputType: 'password',
+      errorChecks: (value) => checkNotBlankError(value),
+    },
   ];
   return (
-    <FormBuilder fields={fields} onSave={fieldValues => post(fieldValues)} />
+    <FormBuilder fields={fields} onSave={(fieldValues) => post(fieldValues)} />
   );
 };
 

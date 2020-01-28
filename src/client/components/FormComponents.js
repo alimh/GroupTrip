@@ -129,7 +129,7 @@ export const MultiSelect = (props) => (
         ? (
           <CheckboxElement
             key="select-all"
-            label="Select Allx"
+            label="Select All"
             checked={props.options.reduce((acc, o) => o.checked && acc, true)}
             onUpdate={() => {
               const newOptions = props.options;
@@ -258,7 +258,6 @@ export class FormBuilder extends React.Component {
     //   ...this.state.values,
     //   [field]: value,
     // };
-
     this.setState((prevState) => {
       const errors = {
         ...prevState.errors,
