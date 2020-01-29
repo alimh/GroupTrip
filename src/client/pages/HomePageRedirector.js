@@ -7,6 +7,8 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import ListGroup from 'react-bootstrap/ListGroup';
+import Card from 'react-bootstrap/Card';
+import CardDeck from 'react-bootstrap/CardDeck';
 import { AllTripsDA } from '../data-access/AllTripsDA';
 import Auth from '../utils/Auth';
 
@@ -29,22 +31,41 @@ export class HomePageRedirector extends React.Component {
   render() {
     const rednerNotLoggedIn = () => (
       <Container>
-        <h4>
-          <Link to="/newuser">Create an account</Link>
-          {' '}
-          or
-          {' '}
-          <Link to="/account">Login</Link>
-          {' '}
-          to get started!
-        </h4>
+        <CardDeck>
+          <Card border="light" style={{ width: '18rem', alignItems: 'center' }}>
+            <Card.Img style={{ width: '80px' }} variant="top" src="/icon-globe.png" />
+            <Card.Body>
+              <Card.Title>Planning a trip with a group?</Card.Title>
+              <Card.Text>When you&apos;re traveling in a group, splitting the expenses can be a chore. Just start trip on GroupTrip!</Card.Text>
+            </Card.Body>
+          </Card>
+          <Card border="light" style={{ width: '18rem', alignItems: 'center' }}>
+            <Card.Img style={{ width: '80px' }} variant="top" src="/icon-money.png" />
+            <Card.Body>
+              <Card.Title>Don&apos;t worry about who spends what.</Card.Title>
+              <Card.Text>Everyone can add their own expenses and choose who splits what.</Card.Text>
+            </Card.Body>
+          </Card>
+          <Card border="light" style={{ width: '18rem', alignItems: 'center' }}>
+            <Card.Img style={{ width: '80px' }} variant="top" src="/icon-bill.png" />
+            <Card.Body>
+              <Card.Title>Get a bill at the end. Easy!</Card.Title>
+              <Card.Text>Get a simple &quot;payback&quot; list during and at the end of the trip.</Card.Text>
+            </Card.Body>
+          </Card>
+        </CardDeck>
+        <Row>
+          <Col style={{ alignItems: 'center' }}>
+            <Link to="/newuser">Sign up to get started</Link>
+          </Col>
+        </Row>
       </Container>
     );
 
     const renderLoggedIn = () => (
       <Container>
         <h3>Get Started</h3>
-        <Row className="justify-content-md-center">
+        <Row>
           <Col>
             <ListGroup>
               <LinkContainer to="/new">
@@ -74,7 +95,7 @@ export class HomePageRedirector extends React.Component {
         <div style={{ background: 'rgba(0, 0, 255, .5)' }}>
           <Jumbotron style={jumbotronStyle}>
             <Container>
-              <Row className="justify-content-md-center">
+              <Row>
                 <h2
                   className="display-3"
                   style={{
@@ -85,7 +106,7 @@ export class HomePageRedirector extends React.Component {
                   Share Costs Between Friends
                 </h2>
               </Row>
-              <Row className="justify-content-md-center">
+              <Row>
                 <h2 className="display-4" style={{ color: 'white' }}>
                   Stay Friends!
                 </h2>
