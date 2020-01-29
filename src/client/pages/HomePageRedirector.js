@@ -1,6 +1,5 @@
 import React from 'react';
 import { LinkContainer } from 'react-router-bootstrap';
-import { Link } from 'react-router-dom';
 
 import Jumbotron from 'react-bootstrap/Jumbotron';
 import Container from 'react-bootstrap/Container';
@@ -9,6 +8,7 @@ import Col from 'react-bootstrap/Col';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Card from 'react-bootstrap/Card';
 import CardDeck from 'react-bootstrap/CardDeck';
+import Button from 'react-bootstrap/Button';
 import { AllTripsDA } from '../data-access/AllTripsDA';
 import Auth from '../utils/Auth';
 
@@ -30,36 +30,41 @@ export class HomePageRedirector extends React.Component {
 
   render() {
     const rednerNotLoggedIn = () => (
-      <Container>
-        <CardDeck>
-          <Card border="light" style={{ width: '18rem', alignItems: 'center' }}>
-            <Card.Img style={{ width: '80px' }} variant="top" src="/icon-globe.png" />
-            <Card.Body>
-              <Card.Title>Planning a trip with a group?</Card.Title>
-              <Card.Text>When you&apos;re traveling in a group, splitting the expenses can be a chore. Just start trip on GroupTrip!</Card.Text>
-            </Card.Body>
-          </Card>
-          <Card border="light" style={{ width: '18rem', alignItems: 'center' }}>
-            <Card.Img style={{ width: '80px' }} variant="top" src="/icon-money.png" />
-            <Card.Body>
-              <Card.Title>Don&apos;t worry about who spends what.</Card.Title>
-              <Card.Text>Everyone can add their own expenses and choose who splits what.</Card.Text>
-            </Card.Body>
-          </Card>
-          <Card border="light" style={{ width: '18rem', alignItems: 'center' }}>
-            <Card.Img style={{ width: '80px' }} variant="top" src="/icon-bill.png" />
-            <Card.Body>
-              <Card.Title>Get a bill at the end. Easy!</Card.Title>
-              <Card.Text>Get a simple &quot;payback&quot; list during and at the end of the trip.</Card.Text>
-            </Card.Body>
-          </Card>
-        </CardDeck>
-        <Row>
-          <Col style={{ alignItems: 'center' }}>
-            <Link to="/newuser">Sign up to get started</Link>
-          </Col>
-        </Row>
-      </Container>
+      <div>
+        <Container>
+          <CardDeck className="text-center">
+            <Card border="light" style={{ alignItems: 'center' }}>
+              <Card.Img style={{ width: '80px' }} variant="top" src="/icon-globe.png" />
+              <Card.Body>
+                <Card.Title>Planning a trip with a group?</Card.Title>
+                <Card.Text>When you&apos;re traveling in a group, splitting the expenses can be a chore. Just start trip on GroupTrip!</Card.Text>
+              </Card.Body>
+            </Card>
+            <Card border="light" style={{ alignItems: 'center' }}>
+              <Card.Img style={{ width: '80px' }} variant="top" src="/icon-money.png" />
+              <Card.Body>
+                <Card.Title>Don&apos;t worry about who spends what.</Card.Title>
+                <Card.Text>Everyone can add their own expenses and choose who splits what.</Card.Text>
+              </Card.Body>
+            </Card>
+            <Card border="light" style={{ alignItems: 'center' }}>
+              <Card.Img style={{ width: '80px' }} variant="top" src="/icon-bill.png" />
+              <Card.Body>
+                <Card.Title>Get a bill at the end. Easy!</Card.Title>
+                <Card.Text>Get a simple &quot;payback&quot; list during and at the end of the trip.</Card.Text>
+              </Card.Body>
+            </Card>
+          </CardDeck>
+          <br />
+          <Row className="justify-content-md-center">
+            <Col className="text-center">
+              <LinkContainer to="/newuser">
+                <Button>Sign up to get started</Button>
+              </LinkContainer>
+            </Col>
+          </Row>
+        </Container>
+      </div>
     );
 
     const renderLoggedIn = () => (
