@@ -2,28 +2,20 @@ import React from 'react';
 import { DisappearingAlert } from '../components/DisappearingAlert';
 
 export class TestPage extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
-    this.state = {
-      n: 0,
-      messageObj: [
-        { text: 'message 0' },
-        { text: 'message 1', variant: 'success' },
-        { text: 'message 2', variant: 'error' },
-      ],
-    };
+    const { prop1, prop2 = '5' } = props;
+    this.state = { prop1, prop2 };
   }
-  onDisappear() {
-    this.setState({ n: this.state.n + 1 });
-  }
+
   render() {
+    const { prop1, prop2 } = this.state;
+    console.log(this.state);
     return (
       <div>
-        <DisappearingAlert
-          messageObj={this.state.messageObj[this.state.n]}
-          onDisappear={() => this.onDisappear()}
-        />
+        <h1>{prop1 || 'No Prop'}</h1>
+        <h2>{prop2}</h2>
       </div>
     );
   }

@@ -11,72 +11,84 @@ export class SettingsViewWithNew extends React.Component {
     this.state = {
       settings: props.settings,
       newValue: '',
+      newLabel: props.newLabel || '',
       error: false,
+      dirty: false,
     };
   }
 
   handleChange(newValue) {
     // check for error
 
-    this.setState({ newValue });
+    this.setState({ newValue, dirty: newValue !== '' });
   }
 
   sendNewValue(e) {
     e.preventDefault();
+    const { newValue } = this.state;
+    const { onNew } = this.props;
 
-    const error = checkNotBlankError(this.state.newValue);
+    const error = checkNotBlankError(newValue);
     if (!error) {
-      this.setState({ newValue: '', error: false });
-      this.props.onNew(this.state.newValue);
+      this.setState({ newValue: '', error: false, dirty: false });
+      onNew(newValue);
     } else {
       this.setState({ error });
     }
   }
 
   render() {
-    const noFormat = t => t;
-    const formatDirty = this.props.formatDirty || noFormat;
-    const formatRemove = this.props.formatRemove || noFormat;
+    const noFormat = (t) => t;
+    const { formatDirty = noFormat, formatRemove = noFormat } = this.props;
+    const {
+      settings, newValue, error, dirty, newLabel,
+    } = this.state;
+    const { onRemove } = this.props;
 
     return (
       <div>
-        <ListGroup>
-          {this.state.settings.map((value, i) => (
-            <ListGroup.Item key={value.id}>
-              {!value.active
-                ? formatRemove(value.label)
-                : value.unsaved
-                ? formatDirty(value.label)
-                : value.label}
-              <Button
-                className="float-right"
-                variant="outline-warning"
-                size="sm"
-                onClick={(e) => {
-                  e.preventDefault();
-                  this.props.onRemove(i);
-                }}
-              >
-                {value.active ? 'x' : 'Reenable'}
-              </Button>
-            </ListGroup.Item>
-          ))}
-        </ListGroup>
+        {
+          settings.length > 0
+            ? (
+              <ListGroup>
+                {settings.map((value, i) => (
+                  <ListGroup.Item key={value.id}>
+                    {!value.active
+                      ? formatRemove(value.label)
+                      : value.unsaved
+                        ? formatDirty(value.label)
+                        : value.label}
+                    <Button
+                      className="float-right"
+                      variant="outline-warning"
+                      size="sm"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onRemove(i);
+                      }}
+                    >
+                      {value.active ? 'x' : 'Reenable'}
+                    </Button>
+                  </ListGroup.Item>
+                ))}
+              </ListGroup>
+            ) : <div />
+        }
         <InputBox
           id="New"
           name=""
-          placeholder="New"
-          value={this.state.newValue}
-          onUpdate={newValue => this.handleChange(newValue)}
-          errMsg={this.state.error}
-          appendButton={
+          placeholder={newLabel}
+          value={newValue}
+          onUpdate={(nv) => this.handleChange(nv)}
+          errMsg={error}
+          appendButton={(
             <Button
-              variant="outline-secondary"
-              onClick={e => this.sendNewValue(e)}
+              variant={dirty ? 'primary' : 'outline-secondary'}
+              onClick={(e) => this.sendNewValue(e)}
             >
               Add
             </Button>
-          }
+          )}
         />
       </div>
     );

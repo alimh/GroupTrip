@@ -9,38 +9,43 @@ export class TripSettingsPage extends React.Component {
   constructor(props) {
     super(props);
 
+    const { tripId = null } = props;
+
     this.state = {
-      tripId: props.tripId || null,
-      redirect: false
+      tripId,
+      redirect: false,
     };
   }
 
   handleRedirect(path) {
     this.setState({ redirect: path });
   }
+
   render() {
+    const { redirect, tripId } = this.state;
     return (
       <div>
         <Container>
-          {this.state.redirect ? (
-            <Redirect
-              push
-              to={{
-                pathname: this.state.redirect,
-                state: { messageObj: { text: 'Saved', variant: 'success' } }
-              }}
-            />
-          ) : (
-            <Row>
-              <Col>
-                <TripDetailsDA
-                  tripId={this.state.tripId}
-                  redirect={path => this.handleRedirect(path)}
-                  onCancel={() => this.handleRedirect()}
-                />
-              </Col>
-            </Row>
-          )}
+          {redirect
+            ? (
+              <Redirect
+                push
+                to={{
+                  pathname: redirect,
+                  state: { refresh: true, messageObj: { text: 'Saved', variant: 'success' } },
+                }}
+              />
+            )
+            : (
+              <Row>
+                <Col>
+                  <TripDetailsDA
+                    tripId={tripId}
+                    redirect={(path) => this.handleRedirect(path)}
+                  />
+                </Col>
+              </Row>
+            )}
         </Container>
       </div>
     );

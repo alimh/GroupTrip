@@ -11,17 +11,13 @@ import { HomePageRedirector } from './pages/HomePageRedirector';
 import { ForgotPassword } from './pages/ForgotPassword';
 
 export const App = () => {
-  const renderAllTrips = (props) => {
-    const { location } = props;
-    const { state } = location;
-    const { refresh, ...otherProps } = state || {};
-    const { messageObj } = otherProps;
+  const renderAllTrips = (pathObj) => {
+    const { history, location: { state = {} } } = pathObj;
+    const { refresh, messageObj } = state;
 
     if (refresh) {
-      const { history } = props;
       history.replace({
-        pathname: '/',
-        state: { refresh: false, ...otherProps },
+        state: { refresh: false, messageObj },
       });
       window.location.reload();
       return false;
@@ -29,9 +25,21 @@ export const App = () => {
     return <HomePageRedirector messageObj={messageObj} />;
   };
   const renderNewTrip = () => <NewTripPage />;
-  const renderTripLinksWrapper = (pathObj) => (
-    <TripLinksWrapper tripId={pathObj.match.params.n} pathObj={pathObj} />
-  );
+  const renderTripLinksWrapper = (pathObj) => {
+    const {
+      match: { params: { n: tripId } },
+      location: { state: { refresh = false, messageObj = null } = {} },
+      history,
+    } = pathObj;
+    if (refresh) {
+      history.replace({
+        state: { refresh: false, messageObj },
+      });
+      window.location.reload();
+      return false;
+    }
+    return <TripLinksWrapper tripId={tripId} pathObj={pathObj} messageObj={messageObj} />;
+  };
   const renderAccountRedirector = () => <AccountRedirector />;
   const renderTestPage = () => <TestPage />;
   const renderNewUser = () => <NewUserPage />;

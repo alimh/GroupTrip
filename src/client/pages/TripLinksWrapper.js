@@ -7,18 +7,31 @@ import { ExpensesPage } from './ExpensesPage';
 import { SummaryPage } from './SummaryPage';
 import { TripLinks } from '../data-access/TripLinksDA';
 
-const renderSettings = tripId => <TripSettingsPage tripId={tripId} />;
-const renderSummary = tripId => <SummaryPage tripId={tripId} />;
-const renderTripPage = tripId => <TripIndexPage tripId={tripId} />;
-const renderExpensesPage = tripId => <ExpensesPage tripId={tripId} />;
+import MessageContext from '../components/MessageContext';
+
+const renderSettings = (tripId) => <TripSettingsPage tripId={tripId} />;
+const renderSummary = (tripId) => <SummaryPage tripId={tripId} />;
+const renderTripPage = (tripId) => <TripIndexPage tripId={tripId} />;
+const renderExpensesPage = (tripId) => <ExpensesPage tripId={tripId} />;
 
 export class TripLinksWrapper extends React.Component {
   constructor(props) {
     super(props);
 
+    const { tripId = null, messageObj = null } = props;
+
     this.state = {
-      tripId: props.pathObj.match.params.n || null
+      tripId,
+      messageObj,
+      loadChild: false,
     };
+  }
+
+  componentDidMount() {
+    const { messageObj } = this.state;
+    const { sendMessage } = this.context;
+
+    if (messageObj) sendMessage(messageObj);
   }
 
   handleSuccess() {
@@ -26,31 +39,33 @@ export class TripLinksWrapper extends React.Component {
   }
 
   render() {
-    const { tripId } = this.state;
+    const { tripId, loadChild } = this.state;
+    const { pathObj: { match: { path } } } = this.props;
+
     const child = () => (
       <Switch>
         <Route
           exact
-          path={`${this.props.pathObj.match.path}/settings`}
+          path={`${path}/settings`}
           render={() => renderSettings(tripId)}
         />
         <Route
           exact
-          path={`${this.props.pathObj.match.path}/summary`}
+          path={`${path}/summary`}
           render={() => renderSummary(tripId)}
         />
         <Route
           exact
-          path={`${this.props.pathObj.match.path}/home`}
+          path={`${path}/home`}
           render={() => renderTripPage(tripId)}
         />
         <Route
           exact
-          path={`${this.props.pathObj.match.path}/expenses`}
+          path={`${path}/expenses`}
           render={() => renderExpensesPage(tripId)}
         />
         <Route
-          path={`${this.props.pathObj.match.path}`}
+          path={`${path}`}
           render={() => renderTripPage(tripId)}
         />
         <Route component={NotFoundPage} />
@@ -59,14 +74,16 @@ export class TripLinksWrapper extends React.Component {
     return (
       <div>
         <TripLinks
-          tripId={this.state.tripId}
+          tripId={tripId}
           onSuccess={() => this.handleSuccess()}
         />
         <br />
-        {this.state.loadChild ? child() : <div />}
+        {loadChild ? child() : <div />}
       </div>
     );
   }
 }
+
+TripLinksWrapper.contextType = MessageContext;
 
 export default TripLinksWrapper;

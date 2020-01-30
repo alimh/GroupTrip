@@ -13,44 +13,47 @@ export class NewTripPage extends React.Component {
     this.state = {
       keyNewTrip: Math.random(),
       redirect: null,
-      canceled: null
     };
   }
 
   handleRedirect(path) {
     this.setState({ redirect: path });
   }
-  handleCancel() {
-    // console.log('canceling');
-    // BrowserHistory.goBack();
-  }
+
+  // handleCancel() {
+  //   this.setState({ redirect: })
+  // }
+
   render() {
+    const { redirect, keyNewTrip } = this.state;
     return (
       <div>
         <br />
         <Container>
           <h3>New Trip Details</h3>
-          {this.state.redirect ? (
-            <Redirect
-              push
-              to={{
-                pathname: this.state.redirect,
-                state: {
-                  messageObj: { text: 'Trip Created', variant: 'success' }
-                }
-              }}
-            />
-          ) : (
-            <Row className="justify-content-md-center">
-              <Col>
-                <TripDetailsDA
-                  key={this.state.keyNewTrip}
-                  redirect={path => this.handleRedirect(path)}
-                  cancel={() => this.handleCancel()}
-                />
-              </Col>
-            </Row>
-          )}
+          {redirect
+            ? (
+              <Redirect
+                push
+                to={{
+                  pathname: redirect,
+                  state: {
+                    messageObj: { text: 'Trip Created', variant: 'success' },
+                  },
+                }}
+              />
+            )
+            : (
+              <Row className="justify-content-md-center">
+                <Col>
+                  <TripDetailsDA
+                    key={keyNewTrip}
+                    redirect={(path) => this.handleRedirect(path)}
+                    cancel={() => this.handleCancel()}
+                  />
+                </Col>
+              </Row>
+            )}
         </Container>
       </div>
     );

@@ -7,8 +7,6 @@ import { LoggedOutMessage } from '../components/LoggedOutMessage';
 import MessageContext from '../components/MessageContext';
 
 export class TripLinks extends React.Component {
-  static contextType = MessageContext;
-
   constructor(props) {
     super(props);
 
@@ -17,47 +15,57 @@ export class TripLinks extends React.Component {
     this.state = {
       loading: true,
       tripId,
-      tripName: null
+      tripName: null,
     };
   }
 
   componentDidMount() {
-    if (this.state.tripId) {
+    const { tripId } = this.state;
+    const { onSuccess } = this.props;
+    const { sendMessage } = this.context;
+
+    if (tripId) {
       Axios.get('/api/trips/getName', {
-        params: { id: this.state.tripId }
+        params: { id: tripId },
       })
         .then((response) => {
           const { data } = response;
           this.setState({
             loading: false,
             tripName: data.name,
-            isOwner: data.isOwner
+            isOwner: data.isOwner,
           });
-          this.props.onSuccess();
+          onSuccess();
         })
         .catch((err) => {
           this.setState({ loading: false });
-          this.context.sendMessage({
+          sendMessage({
             text:
               err.response.status === 401
                 ? LoggedOutMessage()
                 : err.response.data,
-            variant: 'error'
+            variant: 'error',
           });
         });
     }
   }
 
   render() {
-    if (this.state.loading) return <LoadingView />;
+    const {
+      tripId, tripName, isOwner, loading,
+    } = this.state;
+
+    if (loading) return <LoadingView />;
     return (
       <TripLinksBanner
-        tripId={this.state.tripId}
-        tripName={this.state.tripName}
-        isOwner={this.state.isOwner}
+        tripId={tripId}
+        tripName={tripName}
+        isOwner={isOwner}
       />
     );
   }
 }
+
+TripLinks.contextType = MessageContext;
 
 export default TripLinks;
