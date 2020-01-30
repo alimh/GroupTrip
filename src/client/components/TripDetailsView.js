@@ -42,7 +42,7 @@ export class TripDetailsView extends React.Component {
       },
       unsavedName: false,
       unsaved: false,
-      unsavedSettings: null,
+      unsavedSettings: {},
     };
   }
 
