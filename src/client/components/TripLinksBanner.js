@@ -9,14 +9,13 @@ export const TripLinksBanner = (props) => {
   const linkSummary = '/trips/'.concat(props.tripId).concat('/summary');
   const linkTripIndex = '/trips/'.concat(props.tripId).concat('/home');
   const tripName = props.tripName || 'Trip Home';
-  const tripNameTrunc =
-    tripName.length > 13 ? tripName.substring(0, 10).concat('...') : tripName;
+  const tripNameTrunc = tripName.length > 13 ? tripName.substring(0, 10).concat('...') : tripName;
 
   return (
-    <Navbar expand="lg" bg="primary" variant="dark">
+    <Navbar collapseOnSelect expand="lg" bg="primary" variant="dark">
       <Navbar.Brand>{tripNameTrunc}</Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
-      <Navbar.Collapse id="basic-navbar-nav">
+      <Navbar.Collapse id="responsive-navbar-nav">
         <Nav className="mr-auto">
           <LinkContainer to={linkTripIndex}>
             <Nav.Link>Home</Nav.Link>
@@ -26,8 +25,8 @@ export const TripLinksBanner = (props) => {
               <Nav.Link>Settings</Nav.Link>
             </LinkContainer>
           ) : (
-            <div />
-          )}
+              <div />
+            )}
           <LinkContainer to={linkExpenses}>
             <Nav.Link>Expenses</Nav.Link>
           </LinkContainer>
