@@ -4,6 +4,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import ListGroup from 'react-bootstrap/ListGroup';
+import Alert from 'react-bootstrap/Alert';
 import { ExpensesList } from '../data-access/ExpensesListDA';
 import { ExpenseModal } from '../components/ExpenseModal';
 import { Log } from '../data-access/LogDA';
@@ -17,34 +18,56 @@ export class TripIndexPage extends React.Component {
       keyExpenseList: Math.random(),
       keyLog: Math.random(),
       tripId: props.tripId || null,
-      activeExpenseObject: null
+      activeExpenseObject: null,
+      showShare: true,
     };
   }
 
   handleEdit(expObjToEdit) {
     this.setState({
-      activeExpenseObject: expObjToEdit
+      activeExpenseObject: expObjToEdit,
     });
   }
 
   handleCloseModal() {
     this.setState({
       keyNewExpense: null,
-      activeExpenseObject: null
+      activeExpenseObject: null,
       // keyExpenseList: Math.random(), // force re-render
     });
   }
 
   handleAddExpense() {
     this.setState({
-      keyNewExpense: Math.random()
+      keyNewExpense: Math.random(),
     });
   }
 
+  handleCloseShare() {
+    this.setState({ showShare: false });
+  }
+
   render() {
+    const {
+      showShare, activeExpenseObject, keyNewExpense, keyLog, keyExpenseList, tripId,
+    } = this.state;
+
     return (
-      <div className="home">
+      <>
         <Container>
+          <Row>
+            <Col>
+              <Alert
+                variant="info"
+                dismissible
+                onClose={() => this.handleCloseShare()}
+                show={showShare}
+              >
+                <Alert.Heading>Share this trip with your friends:</Alert.Heading>
+                {window.location.href}
+              </Alert>
+            </Col>
+          </Row>
           <Row>
             <Col>
               <ListGroup>
@@ -53,8 +76,8 @@ export class TripIndexPage extends React.Component {
                   variant="primary"
                   onClick={() => this.handleAddExpense()}
                   disabled={
-                    this.state.activeExpenseObject !== null ||
-                    this.state.keyNewExpense !== null
+                    activeExpenseObject !== null
+                    || keyNewExpense !== null
                   }
                 >
                   Add an expense
@@ -65,43 +88,41 @@ export class TripIndexPage extends React.Component {
           <br />
           <Row>
             <Col sm>
-              <h3>Most Recent Expenses</h3>
+              <h3>Recent Expenses</h3>
               <br />
               <ExpensesList
-                key={this.state.keyExpenseList}
-                tripId={this.state.tripId}
-                onEdit={expObjToEdit => this.handleEdit(expObjToEdit)}
-                active={this.state.activeExpenseObject}
+                key={keyExpenseList}
+                tripId={tripId}
+                onEdit={(expObjToEdit) => this.handleEdit(expObjToEdit)}
+                active={activeExpenseObject}
               />
             </Col>
             <Col sm>
               <h3>Activity</h3>
               <Log
-                key={this.state.keyLog}
-                tripId={this.state.tripId}
-                onView={exp => this.handleEdit(exp)}
+                key={keyLog}
+                tripId={tripId}
+                onView={(exp) => this.handleEdit(exp)}
               />
             </Col>
           </Row>
         </Container>
         <ExpenseModal
-          tripId={this.state.tripId}
-          expenseObj={this.state.activeExpenseObject}
+          tripId={tripId}
+          expenseObj={activeExpenseObject}
           onClose={() => this.handleCloseModal()}
-          onSuccess={() =>
-            this.setState({
-              keyExpenseList: Math.random(),
-              keyLog: Math.random(),
-              activeExpenseObject: null,
-              keyNewExpense: null
-            })
-          }
+          onSuccess={() => this.setState({
+            keyExpenseList: Math.random(),
+            keyLog: Math.random(),
+            activeExpenseObject: null,
+            keyNewExpense: null,
+          })}
           showModal={
-            this.state.activeExpenseObject !== null ||
-            this.state.keyNewExpense !== null
+            activeExpenseObject !== null
+            || keyNewExpense !== null
           }
         />
-      </div>
+      </>
     );
   }
 }

@@ -4,11 +4,12 @@ import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 
 export const TripLinksBanner = (props) => {
-  const linkSettings = '/trips/'.concat(props.tripId).concat('/settings');
-  const linkExpenses = '/trips/'.concat(props.tripId).concat('/expenses');
-  const linkSummary = '/trips/'.concat(props.tripId).concat('/summary');
-  const linkTripIndex = '/trips/'.concat(props.tripId).concat('/home');
-  const tripName = props.tripName || 'Trip Home';
+  const { tripId, tripName = 'Trip Name', isOwner } = props;
+
+  const linkSettings = '/trips/'.concat(tripId).concat('/settings');
+  const linkExpenses = '/trips/'.concat(tripId).concat('/expenses');
+  const linkSummary = '/trips/'.concat(tripId).concat('/summary');
+  const linkTripIndex = '/trips/'.concat(tripId).concat('/home');
   const tripNameTrunc = tripName.length > 13 ? tripName.substring(0, 10).concat('...') : tripName;
 
   return (
@@ -20,11 +21,13 @@ export const TripLinksBanner = (props) => {
           <LinkContainer to={linkTripIndex}>
             <Nav.Link>Home</Nav.Link>
           </LinkContainer>
-          {props.isOwner ? (
-            <LinkContainer to={linkSettings}>
-              <Nav.Link>Settings</Nav.Link>
-            </LinkContainer>
-          ) : (
+          {isOwner
+            ? (
+              <LinkContainer to={linkSettings}>
+                <Nav.Link>Settings</Nav.Link>
+              </LinkContainer>
+            )
+            : (
               <div />
             )}
           <LinkContainer to={linkExpenses}>

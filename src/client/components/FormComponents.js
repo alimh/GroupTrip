@@ -1,5 +1,6 @@
 /* eslint-disable react/destructuring-assignment */
 import React from 'react';
+import { Prompt } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
@@ -456,9 +457,15 @@ export class FormBuilder extends React.Component {
       : elements;
 
     return (
-      <Form validated={false} onSubmit={(e) => this.handleSave(e)}>
-        {formatWrapper(combine)}
-      </Form>
+      <>
+        <Prompt
+          when={this.state.dirty}
+          message="You have unsaved changes. Are you sure you want to leave?"
+        />
+        <Form validated={false} onSubmit={(e) => this.handleSave(e)}>
+          {formatWrapper(combine)}
+        </Form>
+      </>
     );
   }
 }

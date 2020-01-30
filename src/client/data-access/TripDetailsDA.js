@@ -81,10 +81,9 @@ export class TripDetailsDA extends React.Component {
   handleRemove() {
     const { tripId: id } = this.state;
     const { redirect } = this.props;
-    const { sendMessage } = this.contest;
+    const { sendMessage } = this.context;
 
     const payload = { id };
-    // const payload = { id: this.state.tripId };
     this.setState({ loading: true });
     Axios.post('/api/trips/remove', payload)
       .then(() => {

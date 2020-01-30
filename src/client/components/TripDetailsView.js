@@ -1,4 +1,5 @@
 import React from 'react';
+import { Prompt } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
@@ -16,7 +17,7 @@ export class TripDetailsView extends React.Component {
       name: '',
       categories: [],
       travelers: [],
-      tripId: null,
+      id: null,
     };
 
     const defaultCategories = props.tripObj ? [] : ['Food', 'Travel', 'Accommodations', 'Activities'];
@@ -40,12 +41,22 @@ export class TripDetailsView extends React.Component {
         name: (f) => checkNotBlankError(f),
       },
       unsavedName: false,
+      unsaved: false,
+      unsavedSettings: null,
     };
   }
 
   handleUpdateName(name) {
     this.setState((prevState) => ({
       tripObj: { ...prevState.tripObj, name },
+      unsaved: true,
+      unsavedName: true,
+    }));
+  }
+
+  handleUpdateSetting(settingGroup, newValue) {
+    this.setState((prevState) => ({
+      unsavedSettings: { ...prevState.unsavedSettings, [settingGroup]: newValue },
       unsaved: true,
     }));
   }
@@ -63,6 +74,7 @@ export class TripDetailsView extends React.Component {
     this.setState((prevState) => ({
       tripObj: { ...prevState.tripObj, [settingGroup]: newSetting },
       unsaved: true,
+      unsavedSettings: { ...prevState.unsavedSettings, [settingGroup]: '' },
     }));
   }
 
@@ -98,7 +110,12 @@ export class TripDetailsView extends React.Component {
     e.preventDefault();
 
     const { errors, errorChecks, tripObj } = this.state;
+    const { unsavedSettings: { categories: unsavedCategory = '', travelers: unsavedTraveler = '' } = {} } = this.state;
     const { onSave } = this.props;
+
+    // force save of un-added settings
+    if (unsavedCategory !== '') this.handleNewSetting('categories', unsavedCategory);
+    if (unsavedTraveler !== '') this.handleNewSetting('travelers', unsavedTraveler);
 
     // loop through error checks and make sure they are all false
     const error = Object.keys(errorChecks).reduce((acc, field) => {
@@ -116,8 +133,9 @@ export class TripDetailsView extends React.Component {
         const { unsaved, ...rest } = c;
         return rest;
       });
+
       onSave({ ...tripObj, categories, travelers });
-      this.setState({ unsavedName: false });
+      this.setState({ unsavedName: false, unsavedSettings: false, unsaved: false });
     }
   }
 
@@ -153,6 +171,9 @@ export class TripDetailsView extends React.Component {
         tripObj: newTripObj,
         defaultCategories: [...resetDefaultCategories],
         keys: { travelers: Math.random(), categories: Math.random() },
+        unsaved: false,
+        unsavedName: false,
+        unsavedSettings: {},
       });
     }
   }
@@ -160,7 +181,7 @@ export class TripDetailsView extends React.Component {
   render() {
     const {
       tripObj: {
-        tripId, name, travelers, categories,
+        id, name, travelers, categories,
       },
       confirmRemove, unsaved, errors, unsavedName, keys, defaultCategories,
     } = this.state;
@@ -169,7 +190,7 @@ export class TripDetailsView extends React.Component {
       <Button
         key="remove-button"
         variant="outline-danger"
-        disabled={tripId === null}
+        disabled={id === null}
         onClick={(e) => this.showConfirmRemoveButton(e)}
       >
         Remove
@@ -234,66 +255,76 @@ export class TripDetailsView extends React.Component {
       ));
 
       return (
-        <div>
+        <>
+          <h5><small>Select some:</small></h5>
           {options}
-          {defaultCategories.length > 0 ? <br /> : <div />}
-        </div>
+          {defaultCategories.length > 0 ? <br /> : <></>}
+        </>
       );
     };
 
     return (
-      <Card border="light">
-        <Card.Body>
-          <Card.Title>Trip Settings</Card.Title>
-          <Form onSubmit={(e) => e.preventDefault()}>
-            <InputBox
-              id="TripName"
-              label="Trip Name"
-              onUpdate={(newName) => this.handleUpdateName(newName)}
-              value={name}
-              errMsg={errors.name}
-              formatLabel={(t) => (unsavedName ? <i>{t}</i> : t)}
-            />
-            <hr />
-            <Form.Group controlId="travelers">
-              <Form.Label>Who is going on the trip?</Form.Label>
-              <SettingsViewWithNew
-                key={keys.travelers}
-                settings={travelers}
-                onNew={(newValue) => this.handleNewSetting('travelers', newValue)}
-                onRemove={(i) => this.handleRemoveSetting('travelers', i)}
-                formatDirty={(t) => <i>{t}</i>}
-                formatRemove={(t) => <del>{t}</del>}
+      <>
+        <Prompt
+          when={unsaved}
+          message="You have unsaved changes. Are you sure you want to leave?"
+        />
+        <Card border="light">
+          <Card.Body>
+            <Card.Title>Trip Settings</Card.Title>
+            <Form onSubmit={(e) => e.preventDefault()}>
+              <InputBox
+                id="TripName"
+                label="Trip Name"
+                onUpdate={(newName) => this.handleUpdateName(newName)}
+                value={name}
+                errMsg={errors.name}
+                formatLabel={(t) => (unsavedName ? <i>{t}</i> : t)}
               />
-            </Form.Group>
-            <hr />
-            <Form.Group controlId="categories">
-              <Form.Label>Select some categories:</Form.Label>
-              {renderDefaultCategories()}
-              <SettingsViewWithNew
-                key={keys.categories}
-                settings={categories}
-                newLabel="or add your own"
-                onNew={(newValue) => this.handleNewSetting('categories', newValue)}
-                onRemove={(i) => this.handleRemoveSetting('categories', i)}
-                formatDirty={(t) => <i>{t}</i>}
-                formatRemove={(t) => <del>{t}</del>}
-              />
-            </Form.Group>
-            <Row>
-              <Col xs={4}>
-                {removeButtonSelector()}
-                {' '}
-              </Col>
-              <Col>
-                {cancelButton()}
-                <span className="float-right">&nbsp;</span>
-                {saveButtonSelector()}
-              </Col>
-            </Row>
-          </Form>
-        </Card.Body>
-      </Card>
+              <hr />
+              <Form.Group controlId="travelers">
+                <Form.Label>Who is going on the trip?</Form.Label>
+                <SettingsViewWithNew
+                  key={keys.travelers}
+                  settings={travelers}
+                  newLabel="new traveler"
+                  onUpdate={(newValue) => this.handleUpdateSetting('travelers', newValue)}
+                  onNew={(newValue) => this.handleNewSetting('travelers', newValue)}
+                  onRemove={(i) => this.handleRemoveSetting('travelers', i)}
+                  formatDirty={(t) => <i>{t}</i>}
+                  formatRemove={(t) => <del>{t}</del>}
+                />
+              </Form.Group>
+              <hr />
+              <Form.Group controlId="categories">
+                <Form.Label>Expense categories:</Form.Label>
+                {!id ? renderDefaultCategories() : <div />}
+                <SettingsViewWithNew
+                  key={keys.categories}
+                  settings={categories}
+                  newLabel={!id ? 'or add your own' : 'new category'}
+                  onUpdate={(newValue) => this.handleUpdateSetting('categories', newValue)}
+                  onNew={(newValue) => this.handleNewSetting('categories', newValue)}
+                  onRemove={(i) => this.handleRemoveSetting('categories', i)}
+                  formatDirty={(t) => <i>{t}</i>}
+                  formatRemove={(t) => <del>{t}</del>}
+                />
+              </Form.Group>
+              <Row>
+                <Col xs={4}>
+                  {removeButtonSelector()}
+                  {' '}
+                </Col>
+                <Col>
+                  {cancelButton()}
+                  <span className="float-right">&nbsp;</span>
+                  {saveButtonSelector()}
+                </Col>
+              </Row>
+            </Form>
+          </Card.Body>
+        </Card>
+      </>
     );
   }
 }

@@ -18,8 +18,8 @@ export class SettingsViewWithNew extends React.Component {
   }
 
   handleChange(newValue) {
-    // check for error
-
+    const { onUpdate } = this.props;
+    onUpdate(newValue);
     this.setState({ newValue, dirty: newValue !== '' });
   }
 
@@ -50,28 +50,30 @@ export class SettingsViewWithNew extends React.Component {
         {
           settings.length > 0
             ? (
-              <ListGroup>
-                {settings.map((value, i) => (
-                  <ListGroup.Item key={value.id}>
-                    {!value.active
-                      ? formatRemove(value.label)
-                      : value.unsaved
-                        ? formatDirty(value.label)
-                        : value.label}
-                    <Button
-                      className="float-right"
-                      variant="outline-warning"
-                      size="sm"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        onRemove(i);
-                      }}
-                    >
-                      {value.active ? 'x' : 'Reenable'}
-                    </Button>
-                  </ListGroup.Item>
-                ))}
-              </ListGroup>
+              <>
+                <ListGroup>
+                  {settings.map((value, i) => (
+                    <ListGroup.Item key={value.id}>
+                      {!value.active
+                        ? formatRemove(value.label)
+                        : value.unsaved
+                          ? formatDirty(value.label)
+                          : value.label}
+                      <Button
+                        className="float-right"
+                        variant="outline-warning"
+                        size="sm"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          onRemove(i);
+                        }}
+                      >
+                        {value.active ? 'x' : 'Reenable'}
+                      </Button>
+                    </ListGroup.Item>
+                  ))}
+                </ListGroup>
+              </>
             ) : <div />
         }
         <InputBox
