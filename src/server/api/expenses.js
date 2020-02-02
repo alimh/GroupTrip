@@ -12,18 +12,15 @@ const writeToLog = (logObj) => {
   });
 };
 
-const formatMoney = a =>
-  '$ '.concat(a.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'));
+const formatMoney = (a) => '$ '.concat(a.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'));
 
-const formatDate = d =>
-  new Date(d).toLocaleDateString('en-US', {
-    month: '2-digit',
-    day: '2-digit',
-    year: 'numeric'
-  });
+const formatDate = (d) => new Date(d).toLocaleDateString('en-US', {
+  month: '2-digit',
+  day: '2-digit',
+  year: 'numeric',
+});
 
-const reduceSplitBy = s =>
-  s.reduce((acc, i) => acc.concat(i.name).concat(', '), '').slice(0, -2);
+const reduceSplitBy = (s) => s.reduce((acc, i) => acc.concat(i.name).concat(', '), '').slice(0, -2);
 
 const getExpenses = (tripId, userId, res, num = 0) => {
   // num: controls which expenses to get:
@@ -33,7 +30,7 @@ const getExpenses = (tripId, userId, res, num = 0) => {
   Expense.find({ tripId, removed_at: null }, (err, expenses) => {
     if (err) return res.status(500).end();
 
-    const expObj = expenses.map(e => e.toObject({ getters: true }));
+    const expObj = expenses.map((e) => e.toObject({ getters: true }));
 
     // find trip owner
     Trip.findById(tripId, (errTrip, trip) => {
@@ -42,18 +39,16 @@ const getExpenses = (tripId, userId, res, num = 0) => {
       const tripObj = trip.toObject({ getters: true });
       const tripOwner = tripObj.owner;
 
-      const expObjWithOwner = expObj.map(e => ({
+      const expObjWithOwner = expObj.map((e) => ({
         ...e,
-        canEdit: e.owner === userId || tripOwner === userId || e.owner === null
+        canEdit: e.owner === userId || tripOwner === userId || e.owner === null,
       }));
-      const expNeedAttention = expObjWithOwner.filter(e => e.needsAttention && e.canEdit);
-      const expNormal = expObjWithOwner.filter(e => !(e.needsAttention && e.canEdit));
-      const expNormalTrunc =
-        num > 0 ? expNormal.slice(-1 * num).reverse() : expNormal;
-      const expReturn =
-        num < 0
-          ? [...expNeedAttention]
-          : [...expNeedAttention, ...expNormalTrunc];
+      const expNeedAttention = expObjWithOwner.filter((e) => e.needsAttention && e.canEdit);
+      const expNormal = expObjWithOwner.filter((e) => !(e.needsAttention && e.canEdit));
+      const expNormalTrunc = num > 0 ? expNormal.slice(-1 * num).reverse() : expNormal;
+      const expReturn = num < 0
+        ? [...expNeedAttention]
+        : [...expNeedAttention, ...expNormalTrunc];
 
       return res
         .status(200)
@@ -85,8 +80,7 @@ router.get('/recent', (req, res) => {
 router.get('/getone', (req, res) => {
   const { id } = req.query;
   const userId = res.locals.user ? res.locals.user.id : null;
-  console.log('getting');
-  console.log(id);
+
   Expense.findById(id, (err, exp) => {
     if (err) return res.status(500).end();
     if (!exp) {
@@ -108,7 +102,7 @@ router.get('/getone', (req, res) => {
         ...expObj,
         canEdit: !expObj.removed_at
           ? expObj.owner === userId || tripOwner === userId
-          : false
+          : false,
       };
 
       return res
@@ -143,23 +137,23 @@ router.post('/save', async (req, res) => {
     amount: req.body.amount,
     category: {
       name: req.body.category.value,
-      id: req.body.category.key
+      id: req.body.category.key,
     },
     splitBy: req.body.splitBy.reduce((acc, user) => {
       if (user.checked) {
         acc.push({
           name: user.value,
-          id: user.key
+          id: user.key,
         });
       }
       return acc;
     }, []),
     paidBy: {
       name: req.body.paidBy.value,
-      id: req.body.paidBy.key
+      id: req.body.paidBy.key,
     },
     updated_at: new Date(),
-    removed_at: null
+    removed_at: null,
   };
 
   const entry = {
@@ -168,7 +162,7 @@ router.post('/save', async (req, res) => {
     userName,
     expenseId,
     action: expenseId ? 'updated' : 'added',
-    timestamp: new Date()
+    timestamp: new Date(),
   };
 
   const changes = [];
@@ -189,7 +183,7 @@ router.post('/save', async (req, res) => {
         changes.push({
           item: 'Note',
           oldValue: expense.note,
-          newValue: expenseDetails.note
+          newValue: expenseDetails.note,
         });
       }
       if (expenseDetails.amount !== expense.amount) {
@@ -200,28 +194,28 @@ router.post('/save', async (req, res) => {
             : '',
           newValue: expenseDetails.amount
             ? formatMoney(parseFloat(expenseDetails.amount))
-            : ''
+            : '',
         });
       }
       if (expense.category.name !== expenseDetails.category.name) {
         changes.push({
           item: 'Category',
           oldValue: expense.category.name,
-          newValue: expenseDetails.category.name
+          newValue: expenseDetails.category.name,
         });
       }
       if (expense.paidBy.name !== expenseDetails.paidBy.name) {
         changes.push({
           item: 'Paid By',
           oldValue: expense.paidBy.name,
-          newValue: expenseDetails.paidBy.name
+          newValue: expenseDetails.paidBy.name,
         });
       }
       if (formatDate(expense.date) !== formatDate(expenseDetails.date)) {
         changes.push({
           item: 'Date',
           oldValue: formatDate(expense.date),
-          newValue: formatDate(expenseDetails.date)
+          newValue: formatDate(expenseDetails.date),
         });
       }
       if (
@@ -230,7 +224,7 @@ router.post('/save', async (req, res) => {
         changes.push({
           item: 'Split By',
           oldValue: reduceSplitBy(expense.splitBy),
-          newValue: reduceSplitBy(expenseDetails.splitBy)
+          newValue: reduceSplitBy(expenseDetails.splitBy),
         });
       }
 
@@ -239,7 +233,7 @@ router.post('/save', async (req, res) => {
       // new expense
       const newExpense = Expense({
         ...expenseDetails,
-        owner: userId || trip.owner
+        owner: userId || trip.owner,
       });
       const newExp = await newExpense.save();
       entry.expenseId = newExp.id;
@@ -250,7 +244,7 @@ router.post('/save', async (req, res) => {
 
     entry.note = changes.reduce(
       (acc, c) => (c.item === 'Note' ? c.oldValue : acc),
-      expenseDetails.note
+      expenseDetails.note,
     );
     entry.changes = changes;
 
@@ -430,7 +424,7 @@ router.post('/remove', (req, res) => {
           userName,
           action: 'removed',
           note: expense.note,
-          timestamp: new Date()
+          timestamp: new Date(),
         });
         return res.status(200).end();
       });
@@ -450,7 +444,7 @@ router.post('/remove', (req, res) => {
               userName,
               action: 'removed',
               note: expense.note,
-              timestamp: new Date()
+              timestamp: new Date(),
             });
 
             return res.status(200).end();
