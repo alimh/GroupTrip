@@ -3,12 +3,9 @@ import Axios from 'axios';
 import { LoggedOutMessage } from '../components/LoggedOutMessage';
 import { ExpenseForm } from '../components/ExpenseForm';
 import { LoadingView } from '../components/LoadingView';
-
-import MessageContext, { ErrToMessageObj } from '../components/MessageContext';
+import { ErrToMessageObj } from '../components/MessageContext';
 
 export class ExpenseDetail extends React.Component {
-  static contextType = MessageContext;
-
   static getDerivedStateFromProps(nextProps, prevState) {
     return prevState.preventScrub ? {} : nextProps;
   }
@@ -16,24 +13,26 @@ export class ExpenseDetail extends React.Component {
   constructor(props) {
     super(props);
 
-    const tripId = props.tripId || null;
-    const expenseObj = props.expenseObj || null;
-    const tripObj = props.tripObj || null;
-    const borderVariant = props.borderVariant || null;
+    const {
+      tripId = null, expenseObj = {}, tripObj = null, borderVariant = null,
+    } = props;
 
     this.state = {
       loading: true,
       tripObj,
       tripId,
       expenseObj,
-      borderVariant
+      borderVariant,
     };
   }
 
   componentDidMount() {
-    if (this.state.tripId) {
+    const { tripId } = this.state;
+    const { message } = this.props;
+
+    if (tripId) {
       Axios.get('/api/trips/get', {
-        params: { id: this.state.tripId }
+        params: { id: tripId },
       })
         .then((response) => {
           const { data } = response;
@@ -41,88 +40,101 @@ export class ExpenseDetail extends React.Component {
         })
         .catch((err) => {
           this.setState({ loading: false });
-          this.context.sendMessage({
+          message({
             text:
               err.response.status === 401
                 ? LoggedOutMessage()
                 : err.response.data,
-            variant: 'error'
+            variant: 'error',
           });
         });
     } else {
-      this.context.sendMessage({ text: 'Trip ID not valid', variant: 'error' });
+      message({ text: 'Trip ID not valid', variant: 'error' });
     }
   }
 
-  handleSave(expenseObj) {
+  handleSave(incomingExpenseObj) {
+    const { tripId, expenseObj = {} } = this.state;
+    const { id = null } = incomingExpenseObj;
+    const { message } = this.props;
+
     const payload = {
-      ...expenseObj,
-      tripId: this.state.tripId,
-      id: this.state.expenseObj ? this.state.expenseObj.id : null
+      ...incomingExpenseObj,
+      tripId,
+      id,
     };
 
-    // this.setState({ loading: true });
-    this.props.message({ text: 'Saving...' });
+    message({ text: 'Saving...' });
 
     const newExpenseObj = {
-      ...this.state.expenseObj,
       ...expenseObj,
+      ...incomingExpenseObj,
       category: {
-        name: expenseObj.category.value,
-        id: expenseObj.category.key
+        name: incomingExpenseObj.category.value,
+        id: incomingExpenseObj.category.key,
       },
       paidBy: {
-        name: expenseObj.paidBy.value,
-        id: expenseObj.paidBy.key
-      }
+        name: incomingExpenseObj.paidBy.value,
+        id: incomingExpenseObj.paidBy.key,
+      },
     };
     this.setState({
-      expenseObj: newExpenseObj
+      expenseObj: newExpenseObj,
     });
+
     Axios.post('/api/expenses/save', payload)
       .then(() => {
-        this.props.message({ text: 'Saved', variant: 'success' });
-        // this.setState({ loading: false });
-        // had to comment because component is being destroyed on .message
+        message({ text: 'Saved', variant: 'success' });
       })
-      .catch(err => this.props.message(ErrToMessageObj(err)));
+      .catch((err) => message(ErrToMessageObj(err)));
   }
 
   handleRemove() {
-    const payload = { id: this.state.expenseObj.id };
-    this.props.message({ text: 'Removing...' });
+    const { expenseObj } = this.state;
+    const { message } = this.props;
+
+    const payload = { id: expenseObj.id };
+    message({ text: 'Removing...' });
     this.setState({ tripObj: null });
     Axios.post('/api/expenses/remove', payload)
       .then(() => {
-        this.props.message({
+        message({
           text: 'Removed Expense',
-          variant: 'success'
+          variant: 'success',
         });
       })
-      .catch(err => this.props.message(ErrToMessageObj(err)));
+      .catch((err) => message(ErrToMessageObj(err)));
   }
 
   handleCancel() {
+    const { onCancel = () => false } = this.props;
+
     this.setState({ keyExpenseForm: Math.random() });
-    if (this.props.onCancel) this.props.onCancel();
+    onCancel();
   }
 
   render() {
-    if (this.state.loading) return <LoadingView />;
-    return this.state.tripObj ? (
-      <ExpenseForm
-        key={this.state.keyExpenseForm}
-        categories={this.state.tripObj.categories || []}
-        travelers={this.state.tripObj.travelers || []}
-        expenseObj={this.state.expenseObj}
-        onSave={expenseObject => this.handleSave(expenseObject)}
-        onCancel={() => this.handleCancel()}
-        onRemove={() => this.handleRemove()}
-        borderVariant={this.state.borderVariant}
-      />
-    ) : (
-      <div />
-    );
+    const {
+      loading, tripObj, keyExpenseForm, expenseObj, borderVariant,
+    } = this.state;
+
+    if (loading) return <LoadingView />;
+    return tripObj
+      ? (
+        <ExpenseForm
+          key={keyExpenseForm}
+          categories={tripObj.categories || []}
+          travelers={tripObj.travelers || []}
+          expenseObj={expenseObj}
+          onSave={(expObj) => this.handleSave(expObj)}
+          onCancel={() => this.handleCancel()}
+          onRemove={() => this.handleRemove()}
+          borderVariant={borderVariant}
+        />
+      )
+      : (
+        <div />
+      );
   }
 }
 
