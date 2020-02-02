@@ -6,24 +6,29 @@ import { LogView } from '../components/LogView';
 import MessageContext, { ErrToMessageObj } from '../components/MessageContext';
 
 export class Log extends React.Component {
-  static contextType = MessageContext;
-
   constructor(props) {
     super(props);
 
     this.state = {
       log: [],
-      tripId: props.tripId || null
+      tripId: props.tripId || null,
+      showAll: false,
     };
   }
 
   componentDidMount() {
-    if (this.state.tripId) this.getLogs();
+    const { tripId } = this.state;
+    if (tripId) this.getLogs(false);
   }
 
-  getLogs() {
-    Axios.get('/api/log/recent', {
-      params: { tripId: this.state.tripId }
+  getLogs(all) {
+    const { tripId } = this.state;
+    const { sendMessage } = this.context;
+
+    const apiEndPoint = all ? 'all' : 'recent';
+
+    Axios.get('/api/log/'.concat(apiEndPoint), {
+      params: { tripId },
     })
       .then((response) => {
         const { data } = response;
@@ -31,31 +36,48 @@ export class Log extends React.Component {
       })
       .catch((err) => {
         this.setState({ loading: false });
-        this.context.sendMessage(ErrToMessageObj(err));
+        sendMessage(ErrToMessageObj(err));
       });
   }
 
   handleClick(id) {
+    const { onView } = this.props;
+    const { sendMessage } = this.context;
+
     Axios.get('/api/expenses/getone', {
-      params: { id }
+      params: { id },
     })
       .then((response) => {
         const { data } = response;
-        this.props.onView(data);
+        onView(data);
       })
-      .catch(err => this.context.sendMessage(ErrToMessageObj(err)));
+      .catch((err) => sendMessage(ErrToMessageObj(err)));
+  }
+
+  handleShowAll() {
+    this.setState(() => ({ showAll: true }));
+    this.getLogs(true);
   }
 
   render() {
-    if (this.state.loading) return <LoadingView />;
-    return this.state.log.length > 0 ? (
-      <div>
-        <LogView log={this.state.log} onClick={id => this.handleClick(id)} />
-      </div>
-    ) : (
-      <div>No Activity</div>
-    );
+    const { loading, log, showAll } = this.state;
+
+    if (loading) return <LoadingView />;
+    return log.length > 0
+      ? (
+        <LogView
+          log={log}
+          onClick={(id) => this.handleClick(id)}
+          onShowAll={() => this.handleShowAll()}
+          isAll={showAll}
+        />
+      )
+      : (
+        <div>No Activity</div>
+      );
   }
 }
+
+Log.contextType = MessageContext;
 
 export default Log;

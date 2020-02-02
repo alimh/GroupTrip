@@ -6,15 +6,13 @@ import { ExpensesListView } from '../components/ExpensesListView';
 import MessageContext, { ErrToMessageObj } from '../components/MessageContext';
 
 export class ExpensesList extends React.Component {
-  static contextType = MessageContext;
-
   static getDerivedStateFromProps(nextProps, prevState) {
     if (!nextProps.active && prevState.active) {
       // remove active from the others and disable buttons
-      const expenses = prevState.expenses.map(e => ({
+      const expenses = prevState.expenses.map((e) => ({
         ...e,
         buttonsDisabled: true,
-        active: false
+        active: false,
       }));
 
       return { ...nextProps, expenses };
@@ -36,63 +34,74 @@ export class ExpensesList extends React.Component {
       tripId,
       apiEndpoint: props.apiEndpoint || 'recent',
       active: false,
-      sendExpenses: props.getExpenses || blankFunc
+      sendExpenses: props.getExpenses || blankFunc,
     };
   }
 
   componentDidMount() {
-    if (this.state.expenses === null) this.getExpenses();
+    const { expenses } = this.state;
+    if (expenses === null) this.getExpenses();
   }
 
   getExpenses() {
-    if (this.state.tripId) {
-      Axios.get('/api/expenses/'.concat(this.state.apiEndpoint), {
-        params: { id: this.state.tripId }
+    const { tripId, apiEndpoint, sendExpenses } = this.state;
+    const { sendMessage } = this.context;
+
+    if (tripId) {
+      Axios.get('/api/expenses/'.concat(apiEndpoint), {
+        params: { id: tripId },
       })
         .then((response) => {
           const { data } = response;
           this.setState({ loading: false, expenses: data });
-          this.state.sendExpenses(data);
+          sendExpenses(data);
         })
         .catch((err) => {
           this.setState({ loading: false });
-          this.context.sendMessage(ErrToMessageObj(err));
+          sendMessage(ErrToMessageObj(err));
         });
     }
   }
 
   handleEdit(n) {
+    const { expenses } = this.state;
+    const { onEdit } = this.props;
     // remove active from the others and disable buttons
-    const expenses = this.state.expenses.map(e => ({
+    const expensesMapped = expenses.map((e) => ({
       ...e,
       buttonsDisabled: true,
-      active: false
+      active: false,
     }));
-    expenses[n].active = true;
+    expensesMapped[n].active = true;
 
     this.setState({
-      expenses,
-      active: true
+      expenses: expensesMapped,
+      active: true,
     });
-    this.props.onEdit(this.state.expenses[n]);
+    onEdit(expenses[n]);
   }
 
   render() {
-    const ExpenseListTable =
-      this.state.expenses !== null && this.state.expenses.length > 0 ? (
-        <div>
+    const { expenses, loading, tripId } = this.state;
+    const ExpenseListTable = expenses !== null && expenses.length > 0
+      ? (
+        <>
           <ExpensesListView
-            expenses={this.state.expenses}
-            onEdit={n => this.handleEdit(n)}
+            tripId={tripId}
+            expenses={expenses}
+            onEdit={(n) => this.handleEdit(n)}
           />
-        </div>
-      ) : (
+        </>
+      )
+      : (
         <div />
       );
 
-    if (this.state.loading) return <LoadingView />;
+    if (loading) return <LoadingView />;
     return ExpenseListTable;
   }
 }
+
+ExpensesList.contextType = MessageContext;
 
 export default ExpensesList;
