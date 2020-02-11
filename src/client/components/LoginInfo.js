@@ -5,11 +5,9 @@ import Axios from 'axios';
 import Auth from '../utils/Auth';
 import { LoggedOutMessage } from './LoggedOutMessage';
 
-import MessageContext, { ErrToMessageObj } from './MessageContext';
+import { ErrToMessageObj } from './MessageContext';
 
 export class LoginInfo extends React.Component {
-  static contextType = MessageContext;
-
   constructor() {
     super();
 
@@ -23,8 +21,13 @@ export class LoginInfo extends React.Component {
   }
 
   checkAuth() {
+    const { sendMessage } = this.props;
+    const username = Auth.getToken();
+
     // Auth.deauthenticateUser();
-    Axios.get('/api/users/check-auth')
+    Axios.get('/api/users/check-auth', {
+      params: { username },
+    })
       .then((res) => {
         if (res.data.name) {
           Auth.authenticateUser(res.data.name);
@@ -37,24 +40,28 @@ export class LoginInfo extends React.Component {
           this.setState({
             relogin: true,
           });
-        } else this.context.sendMessage(ErrToMessageObj(err));
+        } else sendMessage(ErrToMessageObj(err));
       });
   }
 
   render() {
-    if (this.state.relogin) return <LoggedOutMessage />;
+    const { relogin, username } = this.state;
 
-    return this.state.username ? (
-      <Nav>
-        <LinkContainer to="/account">
-          <Nav.Link active>
-            Hi,
-            {' '}
-            {this.state.username}
-          </Nav.Link>
-        </LinkContainer>
-      </Nav>
-    ) : (
+    if (relogin) return <LoggedOutMessage />;
+
+    return username
+      ? (
+        <Nav>
+          <LinkContainer to="/account">
+            <Nav.Link active>
+              Hi,
+              {' '}
+              {username}
+            </Nav.Link>
+          </LinkContainer>
+        </Nav>
+      )
+      : (
         <Nav>
           <Nav.Item>
             <LinkContainer to="/login">
@@ -73,4 +80,5 @@ export class LoginInfo extends React.Component {
       );
   }
 }
+
 export default LoginInfo;

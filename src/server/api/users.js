@@ -16,6 +16,13 @@ router.get('/check-auth', (req, res) => {
   //   }
   //   if (res.locals.user)
   // }
+  const { username: localUserName } = req.query; // username that is in local storage
+  const { user = {} } = res.locals;
+  const { name: cookieUserName = null } = user;
+
+  console.log('local: '.concat(localUserName));
+  console.log('cookie: '.concat(cookieUserName));
+
   res
     .status(200)
     .send({

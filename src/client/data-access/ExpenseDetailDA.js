@@ -57,8 +57,6 @@ export class ExpenseDetail extends React.Component {
     const { tripId, expenseObj } = this.state;
     const id = expenseObj ? expenseObj.id : null;
     const { message } = this.props;
-    console.log(incomingExpenseObj);
-    console.log(expenseObj);
 
     const payload = {
       ...incomingExpenseObj,

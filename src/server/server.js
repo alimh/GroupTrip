@@ -31,19 +31,21 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 app.use('/api', (req, res, next) => {
-  passport.authenticate('jwt', { session: false }, (err, user, info) => {
+  passport.authenticate('jwt', { session: false }, (err, user, info = {}) => {
     if (err) {
-      return res.status(500).end();
+      return res.status(500).send(err).end();
     }
-    const message = info ? info.message : null;
+
+    const { message = null } = info;
+
     if (message === 'expired') {
       return res
         .clearCookie('jwt')
         .status(401)
-        .send('Your session has expired.')
+        .send({ message: 'Your session has expired.' })
         .end();
     }
-    res.locals.user = user || null;
+    res.locals.user = user || {};
     return next();
   })(req, res, next);
   return true;

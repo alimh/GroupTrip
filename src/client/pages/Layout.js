@@ -98,7 +98,7 @@ export class Layout extends React.Component {
               <span className="text-primary font-weight-bold">GroupTrip!</span>
             </Navbar.Brand>
           </LinkContainer>
-          <LoginInfo />
+          <LoginInfo sendMessage={(m) => this.handleMessage(m)} />
         </Navbar>
         <div>
           {toasts()}
