@@ -40,6 +40,7 @@ export class LoginInfo extends React.Component {
           this.setState({
             relogin: true,
           });
+          sendMessage({ text: 'Your session has expired. Click above to relogin', variant: 'warning', disappear: false });
         } else sendMessage(ErrToMessageObj(err));
       });
   }

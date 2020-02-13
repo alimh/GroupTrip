@@ -16,17 +16,22 @@ router.get('/check-auth', (req, res) => {
   //   }
   //   if (res.locals.user)
   // }
-  const { username: localUserName } = req.query; // username that is in local storage
+  const { username: localUserName = null } = req.query; // username that is in local storage
   const { user = {} } = res.locals;
   const { name: cookieUserName = null } = user;
 
-  console.log('local: '.concat(localUserName));
-  console.log('cookie: '.concat(cookieUserName));
+  // three scenarios:
+  // a) localusername is defined, but cookie doesn't match
+  //  send error and 403
+  // b) localusername is defined, and cookie matches
+  //  send username and success
+  // c) localusername is not defined
+  //  send null and success
 
   res
-    .status(200)
+    .status(localUserName !== 'undefined' && localUserName !== cookieUserName ? 401 : 200)
     .send({
-      name: res.locals.user ? res.locals.user.name : null,
+      name: cookieUserName,
     })
     .end();
 });

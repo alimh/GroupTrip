@@ -20,14 +20,16 @@ export class DisappearingAlert extends React.Component {
         return 'secondary';
       };
       const variant = getVariant();
-
       const { messageObj, ...options } = nextProps;
+
+      const { disappear = variant !== 'danger' } = messageObj;
+
       const defaults = {
         msg: messageObj.text || '',
         heading: messageObj.heading || '',
         variant,
         timeout: 3000,
-        disappear: variant !== 'danger',
+        disappear,
       };
 
       return {
