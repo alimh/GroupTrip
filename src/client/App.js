@@ -13,16 +13,22 @@ import { ForgotPassword } from './pages/ForgotPassword';
 export const App = () => {
   const renderAllTrips = (pathObj) => {
     const { history, location: { state = {} } } = pathObj;
-    const { refresh, messageObj } = state;
+    const { refresh, messageObj, messageObjFromRefresh } = state;
+    const messageObjToRender = messageObjFromRefresh || messageObj;
 
     if (refresh) {
       history.replace({
-        state: { refresh: false, messageObj },
+        state: { refresh: false, messageObj: null, messageObjFromRefresh: messageObj },
       });
       window.location.reload();
       return false;
     }
-    return <HomePageRedirector messageObj={messageObj} />;
+
+    if (messageObjFromRefresh) {
+      history.replace({ state: { messageObjFromRefresh: null } });
+    }
+
+    return <HomePageRedirector messageObj={messageObjToRender} />;
   };
   const renderNewTrip = () => <NewTripPage />;
   const renderTripLinksWrapper = (pathObj) => {
