@@ -19,7 +19,7 @@ Passport.use(new LocalStrategy(
   },
   async (email, password, done) => {
     try {
-      const userDocument = await UserObjs.findOne({ email }).exec();
+      const userDocument = await UserObjs.findOne({ email: email.toLowerCase() }).exec();
       const passwordsMatch = await bcrypt.compare(
         password,
         userDocument.passwordHash,

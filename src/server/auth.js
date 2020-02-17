@@ -19,9 +19,9 @@ router.post('/signup', async (req, res) => {
 
   try {
     const passwordHash = await bcrypt.hash(password, hashCost);
-    const reminderHash = await bcrypt.hash(reminderAnswer, hashCost);
+    const reminderHash = await bcrypt.hash(reminderAnswer.toLowerCase(), hashCost);
     const userDocument = new UserObjs({
-      name, email, passwordHash, reminderQuestion, reminderHash,
+      name, email: email.toLowerCase(), passwordHash, reminderQuestion, reminderHash,
     });
     await userDocument.save();
 
@@ -120,7 +120,7 @@ router.post(
     UserObjs.findOne({ email })
       .then(async (userDocument) => {
         const passwordsMatch = await bcrypt.compare(
-          reminderAnswer,
+          reminderAnswer.toLowerCase(),
           userDocument.reminderHash,
         );
         if (!passwordsMatch) return res.status(403).send('Incorrect answer').end();
