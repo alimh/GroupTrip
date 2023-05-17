@@ -28,6 +28,9 @@ router.get('/check-auth', (req, res) => {
   // c) localusername is not defined
   //  send null and success
 
+  if (localUserName !== 'undefined' && localUserName !== cookieUserName) {
+    console.error('*** check-auth error', localUserName, cookieUserName);
+  }
   res
     .status(localUserName !== 'undefined' && localUserName !== cookieUserName ? 401 : 200)
     .send({

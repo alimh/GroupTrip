@@ -41,6 +41,7 @@ export class LoginInfo extends React.Component {
             relogin: true,
           });
           sendMessage({ text: 'Your session has expired. Click above to relogin', variant: 'warning', disappear: false });
+          console.log('*** check-auth error', err);
         } else sendMessage(ErrToMessageObj(err));
       });
   }
