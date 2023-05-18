@@ -3,6 +3,7 @@
   "description": "Share costs between friends. Stay friends!",
   "repository": "https://github.com/alimh/GroupTrip",
   "keywords": ["node", "express", "react", "universal", "javascript"],
+  "stack": "heroku-22",
   "env": {
     "PORT": {
       "description": "The port where the web server will be running",
