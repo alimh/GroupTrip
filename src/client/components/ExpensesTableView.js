@@ -2,7 +2,7 @@ import React from 'react';
 import Button from 'react-bootstrap/Button';
 import Badge from 'react-bootstrap/Badge';
 import ReactTable from 'react-table';
-import 'react-table/react-table.css';
+// import 'react-table/react-table.css';
 
 // needed for bug https://spectrum.chat/react-table/general/v6-10-3-proptypes-fail-for-component-props~9ca49c7e-df58-4488-97eb-ab168570d597
 delete ReactTable.propTypes.TableComponent;
@@ -27,15 +27,13 @@ delete ReactTable.propTypes.ResizerComponent;
 delete ReactTable.propTypes.PadRowComponent;
 delete ReactTable.propTypes.columns.Cell;
 
-const formatMoney = a =>
-  '$ '.concat(a.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'));
+const formatMoney = (a) => '$ '.concat(a.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'));
 
-const formatDate = d =>
-  new Date(d).toLocaleDateString('en-US', {
-    month: '2-digit',
-    day: '2-digit',
-    year: 'numeric'
-  });
+const formatDate = (d) => new Date(d).toLocaleDateString('en-US', {
+  month: '2-digit',
+  day: '2-digit',
+  year: 'numeric',
+});
 
 export const ExpensesTableView = (props) => {
   const { expenses, onEdit } = props;
@@ -51,18 +49,18 @@ export const ExpensesTableView = (props) => {
     needsAttention: e.needsAttention,
     splitBy: e.splitBy
       .reduce((acc, i) => acc.concat(i.name).concat(', '), '')
-      .slice(0, -2)
+      .slice(0, -2),
   }));
 
   const distinctCategories = [
-    ...new Set(expenses.map(e => e.category.name))
-  ].filter(f => f !== '');
-  const distinctPaidBy = [...new Set(expenses.map(e => e.paidBy.name))].filter(f => f !== '');
+    ...new Set(expenses.map((e) => e.category.name)),
+  ].filter((f) => f !== '');
+  const distinctPaidBy = [...new Set(expenses.map((e) => e.paidBy.name))].filter((f) => f !== '');
   const distinctSplitBy = [
     ...new Set(expenses
-        .map(e => e.splitBy)
-        .flat()
-        .map(f => f.name))
+      .map((e) => e.splitBy)
+      .flat()
+      .map((f) => f.name)),
   ];
   return (
     <div>
@@ -74,79 +72,78 @@ export const ExpensesTableView = (props) => {
           {
             Header: 'Date',
             accessor: 'date',
-            Filter: () => <div />
+            Filter: () => <div />,
           },
           {
             Header: 'Note',
             accessor: 'note',
-            filterMethod: (filter, row) =>
-              row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
+            filterMethod: (filter, row) => row[filter.id].toLowerCase().includes(filter.value.toLowerCase()),
           },
           {
             Header: 'Amount',
             accessor: 'amount',
-            filterMethod: (filter, row) => row[filter.id].includes(filter.value)
+            filterMethod: (filter, row) => row[filter.id].includes(filter.value),
           },
           {
             Header: 'Category',
             accessor: 'category',
             Filter: ({ filter, onChange }) => (
               <select
-                onChange={event => onChange(event.target.value)}
+                onChange={(event) => onChange(event.target.value)}
                 style={{ width: '100%' }}
                 value={filter ? filter.value : ''}
               >
                 <option key="(all)" value="" />
-                {distinctCategories.map(c => (
+                {distinctCategories.map((c) => (
                   <option key={c} value={c}>
                     {c}
                   </option>
                 ))}
               </select>
-            )
+            ),
           },
           {
             Header: 'Paid By',
             accessor: 'paidBy',
             Filter: ({ filter, onChange }) => (
               <select
-                onChange={event => onChange(event.target.value)}
+                onChange={(event) => onChange(event.target.value)}
                 style={{ width: '100%' }}
                 value={filter ? filter.value : ''}
               >
                 <option key="(all)" value="" />
-                {distinctPaidBy.map(p => (
+                {distinctPaidBy.map((p) => (
                   <option key={p} value={p}>
                     {p}
                   </option>
                 ))}
               </select>
-            )
+            ),
           },
           {
             Header: 'Split By',
             accessor: 'splitBy',
             Filter: ({ filter, onChange }) => (
               <select
-                onChange={event => onChange(event.target.value)}
+                onChange={(event) => onChange(event.target.value)}
                 style={{ width: '100%' }}
                 value={filter ? filter.value : ''}
               >
                 <option key="(all)" value="" />
-                {distinctSplitBy.map(s => (
+                {distinctSplitBy.map((s) => (
                   <option key={s} value={s}>
                     {s}
                   </option>
                 ))}
               </select>
             ),
-            filterMethod: (filter, row) => row[filter.id].includes(filter.value)
+            filterMethod: (filter, row) => row[filter.id].includes(filter.value),
           },
           {
             Header: '',
             accessor: 'n',
             Filter: () => <div />,
-            Cell: row => (
+            Cell: (row) => (
               <div style={{ textAlign: 'center' }}>
                 <Button
                   style={{ margin: '0 auto' }}
@@ -157,13 +154,13 @@ export const ExpensesTableView = (props) => {
                   View
                 </Button>
               </div>
-            )
+            ),
           },
           {
             Header: '',
             //              accessor: 'id',
             Filter: () => <div />,
-            Cell: row => (
+            Cell: (row) => (
               <div style={{ textAlign: 'center' }}>
                 {row.original.canEdit && row.original.needsAttention ? (
                   <Badge variant="warning">Incomplete</Badge>
@@ -171,8 +168,8 @@ export const ExpensesTableView = (props) => {
                   <div />
                 )}
               </div>
-            )
-          }
+            ),
+          },
         ]}
       />
     </div>
